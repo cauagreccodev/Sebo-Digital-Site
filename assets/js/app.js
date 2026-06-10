@@ -447,7 +447,7 @@ function setupCartEvents() {
 
 function renderHome() {
   const bestSellers = sortBooks(books, "mais-vendidos");
-  renderBooks(document.querySelector("#best-seller-shelf"), bestSellers);
+  renderBooks(document.querySelector("#best-seller-shelf"), [...bestSellers, ...bestSellers]);
   renderAuthors();
   renderBooks(document.querySelector("#classic-books"), books.filter((book) => book.category === "Literatura").slice(0, 4));
   renderUniverses();
@@ -461,14 +461,61 @@ function setupShelfControls() {
   const nextButton = document.querySelector("[data-shelf-next]");
   if (!shelf || !previousButton || !nextButton) return;
 
+  let isPaused = false;
+  let pauseTimeout;
+  let lastFrameTime;
+  const autoSpeed = 0.024;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   const scrollShelf = (direction) => {
     const firstCard = shelf.querySelector(".book-card");
     const distance = firstCard ? firstCard.getBoundingClientRect().width + 18 : 280;
+    pauseTemporarily();
     shelf.scrollBy({ left: direction * distance, behavior: "smooth" });
+  };
+
+  const pauseTemporarily = () => {
+    isPaused = true;
+    window.clearTimeout(pauseTimeout);
+    pauseTimeout = window.setTimeout(() => {
+      isPaused = false;
+      lastFrameTime = undefined;
+    }, 2600);
+  };
+
+  const setPaused = (value) => {
+    isPaused = value;
+    lastFrameTime = undefined;
+    if (value) window.clearTimeout(pauseTimeout);
+  };
+
+  const animateShelf = (timestamp) => {
+    const loopPoint = shelf.scrollWidth / 2;
+
+    if (!isPaused && loopPoint > shelf.clientWidth) {
+      if (lastFrameTime !== undefined) {
+        shelf.scrollLeft += (timestamp - lastFrameTime) * autoSpeed;
+      }
+
+      if (shelf.scrollLeft >= loopPoint) {
+        shelf.scrollLeft -= loopPoint;
+      }
+    }
+
+    lastFrameTime = timestamp;
+    window.requestAnimationFrame(animateShelf);
   };
 
   previousButton.addEventListener("click", () => scrollShelf(-1));
   nextButton.addEventListener("click", () => scrollShelf(1));
+  shelf.addEventListener("mouseenter", () => setPaused(true));
+  shelf.addEventListener("mouseleave", () => setPaused(false));
+  shelf.addEventListener("focusin", () => setPaused(true));
+  shelf.addEventListener("focusout", () => setPaused(false));
+
+  if (!prefersReducedMotion) {
+    window.requestAnimationFrame(animateShelf);
+  }
 }
 
 function renderAuthors() {

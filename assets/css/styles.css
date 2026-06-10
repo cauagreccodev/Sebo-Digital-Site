@@ -729,15 +729,18 @@ h3 {
   grid-auto-flow: column;
   grid-auto-columns: minmax(240px, 285px);
   gap: 18px;
-  overflow-x: auto;
+  overflow-x: hidden;
   overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
-  padding: 4px 2px 18px;
-  scrollbar-width: thin;
+  padding: 4px 2px 10px;
+  scrollbar-width: none;
+}
+
+.book-shelf::-webkit-scrollbar {
+  display: none;
 }
 
 .book-shelf .book-card {
-  scroll-snap-align: start;
+  min-width: 0;
 }
 
 .compact-grid {
