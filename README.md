@@ -66,6 +66,12 @@ This keeps the project simple, easier to understand, and more suitable for a dem
 
 More details are available in `docs/estrategia-imagens.md`.
 
+## Book Copy Modeling
+
+The future database model should separate the book record from its sellable copies. A single book can have multiple offers, grouped as new and used copies.
+
+More details are available in `docs/modelagem-livros.md`.
+
 ## Future Roadmap
 
 - Backend API for books, sellers, users, and orders
