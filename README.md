@@ -9,6 +9,7 @@ The project presents the first version of a virtual used-book store, with a warm
 - Responsive storefront for a virtual second-hand bookstore
 - Home page with search, featured books, categories, and reading suggestions
 - Marketplace-style navigation with a catalog mega menu
+- Account access area with lists, orders, and profile shortcuts
 - Book listing page with advanced filters
 - Book detail page with price, seller, location, condition notes, and metadata
 - Demo shopping cart using local browser storage
@@ -40,6 +41,7 @@ The catalog currently supports filtering by:
 - `livros.html` - book catalog and filters
 - `detalhes.html?id=1` - book detail page
 - `carrinho.html` - demo cart and purchase intent
+- `login.html` - login and account creation screen
 
 ## Project Structure
 

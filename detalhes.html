@@ -38,10 +38,21 @@
         <span></span>
       </button>
 
-      <a class="cart-link" href="carrinho.html" aria-label="Ver carrinho">
-        <span>Carrinho</span>
-        <strong data-cart-count>0</strong>
-      </a>
+      <div class="header-actions">
+        <a class="wishlist-link" href="login.html?next=listas">Minhas listas</a>
+        <div class="account-menu" data-account-menu>
+          <a class="account-trigger" href="login.html" aria-haspopup="true" aria-expanded="false" data-account-trigger>Entrar</a>
+          <div class="account-dropdown" role="menu">
+            <a href="login.html">Acessar ou criar conta</a>
+            <a href="login.html?next=pedidos">Meus pedidos</a>
+            <a href="login.html?next=conta">Minha conta</a>
+          </div>
+        </div>
+        <a class="cart-link" href="carrinho.html" aria-label="Ver carrinho">
+          <span>Carrinho</span>
+          <strong data-cart-count>0</strong>
+        </a>
+      </div>
     </div>
 
     <nav class="site-nav" data-site-nav>

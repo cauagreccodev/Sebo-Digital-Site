@@ -263,6 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupNavigation();
   setupSearchForms();
   setupCartEvents();
+  setupAuthPage();
   updateCartBadge();
 
   if (page === "home") renderHome();
@@ -276,6 +277,8 @@ function setupNavigation() {
   const nav = document.querySelector("[data-site-nav]");
   const catalogMenu = document.querySelector("[data-catalog-menu]");
   const catalogTrigger = document.querySelector("[data-catalog-trigger]");
+  const accountMenu = document.querySelector("[data-account-menu]");
+  const accountTrigger = document.querySelector("[data-account-trigger]");
   if (!toggle || !nav) return;
 
   toggle.addEventListener("click", () => {
@@ -284,6 +287,8 @@ function setupNavigation() {
     toggle.setAttribute("aria-expanded", String(isOpen));
     if (!isOpen && catalogMenu) setCatalogState(false);
   });
+
+  setupAccountMenu(accountMenu, accountTrigger);
 
   if (!catalogMenu || !catalogTrigger) return;
 
@@ -311,6 +316,61 @@ function setupNavigation() {
     event.preventDefault();
     setCatalogState(!catalogMenu.classList.contains("is-catalog-open"));
   });
+}
+
+function setupAccountMenu(accountMenu, accountTrigger) {
+  if (!accountMenu || !accountTrigger) return;
+
+  const isCompactHeader = () => window.matchMedia("(max-width: 700px)").matches;
+  const setAccountState = (isOpen) => {
+    accountMenu.classList.toggle("is-account-open", isOpen);
+    accountTrigger.setAttribute("aria-expanded", String(isOpen));
+  };
+
+  accountMenu.addEventListener("mouseenter", () => {
+    if (!isCompactHeader()) setAccountState(true);
+  });
+  accountMenu.addEventListener("mouseleave", () => {
+    if (!isCompactHeader()) setAccountState(false);
+  });
+  accountMenu.addEventListener("focusin", () => setAccountState(true));
+  accountMenu.addEventListener("focusout", (event) => {
+    if (!accountMenu.contains(event.relatedTarget)) setAccountState(false);
+  });
+
+  accountTrigger.addEventListener("click", (event) => {
+    if (!isCompactHeader()) return;
+    event.preventDefault();
+    setAccountState(!accountMenu.classList.contains("is-account-open"));
+  });
+}
+
+function setupAuthPage() {
+  document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = button.parentElement.querySelector("input");
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      button.textContent = isPassword ? "Ocultar" : "Mostrar";
+    });
+  });
+
+  const loginForm = document.querySelector("#login-form");
+  const signupForm = document.querySelector("#signup-form");
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      showToast("Login demonstrativo: autenticacao sera conectada ao backend.");
+    });
+  }
+
+  if (signupForm) {
+    signupForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      showToast("Cadastro demonstrativo: criacao de conta entra na etapa backend.");
+    });
+  }
 }
 
 function setupSearchForms() {

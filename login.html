@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar ou criar conta | Sebo Digital</title>
+  <meta name="description" content="Tela demonstrativa de acesso e criacao de conta do Sebo Digital.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="login">
+  <header class="auth-header">
+    <div class="shell auth-header-inner">
+      <a class="brand" href="index.html" aria-label="Sebo Digital - inicio">
+        <span class="brand-mark">SD</span>
+        <span>
+          <strong>Sebo Digital</strong>
+          <small>livros com historia</small>
+        </span>
+      </a>
+      <a class="text-link" href="livros.html">Voltar ao catalogo</a>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <section class="auth-layout shell" aria-label="Entrar ou criar conta">
+      <form class="auth-panel" id="login-form">
+        <div class="auth-copy">
+          <p class="eyebrow">Ja sou cliente</p>
+          <h1>Acesse sua conta</h1>
+          <p>Entre para acompanhar pedidos, listas salvas e dados da sua conta.</p>
+        </div>
+
+        <div class="filter-group">
+          <label for="login-email">E-mail</label>
+          <input id="login-email" name="email" type="email" placeholder="seuemail@exemplo.com" required>
+        </div>
+
+        <div class="filter-group password-field">
+          <label for="login-password">Senha</label>
+          <input id="login-password" name="password" type="password" placeholder="Digite sua senha" required>
+          <button type="button" data-password-toggle aria-label="Mostrar senha">Mostrar</button>
+        </div>
+
+        <a class="auth-muted-link" href="login.html?recuperar=senha">Esqueci minha senha</a>
+
+        <button class="primary-button" type="submit">Acessar conta</button>
+        <button class="ghost-button" type="button">Entrar sem senha</button>
+      </form>
+
+      <form class="auth-panel" id="signup-form">
+        <div class="auth-copy">
+          <p class="eyebrow">Criar conta</p>
+          <h2>Primeira compra?</h2>
+          <p>Informe seu e-mail para comecar o cadastro e salvar suas preferencias.</p>
+        </div>
+
+        <div class="filter-group">
+          <label for="signup-email">E-mail</label>
+          <input id="signup-email" name="email" type="email" placeholder="informe seu e-mail" required>
+        </div>
+
+        <button class="primary-button" type="submit">Prosseguir</button>
+
+        <div class="auth-benefits">
+          <strong>Com sua conta voce pode:</strong>
+          <span>Salvar listas de livros</span>
+          <span>Acompanhar pedidos</span>
+          <span>Gerenciar dados de compra</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="social-login shell" aria-label="Acesso com redes sociais">
+      <p>Acesse sua conta Sebo Digital usando uma opcao rapida.</p>
+      <div class="social-actions">
+        <button class="social-button facebook-button" type="button">
+          <span>f</span>
+          Conectar com Facebook
+        </button>
+        <button class="social-button google-button" type="button">
+          <span>G</span>
+          Fazer login com Google
+        </button>
+      </div>
+      <a href="login.html?ajuda=true">Preciso de ajuda</a>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
