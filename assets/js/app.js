@@ -461,10 +461,34 @@ function setupShelfControls() {
   const nextButton = document.querySelector("[data-shelf-next]");
   if (!shelf || !previousButton || !nextButton) return;
 
+  let isPaused = false;
+  let lastFrameTime;
+  let pauseTimeout;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const autoSpeed = 0.018;
+
+  const normalizeShelfPosition = () => {
+    const loopPoint = shelf.scrollWidth / 2;
+
+    if (loopPoint > shelf.clientWidth && shelf.scrollLeft >= loopPoint) {
+      shelf.scrollLeft -= loopPoint;
+    }
+  };
+
+  const pauseTemporarily = () => {
+    isPaused = true;
+    window.clearTimeout(pauseTimeout);
+    pauseTimeout = window.setTimeout(() => {
+      isPaused = false;
+      lastFrameTime = undefined;
+    }, 2200);
+  };
+
   const scrollShelf = (direction) => {
     const firstCard = shelf.querySelector(".book-card");
     const distance = firstCard ? firstCard.getBoundingClientRect().width + 18 : 280;
     const loopPoint = shelf.scrollWidth / 2;
+    pauseTemporarily();
 
     if (loopPoint > shelf.clientWidth && direction < 0 && shelf.scrollLeft <= 2) {
       shelf.scrollLeft = loopPoint;
@@ -473,14 +497,44 @@ function setupShelfControls() {
     shelf.scrollBy({ left: direction * distance, behavior: "smooth" });
 
     window.setTimeout(() => {
-      if (loopPoint > shelf.clientWidth && shelf.scrollLeft >= loopPoint) {
-        shelf.scrollLeft -= loopPoint;
-      }
+      normalizeShelfPosition();
     }, 420);
+  };
+
+  const animateShelf = (timestamp) => {
+    if (!isPaused && shelf.scrollWidth > shelf.clientWidth) {
+      if (lastFrameTime !== undefined) {
+        shelf.scrollLeft += (timestamp - lastFrameTime) * autoSpeed;
+        normalizeShelfPosition();
+      }
+    }
+
+    lastFrameTime = timestamp;
+    window.requestAnimationFrame(animateShelf);
   };
 
   previousButton.addEventListener("click", () => scrollShelf(-1));
   nextButton.addEventListener("click", () => scrollShelf(1));
+  shelf.addEventListener("mouseenter", () => {
+    isPaused = true;
+    window.clearTimeout(pauseTimeout);
+  });
+  shelf.addEventListener("mouseleave", () => {
+    isPaused = false;
+    lastFrameTime = undefined;
+  });
+  shelf.addEventListener("focusin", () => {
+    isPaused = true;
+    window.clearTimeout(pauseTimeout);
+  });
+  shelf.addEventListener("focusout", () => {
+    isPaused = false;
+    lastFrameTime = undefined;
+  });
+
+  if (!prefersReducedMotion) {
+    window.requestAnimationFrame(animateShelf);
+  }
 }
 
 function renderAuthors() {
