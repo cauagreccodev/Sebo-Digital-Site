@@ -462,10 +462,9 @@ function setupShelfControls() {
   if (!shelf || !previousButton || !nextButton) return;
 
   let isPaused = false;
-  let lastFrameTime;
   let pauseTimeout;
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const autoSpeed = 0.045;
+  const autoStep = 1;
+  const autoInterval = 36;
 
   const normalizeShelfPosition = () => {
     const loopPoint = shelf.scrollWidth / 2;
@@ -480,8 +479,7 @@ function setupShelfControls() {
     window.clearTimeout(pauseTimeout);
     pauseTimeout = window.setTimeout(() => {
       isPaused = false;
-      lastFrameTime = undefined;
-    }, 2200);
+    }, 1600);
   };
 
   const scrollShelf = (direction) => {
@@ -501,25 +499,14 @@ function setupShelfControls() {
     }, 420);
   };
 
-  const animateShelf = (timestamp) => {
-    if (!isPaused && shelf.scrollWidth > shelf.clientWidth) {
-      if (lastFrameTime !== undefined) {
-        const elapsed = Math.min(timestamp - lastFrameTime, 48);
-        shelf.scrollLeft += elapsed * autoSpeed;
-        normalizeShelfPosition();
-      }
-    }
-
-    lastFrameTime = timestamp;
-    window.requestAnimationFrame(animateShelf);
-  };
-
   previousButton.addEventListener("click", () => scrollShelf(-1));
   nextButton.addEventListener("click", () => scrollShelf(1));
 
-  if (!prefersReducedMotion) {
-    window.requestAnimationFrame(animateShelf);
-  }
+  window.setInterval(() => {
+    if (isPaused || shelf.scrollWidth <= shelf.clientWidth) return;
+    shelf.scrollLeft += autoStep;
+    normalizeShelfPosition();
+  }, autoInterval);
 }
 
 function renderAuthors() {
