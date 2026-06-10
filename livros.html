@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogo de livros | Sebo Digital</title>
+  <meta name="description" content="Listagem de livros usados do Sebo Digital com filtros por categoria, preco, frete, autor, editora, cidade e sebo.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="catalog">
+  <header class="site-header">
+    <div class="top-strip">
+      <span>Catalogo com dados demonstrativos para a primeira etapa do projeto</span>
+      <a href="index.html">Voltar ao inicio</a>
+    </div>
+
+    <div class="header-main shell">
+      <a class="brand" href="index.html" aria-label="Sebo Digital - inicio">
+        <span class="brand-mark">SD</span>
+        <span>
+          <strong>Sebo Digital</strong>
+          <small>livros com historia</small>
+        </span>
+      </a>
+
+      <form class="header-search" data-search-form>
+        <label class="sr-only" for="global-search">Buscar livro, autor ou categoria</label>
+        <input id="global-search" name="q" type="search" placeholder="Busque por titulo, autor ou categoria">
+        <button type="submit">Buscar</button>
+      </form>
+
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a class="cart-link" href="carrinho.html" aria-label="Ver carrinho">
+        <span>Carrinho</span>
+        <strong data-cart-count>0</strong>
+      </a>
+    </div>
+
+    <nav class="site-nav" data-site-nav>
+      <div class="shell nav-inner">
+        <div class="catalog-menu" data-catalog-menu>
+          <a class="catalog-trigger" href="livros.html" aria-haspopup="true" aria-expanded="false" data-catalog-trigger>
+            <span class="trigger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            Catálogo
+          </a>
+          <div class="mega-menu" role="menu">
+            <div class="mega-feature">
+              <span>Garimpo rápido</span>
+              <strong>Explore livros usados por tema, estado e tipo de leitura.</strong>
+              <a href="livros.html">Ver todos os livros</a>
+            </div>
+            <div class="mega-columns">
+              <a href="livros.html?categoria=Literatura">Literatura brasileira</a>
+              <a href="livros.html?categoria=Historia">História geral</a>
+              <a href="livros.html?categoria=Infantojuvenil">Infantojuvenil</a>
+              <a href="livros.html?categoria=Arte">Arte e design</a>
+              <a href="livros.html?categoria=Tecnologia">Tecnologia</a>
+              <a href="livros.html?frete=gratis">Frete gratis</a>
+              <a href="livros.html?preco_max=40">Preço amigo</a>
+              <a href="livros.html?categoria=Literatura&q=classico">Clássicos</a>
+              <a href="livros.html">Ver todas as categorias</a>
+            </div>
+            <div class="mega-spotlight">
+              <span>Destaque</span>
+              <strong>Livros técnicos e profissionais</strong>
+              <p>Uma área boa para estudar Java, design e produto sem pagar preço de livro novo.</p>
+            </div>
+          </div>
+        </div>
+        <a href="livros.html">Sebos e Livreiros</a>
+        <a href="livros.html">Busque por Autores</a>
+        <a href="index.html#dicas">Dicas de Livros</a>
+        <a href="livros.html?ordenar=mais-vendidos">Mais Vendidos</a>
+        <a href="livros.html?promo=true">Ofertas 1ª Compra</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-title shell">
+      <p class="eyebrow">Catalogo</p>
+      <h1>Livros disponiveis</h1>
+      <p>Filtre por categoria, frete, tipo de livro, autor, editora, preco, cidade, sebo e outras condicoes de compra.</p>
+    </section>
+
+    <section class="catalog-layout shell">
+      <aside class="filters-panel" aria-label="Filtros do catalogo">
+        <div class="filters-panel-title">
+          <strong>Filtros</strong>
+          <span>Refine seu garimpo</span>
+        </div>
+        <div class="filter-group">
+          <label for="catalog-search">Busca</label>
+          <input id="catalog-search" type="search" placeholder="Titulo, autor ou categoria">
+        </div>
+        <div class="filter-group check-list" aria-label="Filtros rapidos">
+          <label class="check-filter" for="free-shipping-filter">
+            <input id="free-shipping-filter" type="checkbox">
+            <span>Frete gratis</span>
+          </label>
+          <label class="check-filter" for="promotion-filter">
+            <input id="promotion-filter" type="checkbox">
+            <span>Promocoes</span>
+          </label>
+          <label class="check-filter" for="corporate-filter">
+            <input id="corporate-filter" type="checkbox">
+            <span>Compra corporativa</span>
+          </label>
+        </div>
+        <div class="filter-group">
+          <label for="category-filter">Categoria</label>
+          <select id="category-filter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="book-type-filter">Tipo do livro</label>
+          <select id="book-type-filter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="author-filter">Autor</label>
+          <select id="author-filter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="publisher-filter">Editora</label>
+          <select id="publisher-filter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="year-filter">Ano de publicacao</label>
+          <select id="year-filter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="city-filter">Cidade do livro</label>
+          <select id="city-filter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="seller-filter">Sebos e livreiros</label>
+          <select id="seller-filter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="language-filter">Idioma</label>
+          <select id="language-filter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="rating-filter">Avaliacao minima</label>
+          <select id="rating-filter">
+            <option value="">Qualquer avaliacao</option>
+            <option value="5">5 estrelas</option>
+            <option value="4.5">4,5+ estrelas</option>
+            <option value="4">4+ estrelas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filtro de preco</label>
+          <div class="price-grid">
+            <input id="min-price-filter" type="number" min="0" step="1" placeholder="Min.">
+            <input id="max-price-filter" type="number" min="0" step="1" placeholder="Max.">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="sort-filter">Ordenar</label>
+          <select id="sort-filter">
+            <option value="relevance">Relevancia</option>
+            <option value="mais-vendidos">Mais vendidos</option>
+            <option value="price-asc">Menor preco</option>
+            <option value="price-desc">Maior preco</option>
+            <option value="title">Titulo A-Z</option>
+          </select>
+        </div>
+        <button class="ghost-button" type="button" id="clear-filters">Limpar filtros</button>
+      </aside>
+
+      <section class="catalog-results">
+        <div class="results-toolbar">
+          <strong id="results-count">0 livros encontrados</strong>
+          <span>Dados estaticos para prototipo</span>
+        </div>
+        <div class="book-grid catalog-grid" id="catalog-books"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div>
+        <strong>Sebo Digital</strong>
+        <p>Catalogo pronto para receber dados vindos de uma API Spring Boot.</p>
+      </div>
+      <div>
+        <span>Navegacao</span>
+        <a href="index.html">Inicio</a>
+        <a href="livros.html">Livros</a>
+        <a href="carrinho.html">Carrinho</a>
+      </div>
+      <div>
+        <span>Atendimento</span>
+        <p>Fluxo de compra sera conectado em uma etapa futura.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

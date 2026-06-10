@@ -1,0 +1,19 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/
+
+# Java / Spring Boot futuro
+target/
+build/
+.gradle/
+*.class
+
+# Node eventual
+node_modules/
+
+# Uploads locais futuros
+uploads/

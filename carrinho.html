@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho | Sebo Digital</title>
+  <meta name="description" content="Carrinho demonstrativo do Sebo Digital para intencao de compra.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="cart">
+  <header class="site-header">
+    <div class="top-strip">
+      <span>Fluxo de compra demonstrativo, sem pagamento real</span>
+      <a href="livros.html">Adicionar livros</a>
+    </div>
+
+    <div class="header-main shell">
+      <a class="brand" href="index.html" aria-label="Sebo Digital - inicio">
+        <span class="brand-mark">SD</span>
+        <span>
+          <strong>Sebo Digital</strong>
+          <small>livros com historia</small>
+        </span>
+      </a>
+
+      <form class="header-search" data-search-form>
+        <label class="sr-only" for="global-search">Buscar livro, autor ou categoria</label>
+        <input id="global-search" name="q" type="search" placeholder="Busque por titulo, autor ou categoria">
+        <button type="submit">Buscar</button>
+      </form>
+
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a class="cart-link" href="carrinho.html" aria-label="Ver carrinho">
+        <span>Carrinho</span>
+        <strong data-cart-count>0</strong>
+      </a>
+    </div>
+
+    <nav class="site-nav" data-site-nav>
+      <div class="shell nav-inner">
+        <div class="catalog-menu" data-catalog-menu>
+          <a class="catalog-trigger" href="livros.html" aria-haspopup="true" aria-expanded="false" data-catalog-trigger>
+            <span class="trigger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            Catálogo
+          </a>
+          <div class="mega-menu" role="menu">
+            <div class="mega-feature">
+              <span>Garimpo rápido</span>
+              <strong>Explore livros usados por tema, estado e tipo de leitura.</strong>
+              <a href="livros.html">Ver todos os livros</a>
+            </div>
+            <div class="mega-columns">
+              <a href="livros.html?categoria=Literatura">Literatura brasileira</a>
+              <a href="livros.html?categoria=Historia">História geral</a>
+              <a href="livros.html?categoria=Infantojuvenil">Infantojuvenil</a>
+              <a href="livros.html?categoria=Arte">Arte e design</a>
+              <a href="livros.html?categoria=Tecnologia">Tecnologia</a>
+              <a href="livros.html?frete=gratis">Frete gratis</a>
+              <a href="livros.html?preco_max=40">Preço amigo</a>
+              <a href="livros.html?categoria=Literatura&q=classico">Clássicos</a>
+              <a href="livros.html">Ver todas as categorias</a>
+            </div>
+            <div class="mega-spotlight">
+              <span>Destaque</span>
+              <strong>Livros técnicos e profissionais</strong>
+              <p>Uma área boa para estudar Java, design e produto sem pagar preço de livro novo.</p>
+            </div>
+          </div>
+        </div>
+        <a href="livros.html">Sebos e Livreiros</a>
+        <a href="livros.html">Busque por Autores</a>
+        <a href="index.html#dicas">Dicas de Livros</a>
+        <a href="livros.html?ordenar=mais-vendidos">Mais Vendidos</a>
+        <a href="livros.html?promo=true">Ofertas 1ª Compra</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-title shell">
+      <p class="eyebrow">Intencao de compra</p>
+      <h1>Carrinho</h1>
+      <p>Prototipo visual para revisar livros selecionados antes de conectar login, frete e pagamento.</p>
+    </section>
+
+    <section class="cart-layout shell">
+      <div class="cart-items" id="cart-items"></div>
+      <aside class="summary-panel" id="cart-summary" aria-label="Resumo do pedido"></aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div>
+        <strong>Sebo Digital</strong>
+        <p>O carrinho usa localStorage apenas para simular a experiencia inicial.</p>
+      </div>
+      <div>
+        <span>Navegacao</span>
+        <a href="index.html">Inicio</a>
+        <a href="livros.html">Livros</a>
+        <a href="carrinho.html">Carrinho</a>
+      </div>
+      <div>
+        <span>Futuro backend</span>
+        <p>Persistencia de carrinho, usuario e pedido pode entrar depois via Spring Boot.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
