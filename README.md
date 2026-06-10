@@ -8,6 +8,7 @@ The project presents the first version of a virtual used-book store, with a warm
 
 - Responsive storefront for a virtual second-hand bookstore
 - Home page with search, featured books, categories, and reading suggestions
+- Home discovery areas for best sellers, authors, classics, literary universes, and box sets
 - Marketplace-style navigation with a catalog mega menu
 - Account access area with lists, orders, and profile shortcuts
 - Book listing page with advanced filters

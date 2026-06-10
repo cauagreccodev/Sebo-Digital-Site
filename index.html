@@ -116,57 +116,69 @@
     </section>
 
     <section class="section-band">
-      <div class="shell category-grid" aria-label="Atalhos de categorias">
-        <a class="category-tile" href="livros.html?categoria=Literatura">
-          <span>Literatura brasileira</span>
-          <strong data-category-count="Literatura">0 livros</strong>
-        </a>
-        <a class="category-tile" href="livros.html?categoria=Historia">
-          <span>Historia e sociedade</span>
-          <strong data-category-count="Historia">0 livros</strong>
-        </a>
-        <a class="category-tile" href="livros.html?categoria=Tecnologia">
-          <span>Tecnologia e estudo</span>
-          <strong data-category-count="Tecnologia">0 livros</strong>
-        </a>
-        <a class="category-tile" href="livros.html?categoria=Arte">
-          <span>Arte, design e cultura</span>
-          <strong data-category-count="Arte">0 livros</strong>
-        </a>
+      <div class="shell promo-actions" aria-label="Atalhos de compra">
+        <a class="promo-pill promo-pill-a" href="livros.html?frete=gratis">Frete Gratis</a>
+        <a class="promo-pill promo-pill-b" href="livros.html?promo=true">Ofertas</a>
+        <a class="promo-pill promo-pill-a" href="livros.html?ordenar=mais-vendidos">Mais vendidos</a>
+        <a class="promo-pill promo-pill-b" href="livros.html?ano=2021">Lancamentos</a>
       </div>
     </section>
 
-    <section class="content-section shell">
+    <section class="content-section shell best-seller-section">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Destaques</p>
-          <h2>Livros para comecar o garimpo</h2>
+          <h2>Livros mais vendidos</h2>
         </div>
-        <a class="text-link" href="livros.html">Ver todos</a>
+        <div class="shelf-controls" aria-label="Controles da vitrine de mais vendidos">
+          <button type="button" data-shelf-prev aria-label="Voltar livros">‹</button>
+          <button type="button" data-shelf-next aria-label="Avancar livros">›</button>
+        </div>
       </div>
-      <div class="book-grid" id="featured-books"></div>
+      <div class="book-shelf" id="best-seller-shelf" tabindex="0" aria-label="Lista horizontal de livros mais vendidos"></div>
     </section>
 
-    <section class="content-section shell split-section" id="dicas">
-      <div class="reading-note">
-        <p class="eyebrow">Curadoria</p>
-        <h2>Estado de conservacao sem misterio.</h2>
-        <p>Cards com avaliacao visual, descricao curta e preco claro ajudam o leitor a decidir sem abrir varias abas.</p>
+    <section class="content-section shell discovery-section" id="dicas">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Autores</p>
+          <h2>Busque por autores</h2>
+        </div>
+        <a class="text-link" href="livros.html">Ver catalogo</a>
       </div>
-      <div class="condition-list">
+      <div class="author-strip" id="author-strip"></div>
+    </section>
+
+    <section class="content-section shell discovery-section">
+      <div class="section-heading">
         <div>
-          <strong>Novo</strong>
-          <span>Exemplar sem marcas relevantes.</span>
+          <p class="eyebrow">Curadoria</p>
+          <h2>Classicos para ter na estante</h2>
         </div>
+        <a class="text-link" href="livros.html?categoria=Literatura">Ver classicos</a>
+      </div>
+      <div class="book-grid compact-grid" id="classic-books"></div>
+    </section>
+
+    <section class="content-section shell discovery-section">
+      <div class="section-heading">
         <div>
-          <strong>Muito bom</strong>
-          <span>Pouco uso, miolo integro e capa preservada.</span>
-        </div>
-        <div>
-          <strong>Bom</strong>
-          <span>Sinais de leitura, sem comprometer o conteudo.</span>
+          <p class="eyebrow">Colecoes</p>
+          <h2>Universos literarios</h2>
         </div>
       </div>
+      <div class="universe-grid" id="literary-universes"></div>
+    </section>
+
+    <section class="content-section shell discovery-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Presentes e colecoes</p>
+          <h2>Boxes imperdiveis</h2>
+        </div>
+        <a class="text-link" href="livros.html?promo=true">Ver ofertas</a>
+      </div>
+      <div class="box-grid" id="box-sets"></div>
     </section>
   </main>
 

@@ -596,6 +596,40 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
+.promo-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.promo-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: #fff;
+  font-family: Lora, Georgia, serif;
+  font-size: 1.18rem;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(36, 50, 47, 0.12);
+}
+
+.promo-pill-a {
+  background: linear-gradient(135deg, var(--wine), #a62ab4);
+}
+
+.promo-pill-b {
+  background: linear-gradient(135deg, var(--teal), #43c2b5);
+}
+
+.promo-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(36, 50, 47, 0.16);
+}
+
 .category-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -652,6 +686,31 @@ h3 {
   font-size: clamp(1.8rem, 3vw, 2.7rem);
 }
 
+.shelf-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shelf-controls button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--teal);
+  font-size: 2rem;
+  line-height: 1;
+  box-shadow: 0 10px 24px rgba(36, 50, 47, 0.08);
+}
+
+.shelf-controls button:hover {
+  background: var(--teal);
+  color: #fff;
+}
+
 .text-link {
   color: var(--teal);
   font-weight: 900;
@@ -663,6 +722,34 @@ h3 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
+}
+
+.book-shelf {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 285px);
+  gap: 18px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  padding: 4px 2px 18px;
+  scrollbar-width: thin;
+}
+
+.book-shelf .book-card {
+  scroll-snap-align: start;
+}
+
+.compact-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.best-seller-section {
+  padding-bottom: 34px;
+}
+
+.discovery-section {
+  padding-top: 34px;
 }
 
 .book-card {
@@ -842,6 +929,195 @@ h3 {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
+}
+
+.author-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.author-chip {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 88px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 12px 30px rgba(36, 50, 47, 0.07);
+}
+
+.author-chip span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  color: #fff;
+  font-family: Lora, Georgia, serif;
+  font-weight: 900;
+}
+
+.author-chip strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author-chip small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.universe-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.universe-card {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-align: center;
+  font-weight: 900;
+}
+
+.universe-card span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 160px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #fff;
+  font-family: Lora, Georgia, serif;
+  font-size: 2rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.universe-card span::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: inherit;
+}
+
+.universe-wine span {
+  background: radial-gradient(circle at 30% 25%, #d38a56, #793f56 58%, #24322f);
+}
+
+.universe-gold span {
+  background: radial-gradient(circle at 35% 28%, #ffe2a2, #d4a33d 42%, #60415f);
+}
+
+.universe-teal span {
+  background: radial-gradient(circle at 35% 28%, #8ed9ce, #286c67 48%, #1f2e2b);
+}
+
+.universe-blue span {
+  background: radial-gradient(circle at 38% 25%, #d8e6ea, #425f7b 52%, #24322f);
+}
+
+.universe-sage span {
+  background: radial-gradient(circle at 35% 28%, #dfe8d5, #506a4f 52%, #24322f);
+}
+
+.universe-clay span {
+  background: radial-gradient(circle at 35% 25%, #ffd47f, #b65f45 52%, #793f56);
+}
+
+.box-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.box-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 12px 30px rgba(36, 50, 47, 0.08);
+}
+
+.box-visual {
+  position: relative;
+  display: flex;
+  align-items: end;
+  gap: 5px;
+  min-height: 185px;
+  padding: 18px 18px 16px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.box-visual::after {
+  content: "BOX";
+  position: absolute;
+  right: 18px;
+  top: 16px;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: Lora, Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.box-visual i {
+  display: block;
+  width: 28%;
+  min-height: 120px;
+  border-radius: 4px 4px 2px 2px;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: inset -8px 0 rgba(0, 0, 0, 0.16);
+}
+
+.box-visual i:nth-child(2) {
+  min-height: 145px;
+}
+
+.box-visual i:nth-child(3) {
+  min-height: 132px;
+}
+
+.box-wine {
+  background: linear-gradient(135deg, #793f56, #d38a56);
+}
+
+.box-teal {
+  background: linear-gradient(135deg, #164c4a, #43c2b5);
+}
+
+.box-gold {
+  background: linear-gradient(135deg, #9b6a1f, #d4a33d);
+}
+
+.box-blue {
+  background: linear-gradient(135deg, #425f7b, #9bb8ca);
+}
+
+.box-card strong {
+  font-size: 1.05rem;
+}
+
+.box-card small {
+  color: var(--muted);
+}
+
+.box-card b {
+  color: var(--teal-dark);
+  font-size: 1.08rem;
 }
 
 .details-link,
@@ -1647,8 +1923,15 @@ h3 {
 
   .book-grid,
   .catalog-grid,
-  .category-grid {
+  .category-grid,
+  .promo-actions,
+  .author-strip,
+  .box-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .universe-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .catalog-layout,
@@ -1769,8 +2052,25 @@ h3 {
   .book-grid,
   .catalog-grid,
   .category-grid,
+  .promo-actions,
+  .author-strip,
+  .box-grid,
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .universe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .promo-pill {
+    min-height: 50px;
+    font-size: 1.02rem;
+  }
+
+  .book-shelf {
+    grid-auto-columns: minmax(230px, 82vw);
   }
 
   .book-cover {

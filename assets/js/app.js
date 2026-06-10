@@ -251,6 +251,46 @@ const books = [
   }
 ];
 
+const literaryUniverses = [
+  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado" },
+  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura" },
+  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia" },
+  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte" },
+  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia" },
+  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil" }
+];
+
+const boxSets = [
+  {
+    title: "Box Literatura Brasileira",
+    description: "Classicos nacionais para montar uma primeira estante.",
+    price: 119.9,
+    theme: "box-wine",
+    link: "livros.html?categoria=Literatura"
+  },
+  {
+    title: "Box Estudos em Java",
+    description: "Livros tecnicos para acompanhar projetos full-stack.",
+    price: 148.0,
+    theme: "box-teal",
+    link: "livros.html?categoria=Tecnologia"
+  },
+  {
+    title: "Box Historia e Sociedade",
+    description: "Obras para leitura, pesquisa e repertorio cultural.",
+    price: 132.4,
+    theme: "box-gold",
+    link: "livros.html?categoria=Historia"
+  },
+  {
+    title: "Box Arte e Design",
+    description: "Referencias visuais e leituras de design.",
+    price: 156.3,
+    theme: "box-blue",
+    link: "livros.html?categoria=Arte"
+  }
+];
+
 const formatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL"
@@ -406,18 +446,71 @@ function setupCartEvents() {
 }
 
 function renderHome() {
-  renderBooks(document.querySelector("#featured-books"), books.slice(0, 8));
+  const bestSellers = sortBooks(books, "mais-vendidos");
+  renderBooks(document.querySelector("#best-seller-shelf"), bestSellers);
+  renderAuthors();
+  renderBooks(document.querySelector("#classic-books"), books.filter((book) => book.category === "Literatura").slice(0, 4));
+  renderUniverses();
+  renderBoxSets();
+  setupShelfControls();
+}
 
-  const categoryCounts = books.reduce((counts, book) => {
-    counts[book.category] = (counts[book.category] || 0) + 1;
-    return counts;
-  }, {});
+function setupShelfControls() {
+  const shelf = document.querySelector("#best-seller-shelf");
+  const previousButton = document.querySelector("[data-shelf-prev]");
+  const nextButton = document.querySelector("[data-shelf-next]");
+  if (!shelf || !previousButton || !nextButton) return;
 
-  document.querySelectorAll("[data-category-count]").forEach((element) => {
-    const category = element.dataset.categoryCount;
-    const total = categoryCounts[category] || 0;
-    element.textContent = `${total} ${total === 1 ? "livro" : "livros"}`;
-  });
+  const scrollShelf = (direction) => {
+    const firstCard = shelf.querySelector(".book-card");
+    const distance = firstCard ? firstCard.getBoundingClientRect().width + 18 : 280;
+    shelf.scrollBy({ left: direction * distance, behavior: "smooth" });
+  };
+
+  previousButton.addEventListener("click", () => scrollShelf(-1));
+  nextButton.addEventListener("click", () => scrollShelf(1));
+}
+
+function renderAuthors() {
+  const container = document.querySelector("#author-strip");
+  if (!container) return;
+
+  const authors = [...new Map(books.map((book) => [book.author, book])).values()].slice(0, 8);
+  container.innerHTML = authors.map((book) => `
+    <a class="author-chip" href="livros.html?autor=${encodeURIComponent(book.author)}">
+      <span>${getInitials(book.author)}</span>
+      <strong>${escapeHtml(book.author)}</strong>
+      <small>${escapeHtml(book.category)}</small>
+    </a>
+  `).join("");
+}
+
+function renderUniverses() {
+  const container = document.querySelector("#literary-universes");
+  if (!container) return;
+
+  container.innerHTML = literaryUniverses.map((universe) => `
+    <a class="universe-card ${universe.theme}" href="${universe.link}">
+      <span aria-hidden="true">${getInitials(universe.name)}</span>
+      <strong>${escapeHtml(universe.name)}</strong>
+    </a>
+  `).join("");
+}
+
+function renderBoxSets() {
+  const container = document.querySelector("#box-sets");
+  if (!container) return;
+
+  container.innerHTML = boxSets.map((box) => `
+    <a class="box-card" href="${box.link}">
+      <span class="box-visual ${box.theme}" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </span>
+      <strong>${escapeHtml(box.title)}</strong>
+      <small>${escapeHtml(box.description)}</small>
+      <b>A partir de ${formatter.format(box.price)}</b>
+    </a>
+  `).join("");
 }
 
 function renderCatalog() {
@@ -876,6 +969,16 @@ function showToast(message) {
   showToast.timeout = window.setTimeout(() => {
     toast.classList.remove("is-visible");
   }, 2600);
+}
+
+function getInitials(value) {
+  return String(value)
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 }
 
 function escapeHtml(value) {
