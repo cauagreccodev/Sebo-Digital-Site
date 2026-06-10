@@ -703,6 +703,7 @@ h3 {
 .shelf-controls {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -715,14 +716,53 @@ h3 {
   border-radius: 50%;
   background: var(--surface);
   color: var(--teal);
-  font-size: 2rem;
+  font-size: 0;
   line-height: 1;
   box-shadow: 0 10px 24px rgba(36, 50, 47, 0.08);
+}
+
+.shelf-controls button::before {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.shelf-controls [data-shelf-prev]::before {
+  content: "\2039";
+}
+
+.shelf-controls [data-shelf-next]::before {
+  content: "\203A";
 }
 
 .shelf-controls button:hover {
   background: var(--teal);
   color: #fff;
+}
+
+.best-seller-section {
+  position: relative;
+  padding-bottom: 34px;
+}
+
+.best-seller-section .shelf-controls {
+  position: absolute;
+  left: -22px;
+  right: -22px;
+  top: 52%;
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 160ms ease;
+}
+
+.best-seller-section:hover .shelf-controls,
+.best-seller-section:focus-within .shelf-controls {
+  opacity: 1;
+}
+
+.best-seller-section .shelf-controls button {
+  pointer-events: auto;
 }
 
 .text-link {
@@ -759,10 +799,6 @@ h3 {
 
 .compact-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.best-seller-section {
-  padding-bottom: 34px;
 }
 
 .discovery-section {
