@@ -361,21 +361,30 @@ function setupNavigation() {
 function setupAccountMenu(accountMenu, accountTrigger) {
   if (!accountMenu || !accountTrigger) return;
 
+  let closeTimer;
   const isCompactHeader = () => window.matchMedia("(max-width: 700px)").matches;
   const setAccountState = (isOpen) => {
     accountMenu.classList.toggle("is-account-open", isOpen);
     accountTrigger.setAttribute("aria-expanded", String(isOpen));
   };
+  const openAccountMenu = () => {
+    window.clearTimeout(closeTimer);
+    setAccountState(true);
+  };
+  const closeAccountMenu = () => {
+    window.clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(() => setAccountState(false), 220);
+  };
 
   accountMenu.addEventListener("mouseenter", () => {
-    if (!isCompactHeader()) setAccountState(true);
+    if (!isCompactHeader()) openAccountMenu();
   });
   accountMenu.addEventListener("mouseleave", () => {
-    if (!isCompactHeader()) setAccountState(false);
+    if (!isCompactHeader()) closeAccountMenu();
   });
-  accountMenu.addEventListener("focusin", () => setAccountState(true));
+  accountMenu.addEventListener("focusin", () => openAccountMenu());
   accountMenu.addEventListener("focusout", (event) => {
-    if (!accountMenu.contains(event.relatedTarget)) setAccountState(false);
+    if (!accountMenu.contains(event.relatedTarget)) closeAccountMenu();
   });
 
   accountTrigger.addEventListener("click", (event) => {
