@@ -101,6 +101,12 @@ To run the site connected to the backend:
 mvn spring-boot:run
 ```
 
+If you are in the project root, point Maven to the backend POM:
+
+```powershell
+mvn -f backend\sebodigital-api\pom.xml spring-boot:run
+```
+
 By default, the API connects to:
 
 ```text
@@ -117,6 +123,19 @@ $env:DB_PASSWORD="sua_senha"
 mvn spring-boot:run
 ```
 
+If you prefer to keep local credentials in the ignored `application-local.yaml`, run the API with the `local` profile:
+
+```powershell
+cd backend\sebodigital-api
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+From the project root, the same command is:
+
+```powershell
+mvn -f backend\sebodigital-api\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
 3. Open `index.html` in the browser, or serve the project root with a local static server.
 
 The frontend reads the API from `http://localhost:8080` by default. If the backend is unavailable, it falls back to the local demo catalog.
@@ -124,7 +143,7 @@ The frontend reads the API from `http://localhost:8080` by default. If the backe
 To use the old H2 local database instead of PostgreSQL:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=h2
+mvn spring-boot:run "-Dspring-boot.run.profiles=h2"
 ```
 
 ## Future Roadmap

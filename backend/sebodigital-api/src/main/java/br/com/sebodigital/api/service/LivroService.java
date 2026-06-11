@@ -16,9 +16,14 @@ import br.com.sebodigital.api.repository.EditoraRepository;
 import br.com.sebodigital.api.repository.LivroRepository;
 import br.com.sebodigital.api.repository.VendedorRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,13 +54,15 @@ public class LivroService {
             Boolean oferta,
             Boolean maisVendido,
             Boolean lancamento) {
-        return livroRepository.buscar(
-                        normalizarFiltro(busca),
-                        normalizarFiltro(categoria),
-                        freteGratis,
-                        oferta,
-                        maisVendido,
-                        lancamento)
+        return livroRepository.findAll(
+                        filtrosLivros(
+                                normalizarFiltro(busca),
+                                normalizarFiltro(categoria),
+                                freteGratis,
+                                oferta,
+                                maisVendido,
+                                lancamento),
+                        Sort.by("titulo").ascending())
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -235,6 +242,50 @@ public class LivroService {
                 copia.isPromocao(),
                 copia.isCompraCorporativa(),
                 copia.isAtivo());
+    }
+
+    private Specification<Livro> filtrosLivros(
+            String busca,
+            String categoria,
+            Boolean freteGratis,
+            Boolean oferta,
+            Boolean maisVendido,
+            Boolean lancamento) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (hasText(busca)) {
+                String termo = "%" + busca.toLowerCase(Locale.ROOT) + "%";
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), termo),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("autor")), termo),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("isbn")), termo)));
+            }
+
+            if (hasText(categoria)) {
+                predicates.add(criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("categoria")),
+                        categoria.toLowerCase(Locale.ROOT)));
+            }
+
+            if (freteGratis != null) {
+                predicates.add(criteriaBuilder.equal(root.get("destaqueFreteGratis"), freteGratis));
+            }
+
+            if (oferta != null) {
+                predicates.add(criteriaBuilder.equal(root.get("destaqueOferta"), oferta));
+            }
+
+            if (maisVendido != null) {
+                predicates.add(criteriaBuilder.equal(root.get("destaqueMaisVendido"), maisVendido));
+            }
+
+            if (lancamento != null) {
+                predicates.add(criteriaBuilder.equal(root.get("destaqueLancamento"), lancamento));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+        };
     }
 
     private String normalizarFiltro(String valor) {
