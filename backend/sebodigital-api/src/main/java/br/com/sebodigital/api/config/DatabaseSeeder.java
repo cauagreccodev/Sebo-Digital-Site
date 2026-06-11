@@ -44,6 +44,7 @@ public class DatabaseSeeder {
             if (livroRepository.count() == 0) {
                 popularLivros(livroService);
             }
+            popularLivrosComplementares(livroRepository, livroService);
         };
     }
 
@@ -215,6 +216,334 @@ public class DatabaseSeeder {
                 List.of(
                         copia("Sebo Riachuelo", "Rio de Janeiro, RJ", "4.78", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "34.90", 3, true, true),
                         copia("Papel e Memoria", "Belo Horizonte, MG", "4.88", TipoCopia.NOVO, EstadoConservacao.NOVO, "47.90", 8, false, false))));
+    }
+
+    private void popularLivrosComplementares(LivroRepository livroRepository, LivroService livroService) {
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "A Hora da Estrela",
+                "Clarice Lispector",
+                "Rocco",
+                "Sebo Riachuelo",
+                "Rio de Janeiro, RJ",
+                bd("4.78"),
+                "9788532508126",
+                "Portugues",
+                1998,
+                "Literatura Brasileira",
+                "Romance breve e essencial em edicoes de bolso para leitores e estudantes.",
+                imagem("A+Hora+da+Estrela", "7f1d1d", "fef2f2"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Sebo Riachuelo", "Rio de Janeiro, RJ", "4.78", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "28.90", 4, true, true),
+                        copia("Livraria Central", "Campinas, SP", "4.70", TipoCopia.NOVO, EstadoConservacao.NOVO, "44.90", 7, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Vidas Secas",
+                "Graciliano Ramos",
+                "Record",
+                "Estante da Praca",
+                "Curitiba, PR",
+                bd("4.60"),
+                "9788501067340",
+                "Portugues",
+                2013,
+                "Literatura Brasileira",
+                "Classico do modernismo brasileiro com opcoes economicas para leitura escolar.",
+                imagem("Vidas+Secas", "78350f", "fff7ed"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Estante da Praca", "Curitiba, PR", "4.60", TipoCopia.USADO, EstadoConservacao.BOM, "19.90", 5, true, true),
+                        copia("Papel e Memoria", "Belo Horizonte, MG", "4.88", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "26.90", 2, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "O Alienista",
+                "Machado de Assis",
+                "Principis",
+                "Banca Aurora",
+                "Curitiba, PR",
+                bd("4.73"),
+                "9788594318788",
+                "Portugues",
+                2020,
+                "Literatura Brasileira",
+                "Novela satirica em edicoes acessiveis, boa para colecoes escolares.",
+                imagem("O+Alienista", "4c1d95", "f5f3ff"),
+                false,
+                true,
+                false,
+                false,
+                List.of(
+                        copia("Banca Aurora", "Curitiba, PR", "4.73", TipoCopia.NOVO, EstadoConservacao.NOVO, "16.90", 10, false, true),
+                        copia("Sebo Aurora", "Sao Paulo, SP", "4.85", TipoCopia.USADO, EstadoConservacao.BOM, "11.90", 3, false, true))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "1984",
+                "George Orwell",
+                "Companhia das Letras",
+                "Livros da Ladeira",
+                "Salvador, BA",
+                bd("4.92"),
+                "9788535914849",
+                "Portugues",
+                2009,
+                "Ficcao",
+                "Distopia moderna com boa saida entre leitores de ficcao politica.",
+                imagem("1984", "111827", "f9fafb"),
+                true,
+                false,
+                true,
+                false,
+                List.of(
+                        copia("Livros da Ladeira", "Salvador, BA", "4.92", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "36.90", 2, true, false),
+                        copia("Livraria Central", "Campinas, SP", "4.70", TipoCopia.NOVO, EstadoConservacao.NOVO, "57.90", 6, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Fahrenheit 451",
+                "Ray Bradbury",
+                "Biblioteca Azul",
+                "Ponto do Livro",
+                "Goiania, GO",
+                bd("4.66"),
+                "9788525052247",
+                "Portugues",
+                2012,
+                "Ficcao Cientifica",
+                "Classico de ficcao cientifica em exemplares novos e usados.",
+                imagem("Fahrenheit+451", "991b1b", "fff1f2"),
+                false,
+                true,
+                false,
+                false,
+                List.of(
+                        copia("Ponto do Livro", "Goiania, GO", "4.66", TipoCopia.USADO, EstadoConservacao.BOM, "31.90", 2, false, true),
+                        copia("Tecnica Livros", "Florianopolis, SC", "4.95", TipoCopia.NOVO, EstadoConservacao.NOVO, "52.90", 3, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "A Revolucao dos Bichos",
+                "George Orwell",
+                "Companhia das Letras",
+                "Sebo Aurora",
+                "Sao Paulo, SP",
+                bd("4.85"),
+                "9788535909555",
+                "Portugues",
+                2007,
+                "Ficcao",
+                "Fabula politica muito procurada, com ofertas de baixo preco.",
+                imagem("A+Revolucao+dos+Bichos", "14532d", "f0fdf4"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Sebo Aurora", "Sao Paulo, SP", "4.85", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "24.50", 4, true, true),
+                        copia("Banca do Centro", "Recife, PE", "4.55", TipoCopia.USADO, EstadoConservacao.BOM, "18.90", 2, false, true))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "A Menina que Roubava Livros",
+                "Markus Zusak",
+                "Intrinseca",
+                "Casa das Letras",
+                "Florianopolis, SC",
+                bd("4.82"),
+                "9788598078175",
+                "Portugues",
+                2007,
+                "Romance",
+                "Romance historico popular com estoque variado para presente e leitura.",
+                imagem("A+Menina+que+Roubava+Livros", "312e81", "eef2ff"),
+                true,
+                false,
+                true,
+                false,
+                List.of(
+                        copia("Casa das Letras", "Florianopolis, SC", "4.82", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "39.90", 3, true, false),
+                        copia("Estante da Praca", "Curitiba, PR", "4.60", TipoCopia.USADO, EstadoConservacao.BOM, "32.90", 2, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "O Pequeno Principe",
+                "Antoine de Saint-Exupery",
+                "Agir",
+                "Leitura de Bolso",
+                "Recife, PE",
+                bd("4.80"),
+                "9788522005230",
+                "Portugues",
+                2015,
+                "Infantojuvenil",
+                "Classico afetivo com edicoes novas e usadas para diferentes idades.",
+                imagem("O+Pequeno+Principe", "854d0e", "fffbeb"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Leitura de Bolso", "Recife, PE", "4.80", TipoCopia.NOVO, EstadoConservacao.NOVO, "24.90", 12, true, true),
+                        copia("Banca Aurora", "Curitiba, PR", "4.73", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "18.90", 3, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "A Bolsa Amarela",
+                "Lygia Bojunga",
+                "Casa Lygia Bojunga",
+                "Leitura de Bolso",
+                "Recife, PE",
+                bd("4.80"),
+                "9788589020109",
+                "Portugues",
+                2021,
+                "Infantojuvenil",
+                "Literatura juvenil brasileira com boa disponibilidade para escolas.",
+                imagem("A+Bolsa+Amarela", "6d28d9", "faf5ff"),
+                false,
+                false,
+                false,
+                true,
+                List.of(
+                        copia("Leitura de Bolso", "Recife, PE", "4.80", TipoCopia.NOVO, EstadoConservacao.NOVO, "35.90", 8, false, false),
+                        copia("Ponto do Livro", "Goiania, GO", "4.66", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "27.90", 2, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Java para Iniciantes",
+                "Herbert Schildt",
+                "Bookman",
+                "Livros e Codigo",
+                "Belo Horizonte, MG",
+                bd("4.71"),
+                "9788582603361",
+                "Portugues",
+                2015,
+                "Tecnologia",
+                "Livro tecnico para introducao a Java, ideal para estudantes de programacao.",
+                imagem("Java+para+Iniciantes", "1e3a8a", "eff6ff"),
+                false,
+                true,
+                false,
+                false,
+                List.of(
+                        copia("Livros e Codigo", "Belo Horizonte, MG", "4.71", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "68.00", 2, false, true),
+                        copia("Tecnica Livros", "Florianopolis, SC", "4.95", TipoCopia.NOVO, EstadoConservacao.NOVO, "99.90", 4, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Domain-Driven Design",
+                "Eric Evans",
+                "Alta Books",
+                "Tecnica Livros",
+                "Florianopolis, SC",
+                bd("4.95"),
+                "9788550800653",
+                "Portugues",
+                2016,
+                "Tecnologia",
+                "Referencia de arquitetura de software para acervos tecnicos e profissionais.",
+                imagem("Domain-Driven+Design", "0f172a", "f8fafc"),
+                false,
+                false,
+                true,
+                false,
+                List.of(
+                        copia("Tecnica Livros", "Florianopolis, SC", "4.95", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "139.90", 1, false, false),
+                        copia("Livros e Codigo", "Belo Horizonte, MG", "4.71", TipoCopia.NOVO, EstadoConservacao.NOVO, "189.90", 3, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Refactoring",
+                "Martin Fowler",
+                "Novatec",
+                "Tecnica Livros",
+                "Florianopolis, SC",
+                bd("4.95"),
+                "9788575227244",
+                "Portugues",
+                2020,
+                "Tecnologia",
+                "Obra de melhoria de codigo para compor uma prateleira tecnica atual.",
+                imagem("Refactoring", "164e63", "ecfeff"),
+                true,
+                false,
+                false,
+                true,
+                List.of(
+                        copia("Tecnica Livros", "Florianopolis, SC", "4.95", TipoCopia.NOVO, EstadoConservacao.NOVO, "149.90", 5, true, false),
+                        copia("Livros e Codigo", "Belo Horizonte, MG", "4.71", TipoCopia.USADO, EstadoConservacao.BOM, "98.00", 1, false, true))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Historia do Brasil",
+                "Boris Fausto",
+                "Edusp",
+                "Sebo Republica",
+                "Porto Alegre, RS",
+                bd("4.63"),
+                "9788531402401",
+                "Portugues",
+                2012,
+                "Historia",
+                "Panorama historico em exemplar completo para consulta e estudos.",
+                imagem("Historia+do+Brasil", "a16207", "fefce8"),
+                false,
+                true,
+                false,
+                false,
+                List.of(
+                        copia("Sebo Republica", "Porto Alegre, RS", "4.63", TipoCopia.USADO, EstadoConservacao.BOM, "54.90", 2, false, true),
+                        copia("Papel e Memoria", "Belo Horizonte, MG", "4.88", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "61.90", 1, true, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Design do Dia a Dia",
+                "Donald Norman",
+                "Rocco",
+                "Prateleira Criativa",
+                "Rio de Janeiro, RJ",
+                bd("4.68"),
+                "9788532520838",
+                "Portugues",
+                2018,
+                "Arte e Design",
+                "Livro de design e usabilidade com procura por estudantes de produto digital.",
+                imagem("Design+do+Dia+a+Dia", "9a3412", "fff7ed"),
+                true,
+                false,
+                false,
+                false,
+                List.of(
+                        copia("Prateleira Criativa", "Rio de Janeiro, RJ", "4.68", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "59.90", 2, true, false),
+                        copia("Casa das Letras", "Florianopolis, SC", "4.82", TipoCopia.NOVO, EstadoConservacao.NOVO, "84.90", 4, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Arte Moderna",
+                "Giulio Carlo Argan",
+                "Companhia das Letras",
+                "Prateleira Criativa",
+                "Rio de Janeiro, RJ",
+                bd("4.68"),
+                "9788535904260",
+                "Portugues",
+                1992,
+                "Arte e Design",
+                "Volume de referencia para arte, cultura e historia em acervo de sebo.",
+                imagem("Arte+Moderna", "1d4ed8", "eff6ff"),
+                false,
+                false,
+                false,
+                false,
+                List.of(
+                        copia("Prateleira Criativa", "Rio de Janeiro, RJ", "4.68", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "76.40", 1, false, false),
+                        copia("Sebo Republica", "Porto Alegre, RS", "4.63", TipoCopia.USADO, EstadoConservacao.BOM, "69.90", 1, false, true))));
+    }
+
+    private void cadastrarSeNaoExistir(
+            LivroRepository livroRepository,
+            LivroService livroService,
+            LivroRequest request) {
+        if (livroRepository.existsByIsbnIgnoreCase(request.isbn())) {
+            return;
+        }
+
+        livroService.cadastrar(request);
     }
 
     private LivroCopiaRequest copia(

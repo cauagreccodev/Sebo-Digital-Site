@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface LivroRepository extends JpaRepository<Livro, Long> {
 
+    boolean existsByIsbnIgnoreCase(String isbn);
+
     @Override
     @EntityGraph(attributePaths = {"editora", "vendedora", "copias", "copias.vendedor"})
     Optional<Livro> findById(Long id);
