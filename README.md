@@ -93,15 +93,39 @@ Default demo users:
 
 To run the site connected to the backend:
 
-1. Start the API from `backend/sebodigital-api`:
+1. Create a PostgreSQL database named `sebodigital`.
+
+2. Start the API from `backend/sebodigital-api`:
 
 ```bash
 mvn spring-boot:run
 ```
 
-2. Open `index.html` in the browser, or serve the project root with a local static server.
+By default, the API connects to:
+
+```text
+jdbc:postgresql://localhost:5432/sebodigital
+user: postgres
+password: postgres
+```
+
+If your pgAdmin/PostgreSQL password is different, set the variables before running:
+
+```powershell
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="sua_senha"
+mvn spring-boot:run
+```
+
+3. Open `index.html` in the browser, or serve the project root with a local static server.
 
 The frontend reads the API from `http://localhost:8080` by default. If the backend is unavailable, it falls back to the local demo catalog.
+
+To use the old H2 local database instead of PostgreSQL:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=h2
+```
 
 ## Future Roadmap
 
