@@ -16,6 +16,8 @@ The project presents the first version of a virtual used-book store, with a warm
 - Demo shopping cart using local browser storage
 - Visual book cards with title, author, price, condition, type, shipping, language, and rating
 - Structure prepared for future backend integration
+- Spring Boot backend with JWT authentication
+- REST API for book registration and marketplace-style offers
 
 ## Catalog Filters
 
@@ -52,6 +54,8 @@ assets/
   img/
   js/
 docs/
+backend/
+  sebodigital-api/
 index.html
 livros.html
 detalhes.html
@@ -72,18 +76,33 @@ The future database model should separate the book record from its sellable copi
 
 More details are available in `docs/modelagem-livros.md`.
 
+## Backend API
+
+The backend lives in `backend/sebodigital-api` and includes:
+
+- User registration and login with JWT
+- Book CRUD endpoints
+- Book copies/offers grouped as new and used
+- Sellers, publishers, stock, prices, highlights, and cover image URLs
+- Initial demo data for local testing
+
+Default demo users:
+
+- `admin@sebodigital.com` / `admin123`
+- `cliente@sebodigital.com` / `cliente123`
+
 ## Future Roadmap
 
-- Backend API for books, sellers, users, and orders
-- Relational database integration
 - Book registration and management area
 - Cover image upload
 - Persistent cart and checkout flow
 - Seller/bookstore profiles
-- Authentication and user accounts
+- Orders and payment flow
 
 ## Version
 
 Current tagged version:
+
+`0.2` - Backend authentication and books API
 
 `0.1` - Initial frontend prototype

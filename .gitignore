@@ -2,18 +2,44 @@
 .DS_Store
 Thumbs.db
 
-# Editores
+# Editores e IDEs
 .idea/
 .vscode/
+*.iws
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+.apt_generated/
+.factorypath
+.springBeans
+.sts4-cache/
 
-# Java / Spring Boot futuro
+# Java / Spring Boot
 target/
+**/target/
 build/
+**/build/
 .gradle/
 *.class
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-# Node eventual
+# Node
 node_modules/
 
-# Uploads locais futuros
+# Arquivos locais de execucao
 uploads/
+data/
+**/data/
+logs/
+*.log
+
+# Configuracoes locais
+.env
+application-local.yaml
+application-local.yml

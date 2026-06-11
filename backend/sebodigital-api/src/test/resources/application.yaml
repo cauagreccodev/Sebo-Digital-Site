@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:sebodigital-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+app:
+  security:
+    jwt-secret: sebo-digital-test-secret-key-change-in-production-123456
+    jwt-expiration-minutes: 120
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: INFO
+    org.springframework: INFO
