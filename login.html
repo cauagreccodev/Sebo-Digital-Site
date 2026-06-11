@@ -54,12 +54,23 @@
         <div class="auth-copy">
           <p class="eyebrow">Criar conta</p>
           <h2>Primeira compra?</h2>
-          <p>Informe seu e-mail para comecar o cadastro e salvar suas preferencias.</p>
+          <p>Informe seus dados para comecar o cadastro e salvar suas preferencias.</p>
+        </div>
+
+        <div class="filter-group">
+          <label for="signup-name">Nome</label>
+          <input id="signup-name" name="nome" type="text" placeholder="seu nome" required>
         </div>
 
         <div class="filter-group">
           <label for="signup-email">E-mail</label>
           <input id="signup-email" name="email" type="email" placeholder="informe seu e-mail" required>
+        </div>
+
+        <div class="filter-group password-field">
+          <label for="signup-password">Senha</label>
+          <input id="signup-password" name="password" type="password" placeholder="minimo de 6 caracteres" minlength="6" required>
+          <button type="button" data-password-toggle aria-label="Mostrar senha">Mostrar</button>
         </div>
 
         <button class="primary-button" type="submit">Prosseguir</button>

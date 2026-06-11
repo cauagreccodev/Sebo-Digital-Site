@@ -91,6 +91,18 @@ Default demo users:
 - `admin@sebodigital.com` / `admin123`
 - `cliente@sebodigital.com` / `cliente123`
 
+To run the site connected to the backend:
+
+1. Start the API from `backend/sebodigital-api`:
+
+```bash
+mvn spring-boot:run
+```
+
+2. Open `index.html` in the browser, or serve the project root with a local static server.
+
+The frontend reads the API from `http://localhost:8080` by default. If the backend is unavailable, it falls back to the local demo catalog.
+
 ## Future Roadmap
 
 - Book registration and management area
@@ -103,6 +115,6 @@ Default demo users:
 
 Current tagged version:
 
-`0.2` - Backend authentication and books API
+`v0.2` - Backend authentication, frontend API integration, and books API
 
-`0.1` - Initial frontend prototype
+`v0.1` - Initial frontend prototype

@@ -1,4 +1,4 @@
-const books = [
+let books = [
   {
     id: 1,
     title: "Dom Casmurro",
@@ -297,14 +297,17 @@ const formatter = new Intl.NumberFormat("pt-BR", {
 });
 
 const cartKey = "seboDigitalCart";
+const authTokenKey = "seboDigitalAuth";
+const apiBaseUrl = window.SEBO_API_URL || "http://localhost:8080";
 const page = document.body.dataset.page;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   setupNavigation();
   setupSearchForms();
   setupCartEvents();
   setupAuthPage();
   updateCartBadge();
+  await loadBooksFromApi();
 
   if (page === "home") renderHome();
   if (page === "catalog") renderCatalog();
@@ -408,18 +411,166 @@ function setupAuthPage() {
   const signupForm = document.querySelector("#signup-form");
 
   if (loginForm) {
-    loginForm.addEventListener("submit", (event) => {
+    loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      showToast("Login demonstrativo: autenticacao sera conectada ao backend.");
+      const formData = new FormData(loginForm);
+      try {
+        const auth = await apiRequest("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: formData.get("email"),
+            senha: formData.get("password")
+          })
+        });
+        localStorage.setItem(authTokenKey, JSON.stringify(auth));
+        showToast(`Bem-vindo, ${auth.usuario.nome}.`);
+      } catch (error) {
+        showToast(error.message || "Nao foi possivel entrar agora.");
+      }
     });
   }
 
   if (signupForm) {
-    signupForm.addEventListener("submit", (event) => {
+    signupForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      showToast("Cadastro demonstrativo: criacao de conta entra na etapa backend.");
+      const formData = new FormData(signupForm);
+      try {
+        const auth = await apiRequest("/api/auth/cadastro", {
+          method: "POST",
+          body: JSON.stringify({
+            nome: formData.get("nome"),
+            email: formData.get("email"),
+            senha: formData.get("password")
+          })
+        });
+        localStorage.setItem(authTokenKey, JSON.stringify(auth));
+        showToast(`Conta criada para ${auth.usuario.nome}.`);
+      } catch (error) {
+        showToast(error.message || "Nao foi possivel criar a conta agora.");
+      }
     });
   }
+}
+
+async function loadBooksFromApi() {
+  try {
+    const apiBooks = await apiRequest("/api/livros");
+    if (Array.isArray(apiBooks) && apiBooks.length) {
+      books = apiBooks.map(mapApiBook);
+    }
+  } catch (error) {
+    console.warn("Catalogo local em uso; backend indisponivel.", error);
+  }
+}
+
+async function apiRequest(path, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...options,
+    headers
+  });
+
+  if (!response.ok) {
+    let message = "Nao foi possivel concluir a operacao.";
+    try {
+      const errorBody = await response.json();
+      message = errorBody.erro || message;
+    } catch (error) {
+      message = response.statusText || message;
+    }
+    throw new Error(message);
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+function mapApiBook(apiBook) {
+  const copies = flattenCopies(apiBook.copias);
+  const bestCopy = selectBestCopy(copies);
+  const highlights = apiBook.destaques || {};
+
+  return {
+    id: apiBook.id,
+    title: apiBook.titulo,
+    author: apiBook.autor,
+    category: normalizeCategory(apiBook.categoria),
+    price: Number(apiBook.menorPreco ?? bestCopy.preco ?? 0),
+    condition: formatEnum(bestCopy.estadoConservacao || "BOM"),
+    year: String(apiBook.anoPublicacao || ""),
+    publisher: apiBook.editora,
+    pages: "Nao informado",
+    stock: Number(apiBook.estoqueTotal ?? bestCopy.estoque ?? 0),
+    seller: bestCopy.vendedor || apiBook.vendedora || "Sebo Digital",
+    city: bestCopy.cidade || bestCopy.cidadeVendedor || "Brasil",
+    type: formatEnum(bestCopy.tipo || "USADO"),
+    freeShipping: Boolean(highlights.freteGratis || copies.some((copy) => copy.freteGratis)),
+    promotion: Boolean(highlights.oferta || copies.some((copy) => copy.promocao)),
+    corporatePurchase: copies.some((copy) => copy.compraCorporativa),
+    rating: Number(bestCopy.avaliacaoVendedor || 4.7),
+    language: apiBook.idioma || "Portugues",
+    sales: highlights.maisVendido ? 100 : highlights.lancamento ? 70 : 25,
+    cover: coverClassFor(apiBook.categoria, apiBook.id),
+    imageUrl: apiBook.imagemUrl,
+    short: apiBook.descricao || "Livro disponivel no catalogo do Sebo Digital.",
+    description: apiBook.descricao || "Obra cadastrada no marketplace com ofertas novas e usadas.",
+    notes: buildApiNotes(copies)
+  };
+}
+
+function flattenCopies(copies) {
+  if (!copies) return [];
+  return [...(copies.novas || []), ...(copies.usadas || [])].filter((copy) => copy.ativo !== false);
+}
+
+function selectBestCopy(copies) {
+  if (!copies.length) return {};
+  return [...copies].sort((a, b) => Number(a.preco || 0) - Number(b.preco || 0))[0];
+}
+
+function normalizeCategory(category) {
+  if (!category) return "Geral";
+  if (category.includes("Literatura")) return "Literatura";
+  if (category.includes("Ficcao") || category.includes("Romance")) return "Literatura";
+  return category;
+}
+
+function formatEnum(value) {
+  return String(value)
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function coverClassFor(category, id) {
+  const byCategory = {
+    Literatura: "cover-burgundy",
+    Romance: "cover-burgundy",
+    Tecnologia: "cover-blue",
+    Fantasia: "cover-sage",
+    Memorias: "cover-teal",
+    Arte: "cover-clay",
+    Historia: "cover-gold"
+  };
+  const fallback = ["cover-burgundy", "cover-teal", "cover-blue", "cover-gold", "cover-sage", "cover-clay", "cover-ink"];
+  return byCategory[category] || fallback[id % fallback.length];
+}
+
+function buildApiNotes(copies) {
+  if (!copies.length) return ["Oferta cadastrada no backend", "Consulte disponibilidade antes da compra"];
+  const freeShipping = copies.some((copy) => copy.freteGratis);
+  const usedCopies = copies.filter((copy) => copy.tipo === "USADO").length;
+  const newCopies = copies.filter((copy) => copy.tipo === "NOVO").length;
+  return [
+    `${newCopies} oferta(s) nova(s) e ${usedCopies} usada(s)`,
+    freeShipping ? "Possui opcao com frete gratis" : "Frete calculado por oferta",
+    "Dados carregados da API Spring Boot"
+  ];
 }
 
 function setupSearchForms() {
@@ -458,7 +609,7 @@ function renderHome() {
   const bestSellers = sortBooks(books, "mais-vendidos");
   renderBooks(document.querySelector("#best-seller-shelf"), [...bestSellers, ...bestSellers]);
   renderAuthors();
-  renderBooks(document.querySelector("#classic-books"), books.filter((book) => book.category === "Literatura").slice(0, 4));
+  renderBooks(document.querySelector("#classic-books"), books.filter((book) => book.category.includes("Literatura")).slice(0, 4));
   renderUniverses();
   renderBoxSets();
   setupShelfControls();
@@ -629,7 +780,7 @@ function renderCatalog() {
     let filtered = books.filter((book) => {
       const searchable = `${book.title} ${book.author} ${book.category} ${book.publisher} ${book.seller} ${book.city} ${book.language}`.toLowerCase();
       const matchesQuery = !filters.query || searchable.includes(filters.query);
-      const matchesCategory = !filters.category || book.category === filters.category;
+      const matchesCategory = !filters.category || book.category === filters.category || book.category.includes(filters.category);
       const matchesType = !filters.type || book.type === filters.type;
       const matchesAuthor = !filters.author || book.author === filters.author;
       const matchesPublisher = !filters.publisher || book.publisher === filters.publisher;
@@ -867,8 +1018,12 @@ function renderBookCard(book) {
 }
 
 function renderCover(book) {
+  const imageStyle = book.imageUrl
+    ? ` style="background-image: linear-gradient(160deg, rgba(32, 24, 18, 0.72), rgba(32, 24, 18, 0.18)), url('${escapeAttribute(book.imageUrl)}')"`
+    : "";
+
   return `
-    <div class="book-cover ${book.cover}" aria-hidden="true">
+    <div class="book-cover ${book.cover}"${imageStyle} aria-hidden="true">
       <span class="cover-category">${escapeHtml(book.category)}</span>
       <strong>${escapeHtml(book.title)}</strong>
       <small>${escapeHtml(book.author)}</small>
@@ -917,7 +1072,7 @@ function fillSelect(select, values) {
 }
 
 function uniqueValues(key) {
-  return [...new Set(books.map((book) => book[key]))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  return [...new Set(books.map((book) => book[key]).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
 }
 
 function sortBooks(collection, sort) {
@@ -1035,4 +1190,11 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll(")", "\\)");
 }
