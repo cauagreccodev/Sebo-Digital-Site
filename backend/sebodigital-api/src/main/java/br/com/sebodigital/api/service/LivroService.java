@@ -109,6 +109,7 @@ public class LivroService {
         livro.setCategoria(request.categoria().trim());
         livro.setDescricao(trimToNull(request.descricao()));
         livro.setImagemUrl(request.imagemUrl().trim());
+        livro.setAutorImagemUrl(trimToNull(request.autorImagemUrl()));
         livro.setDestaqueFreteGratis(request.destaqueFreteGratis());
         livro.setDestaqueOferta(request.destaqueOferta());
         livro.setDestaqueMaisVendido(request.destaqueMaisVendido());
@@ -209,6 +210,7 @@ public class LivroService {
                 livro.getId(),
                 livro.getTitulo(),
                 livro.getAutor(),
+                livro.getAutorImagemUrl(),
                 livro.getEditora().getNome(),
                 livro.getVendedora() == null ? null : livro.getVendedora().getNome(),
                 livro.getIsbn(),

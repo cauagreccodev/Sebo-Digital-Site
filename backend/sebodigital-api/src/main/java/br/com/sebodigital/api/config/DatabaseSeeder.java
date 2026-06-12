@@ -11,6 +11,7 @@ import br.com.sebodigital.api.repository.UsuarioRepository;
 import br.com.sebodigital.api.service.LivroService;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,7 @@ public class DatabaseSeeder {
                 popularLivros(livroService);
             }
             popularLivrosComplementares(livroRepository, livroService);
+            atualizarImagensLivros(livroRepository);
         };
     }
 
@@ -546,6 +548,82 @@ public class DatabaseSeeder {
         livroService.cadastrar(request);
     }
 
+    private void atualizarImagensLivros(LivroRepository livroRepository) {
+        dadosImagensLivros().forEach((isbn, imagens) ->
+                livroRepository.findByIsbnIgnoreCase(isbn).ifPresent(livro -> {
+                    livro.setImagemUrl(imagens.capaUrl());
+                    livro.setAutorImagemUrl(imagens.autorImagemUrl());
+                    livroRepository.save(livro);
+                }));
+    }
+
+    private Map<String, LivroImagens> dadosImagensLivros() {
+        return Map.ofEntries(
+                imagens("9788508040845", "Machado de Assis"),
+                imagens("9788594318603", "Aluisio Azevedo"),
+                imagens("9788535914061", "Jorge Amado"),
+                imagens("9786580309313", "Itamar Vieira Junior"),
+                imagens("9788508196559", "Carolina Maria de Jesus"),
+                imagens("9788595084742", "J. R. R. Tolkien"),
+                imagens("9788576082675", "Robert C. Martin"),
+                imagens("9788582850017", "Machado de Assis"),
+                imagens("9788532508126", "Clarice Lispector"),
+                imagens("9788501067340", "Graciliano Ramos"),
+                imagens("9788594318788", "Machado de Assis"),
+                imagens("9788535914849", "George Orwell"),
+                imagens("9788525052247", "Ray Bradbury"),
+                imagens("9788535909555", "George Orwell"),
+                imagens("9788598078175", "Markus Zusak"),
+                imagens("9788522005230", "Antoine de Saint-Exupery"),
+                imagens("9788589020109", "Lygia Bojunga"),
+                imagens("9788582603361", "Herbert Schildt"),
+                imagens("9788550800653", "Eric Evans"),
+                imagens("9788575227244", "Martin Fowler"),
+                imagens("9788531402401", "Boris Fausto"),
+                imagens("9788532520838", "Donald Norman"),
+                imagens("9788535904260", "Giulio Carlo Argan"));
+    }
+
+    private Map.Entry<String, LivroImagens> imagens(String isbn, String autor) {
+        return Map.entry(isbn, new LivroImagens(capaPorIsbn(isbn), retratoAutor(autor)));
+    }
+
+    private String capaPorIsbn(String isbn) {
+        return "https://books.google.com/books/content?vid=ISBN"
+                + isbn
+                + "&printsec=frontcover&img=1&zoom=1&source=gbs_api";
+    }
+
+    private String retratoAutor(String autor) {
+        return switch (autor) {
+            case "Machado de Assis" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Machado_de_Assis_by_Marc_Ferrez.jpg/500px-Machado_de_Assis_by_Marc_Ferrez.jpg";
+            case "Aluisio Azevedo" -> "https://upload.wikimedia.org/wikipedia/commons/4/4e/Aluisio_Azevedo.jpg";
+            case "Jorge Amado" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Jorge_Amado%2C_Headshot_2%2C_1988_%28cropped%29.png/500px-Jorge_Amado%2C_Headshot_2%2C_1988_%28cropped%29.png";
+            case "Itamar Vieira Junior" -> "https://upload.wikimedia.org/wikipedia/pt/1/1d/Fotografia_de_Itamar_Vieira_Junior.webp";
+            case "Carolina Maria de Jesus" -> "https://upload.wikimedia.org/wikipedia/commons/5/53/Carolina_Maria_de_Jesus%2C_1960_cr.jpg";
+            case "J. R. R. Tolkien" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/500px-J._R._R._Tolkien%2C_ca._1925.jpg";
+            case "Robert C. Martin" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Robert_C._Martin_surrounded_by_computers_%28cropped%29.jpg/500px-Robert_C._Martin_surrounded_by_computers_%28cropped%29.jpg";
+            case "Clarice Lispector" -> "https://upload.wikimedia.org/wikipedia/commons/7/7c/%281920-1977%29_Clarice_Lispector_6zxkp_please_credit%28palette.fm%29_%28cropped%29.png";
+            case "Graciliano Ramos" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Graciliano_Ramos%2C_1940.jpg/500px-Graciliano_Ramos%2C_1940.jpg";
+            case "George Orwell" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/George_Orwell_press_photo.jpg/500px-George_Orwell_press_photo.jpg";
+            case "Ray Bradbury" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Ray_Bradbury_%281975%29_-cropped-.jpg/500px-Ray_Bradbury_%281975%29_-cropped-.jpg";
+            case "Markus Zusak" -> "https://upload.wikimedia.org/wikipedia/commons/8/8c/Markus_Zusak_at_the_Book_Thief_Interview_%28cropped%29.jpg";
+            case "Antoine de Saint-Exupery" -> "https://upload.wikimedia.org/wikipedia/commons/6/68/Antoine_de_Saint-Exup%C3%A9ry.jpg";
+            case "Lygia Bojunga" -> "https://upload.wikimedia.org/wikipedia/commons/0/04/Lygia_bojunga.jpg";
+            case "Martin Fowler" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Webysther_20150414193208_-_Martin_Fowler.jpg/500px-Webysther_20150414193208_-_Martin_Fowler.jpg";
+            case "Boris Fausto" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Boris_Fausto_2015.jpg/500px-Boris_Fausto_2015.jpg";
+            case "Donald Norman" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Donald_Norman_at_AWF05.jpg/500px-Donald_Norman_at_AWF05.jpg";
+            case "Giulio Carlo Argan" -> "https://upload.wikimedia.org/wikipedia/commons/7/71/Argan_politico.jpg";
+            default -> avatarAutor(autor);
+        };
+    }
+
+    private String avatarAutor(String autor) {
+        return "https://ui-avatars.com/api/?name="
+                + autor.replace(" ", "+")
+                + "&size=256&background=286c67&color=ffffff&bold=true&format=png";
+    }
+
     private LivroCopiaRequest copia(
             String vendedor,
             String cidade,
@@ -596,5 +674,8 @@ public class DatabaseSeeder {
 
     private String imagem(String titulo, String fundo, String texto) {
         return "https://placehold.co/600x900/" + fundo + "/" + texto + "?text=" + titulo;
+    }
+
+    private record LivroImagens(String capaUrl, String autorImagemUrl) {
     }
 }

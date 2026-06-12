@@ -54,6 +54,9 @@ public class Livro {
     @Column(name = "imagem_url", nullable = false, length = 600)
     private String imagemUrl;
 
+    @Column(name = "autor_imagem_url", length = 600)
+    private String autorImagemUrl;
+
     @Column(nullable = false)
     private boolean destaqueFreteGratis;
 
@@ -155,6 +158,14 @@ public class Livro {
 
     public void setImagemUrl(String imagemUrl) {
         this.imagemUrl = imagemUrl;
+    }
+
+    public String getAutorImagemUrl() {
+        return autorImagemUrl;
+    }
+
+    public void setAutorImagemUrl(String autorImagemUrl) {
+        this.autorImagemUrl = autorImagemUrl;
     }
 
     public boolean isDestaqueFreteGratis() {

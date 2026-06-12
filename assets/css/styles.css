@@ -839,6 +839,7 @@ h3 {
   flex-direction: column;
   justify-content: space-between;
   min-height: 245px;
+  aspect-ratio: 2 / 3;
   padding: 22px 20px 18px;
   color: #fffaf0;
   overflow: hidden;
@@ -892,6 +893,27 @@ h3 {
   text-transform: uppercase;
 }
 
+.book-cover-photo {
+  display: block;
+  padding: 0;
+  background: #fffaf0;
+}
+
+.book-cover-photo::before,
+.book-cover-photo::after,
+.book-cover-photo .cover-category,
+.book-cover-photo strong,
+.book-cover-photo small {
+  display: none;
+}
+
+.book-cover-photo img {
+  width: 100%;
+  height: 100%;
+  min-height: 245px;
+  object-fit: cover;
+}
+
 .cover-burgundy {
   background: linear-gradient(145deg, #793f56, #b65f45);
 }
@@ -939,6 +961,36 @@ h3 {
   margin: 0;
   color: var(--muted);
   font-size: 0.91rem;
+}
+
+.book-author-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.author-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  color: #fff;
+  font-family: Lora, Georgia, serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  overflow: hidden;
+}
+
+.author-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .book-price-row {
@@ -1012,17 +1064,11 @@ h3 {
   box-shadow: 0 12px 30px rgba(36, 50, 47, 0.07);
 }
 
-.author-chip span {
+.author-chip .author-avatar {
   grid-row: span 2;
-  display: grid;
-  place-items: center;
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--teal), var(--gold));
-  color: #fff;
-  font-family: Lora, Georgia, serif;
-  font-weight: 900;
+  font-size: 1rem;
 }
 
 .author-chip strong {
@@ -1456,6 +1502,10 @@ h3 {
   border-radius: 6px;
 }
 
+.detail-cover-wrap .book-cover-photo img {
+  min-height: 500px;
+}
+
 .detail-cover-wrap .book-cover strong {
   font-size: 2.1rem;
 }
@@ -1477,9 +1527,17 @@ h3 {
 }
 
 .detail-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 10px 0 0;
   color: var(--muted);
   font-size: 1.05rem;
+}
+
+.detail-author .author-avatar {
+  width: 44px;
+  height: 44px;
 }
 
 .detail-description {
@@ -1578,6 +1636,14 @@ h3 {
 .cart-item .book-cover {
   min-height: 130px;
   padding: 14px 13px 11px;
+}
+
+.cart-item .book-cover-photo {
+  padding: 0;
+}
+
+.cart-item .book-cover-photo img {
+  min-height: 130px;
 }
 
 .cart-item .book-cover strong {

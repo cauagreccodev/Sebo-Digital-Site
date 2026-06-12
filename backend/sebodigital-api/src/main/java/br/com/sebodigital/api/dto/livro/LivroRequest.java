@@ -52,6 +52,9 @@ public record LivroRequest(
         @Size(max = 600, message = "URL da imagem deve ter no maximo 600 caracteres")
         String imagemUrl,
 
+        @Size(max = 600, message = "URL da imagem do autor deve ter no maximo 600 caracteres")
+        String autorImagemUrl,
+
         boolean destaqueFreteGratis,
         boolean destaqueOferta,
         boolean destaqueMaisVendido,
@@ -60,4 +63,43 @@ public record LivroRequest(
         @Valid
         @NotEmpty(message = "Informe ao menos uma copia/oferta do livro")
         List<LivroCopiaRequest> copias) {
+
+    public LivroRequest(
+            String titulo,
+            String autor,
+            String editora,
+            String vendedora,
+            String cidadeVendedora,
+            BigDecimal avaliacaoVendedora,
+            String isbn,
+            String idioma,
+            Integer anoPublicacao,
+            String categoria,
+            String descricao,
+            String imagemUrl,
+            boolean destaqueFreteGratis,
+            boolean destaqueOferta,
+            boolean destaqueMaisVendido,
+            boolean destaqueLancamento,
+            List<LivroCopiaRequest> copias) {
+        this(
+                titulo,
+                autor,
+                editora,
+                vendedora,
+                cidadeVendedora,
+                avaliacaoVendedora,
+                isbn,
+                idioma,
+                anoPublicacao,
+                categoria,
+                descricao,
+                imagemUrl,
+                null,
+                destaqueFreteGratis,
+                destaqueOferta,
+                destaqueMaisVendido,
+                destaqueLancamento,
+                copias);
+    }
 }

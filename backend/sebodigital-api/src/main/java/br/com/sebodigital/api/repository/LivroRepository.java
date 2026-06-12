@@ -10,6 +10,8 @@ public interface LivroRepository extends JpaRepository<Livro, Long>, JpaSpecific
 
     boolean existsByIsbnIgnoreCase(String isbn);
 
+    Optional<Livro> findByIsbnIgnoreCase(String isbn);
+
     @Override
     @EntityGraph(attributePaths = {"editora", "vendedora", "copias", "copias.vendedor"})
     Optional<Livro> findById(Long id);

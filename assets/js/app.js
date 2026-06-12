@@ -498,6 +498,7 @@ function mapApiBook(apiBook) {
     id: apiBook.id,
     title: apiBook.titulo,
     author: apiBook.autor,
+    authorImageUrl: apiBook.autorImagemUrl,
     category: normalizeCategory(apiBook.categoria),
     price: Number(apiBook.menorPreco ?? bestCopy.preco ?? 0),
     condition: formatEnum(bestCopy.estadoConservacao || "BOM"),
@@ -676,7 +677,7 @@ function renderAuthors() {
   const authors = [...new Map(books.map((book) => [book.author, book])).values()].slice(0, 8);
   container.innerHTML = authors.map((book) => `
     <a class="author-chip" href="livros.html?autor=${encodeURIComponent(book.author)}">
-      <span>${getInitials(book.author)}</span>
+      ${renderAuthorAvatar(book.author, book.authorImageUrl)}
       <strong>${escapeHtml(book.author)}</strong>
       <small>${escapeHtml(book.category)}</small>
     </a>
@@ -879,7 +880,10 @@ function renderDetail() {
       <article class="detail-main">
         <span class="condition-badge">${escapeHtml(selectedBook.condition)}</span>
         <h1>${escapeHtml(selectedBook.title)}</h1>
-        <p class="detail-author">por ${escapeHtml(selectedBook.author)}</p>
+        <p class="detail-author">
+          ${renderAuthorAvatar(selectedBook.author, selectedBook.authorImageUrl)}
+          <span>por ${escapeHtml(selectedBook.author)}</span>
+        </p>
         <p class="detail-description">${escapeHtml(selectedBook.description)}</p>
         <div class="detail-buy">
           <div>
@@ -995,7 +999,10 @@ function renderBookCard(book) {
       <div class="book-card-body">
         <div class="book-meta">
           <h3>${escapeHtml(book.title)}</h3>
-          <p>${escapeHtml(book.author)}</p>
+          <p class="book-author-line">
+            ${renderAuthorAvatar(book.author, book.authorImageUrl)}
+            <span>${escapeHtml(book.author)}</span>
+          </p>
           <p>${escapeHtml(book.short)}</p>
         </div>
         <div class="book-price-row">
@@ -1018,17 +1025,22 @@ function renderBookCard(book) {
 }
 
 function renderCover(book) {
-  const imageStyle = book.imageUrl
-    ? ` style="background-image: linear-gradient(160deg, rgba(32, 24, 18, 0.72), rgba(32, 24, 18, 0.18)), url('${escapeAttribute(book.imageUrl)}')"`
-    : "";
-
   return `
-    <div class="book-cover ${book.cover}"${imageStyle} aria-hidden="true">
+    <div class="book-cover ${book.cover}${book.imageUrl ? " book-cover-photo" : ""}" aria-hidden="true">
+      ${book.imageUrl ? `<img src="${escapeAttribute(book.imageUrl)}" alt="" loading="lazy" onerror="this.parentElement.classList.remove('book-cover-photo'); this.remove()">` : ""}
       <span class="cover-category">${escapeHtml(book.category)}</span>
       <strong>${escapeHtml(book.title)}</strong>
       <small>${escapeHtml(book.author)}</small>
     </div>
   `;
+}
+
+function renderAuthorAvatar(author, imageUrl) {
+  const image = imageUrl
+    ? `<img src="${escapeAttribute(imageUrl)}" alt="" loading="lazy" onerror="this.remove()">`
+    : "";
+
+  return `<span class="author-avatar" aria-hidden="true"><span>${getInitials(author)}</span>${image}</span>`;
 }
 
 function renderCartItem(item) {

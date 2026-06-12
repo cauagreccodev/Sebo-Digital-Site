@@ -6,6 +6,7 @@ public record LivroResponse(
         Long id,
         String titulo,
         String autor,
+        String autorImagemUrl,
         String editora,
         String vendedora,
         String isbn,
