@@ -10,6 +10,8 @@ import br.com.sebodigital.api.repository.LivroRepository;
 import br.com.sebodigital.api.repository.UsuarioRepository;
 import br.com.sebodigital.api.service.LivroService;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
@@ -559,39 +561,40 @@ public class DatabaseSeeder {
 
     private Map<String, LivroImagens> dadosImagensLivros() {
         return Map.ofEntries(
-                imagens("9788508040845", "Machado de Assis"),
-                imagens("9788594318603", "Aluisio Azevedo"),
-                imagens("9788535914061", "Jorge Amado"),
-                imagens("9786580309313", "Itamar Vieira Junior"),
-                imagens("9788508196559", "Carolina Maria de Jesus"),
-                imagens("9788595084742", "J. R. R. Tolkien"),
-                imagens("9788576082675", "Robert C. Martin"),
-                imagens("9788582850017", "Machado de Assis"),
-                imagens("9788532508126", "Clarice Lispector"),
-                imagens("9788501067340", "Graciliano Ramos"),
-                imagens("9788594318788", "Machado de Assis"),
-                imagens("9788535914849", "George Orwell"),
-                imagens("9788525052247", "Ray Bradbury"),
-                imagens("9788535909555", "George Orwell"),
-                imagens("9788598078175", "Markus Zusak"),
-                imagens("9788522005230", "Antoine de Saint-Exupery"),
-                imagens("9788589020109", "Lygia Bojunga"),
-                imagens("9788582603361", "Herbert Schildt"),
-                imagens("9788550800653", "Eric Evans"),
-                imagens("9788575227244", "Martin Fowler"),
-                imagens("9788531402401", "Boris Fausto"),
-                imagens("9788532520838", "Donald Norman"),
-                imagens("9788535904260", "Giulio Carlo Argan"));
+                imagens("9788508040845", 647501, "Machado de Assis"),
+                imagens("9788594318603", 8176059, "Aluisio Azevedo"),
+                imagens("9788535914061", 4178919, "Jorge Amado"),
+                imagens("9786580309313", 12369648, "Itamar Vieira Junior"),
+                imagens("9788508196559", 295782, "Carolina Maria de Jesus"),
+                imagens("9788595084742", 14627509, "J. R. R. Tolkien"),
+                imagens("9788576082675", 8065615, "Robert C. Martin"),
+                imagens("9788582850017", 123152, "Machado de Assis"),
+                imagens("9788532508126", 650866, "Clarice Lispector"),
+                imagens("9788501067340", 12369687, "Graciliano Ramos"),
+                imagens("9788594318788", 647504, "Machado de Assis"),
+                imagens("9788535914849", 9267242, "George Orwell"),
+                imagens("9788525052247", 12993656, "Ray Bradbury"),
+                imagens("9788535909555", 15200524, "George Orwell"),
+                imagens("9788598078175", 8153054, "Markus Zusak"),
+                imagens("9788522005230", 10708272, "Antoine de Saint-Exupery"),
+                imagens("9788589020109", 13470796, "Lygia Bojunga"),
+                imagens("9788582603361", 62098, "Herbert Schildt"),
+                imagens("9788550800653", 5548424, "Eric Evans"),
+                imagens("9788575227244", 7087623, "Martin Fowler"),
+                imagens("9788531402401", 8171450, "Boris Fausto"),
+                imagens("9788532520838", 10007224, "Donald Norman"),
+                imagens("9788535904260", 12370709, "Giulio Carlo Argan"));
     }
 
-    private Map.Entry<String, LivroImagens> imagens(String isbn, String autor) {
-        return Map.entry(isbn, new LivroImagens(capaPorIsbn(isbn), retratoAutor(autor)));
+    private Map.Entry<String, LivroImagens> imagens(String isbn, int capaId, String autor) {
+        return Map.entry(isbn, new LivroImagens(capaPngOpenLibrary(capaId), retratoAutor(autor)));
     }
 
-    private String capaPorIsbn(String isbn) {
-        return "https://books.google.com/books/content?vid=ISBN"
-                + isbn
-                + "&printsec=frontcover&img=1&zoom=1&source=gbs_api";
+    private String capaPngOpenLibrary(int capaId) {
+        String origem = "https://covers.openlibrary.org/b/id/" + capaId + "-L.jpg?default=false";
+        return "https://images.weserv.nl/?url="
+                + URLEncoder.encode(origem, StandardCharsets.UTF_8)
+                + "&w=800&h=1200&fit=cover&output=png";
     }
 
     private String retratoAutor(String autor) {
