@@ -258,14 +258,14 @@ const openLibraryPng = (coverId, width = 800, height = 1200, fit = "cover") =>
   pngImage(`https://covers.openlibrary.org/b/id/${coverId}-L.jpg?default=false`, width, height, fit);
 
 const literaryUniverses = [
-  { name: "Harry Potter", theme: "universe-wine", link: "livros.html?q=Harry%20Potter", imageUrl: openLibraryPng(8457523, 520, 520) },
-  { name: "Senhor dos Aneis", theme: "universe-sage", link: "livros.html?q=Senhor%20dos%20Aneis", imageUrl: openLibraryPng(14625765, 520, 520) },
-  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado", imageUrl: openLibraryPng(647501, 520, 520) },
-  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura", imageUrl: openLibraryPng(8176059, 520, 520) },
-  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia", imageUrl: openLibraryPng(8065615, 520, 520) },
-  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte", imageUrl: openLibraryPng(12370709, 520, 520) },
-  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia", imageUrl: openLibraryPng(8171450, 520, 520) },
-  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil", imageUrl: openLibraryPng(9321656, 520, 520) }
+  { name: "Harry Potter", theme: "universe-wine", link: "livros.html?q=Harry%20Potter", imageUrl: pngImage("https://i.pinimg.com/736x/09/cf/fd/09cffdfd899a2b71f90248249e27ed11.jpg", 520, 520) },
+  { name: "Senhor dos Aneis", theme: "universe-sage", link: "livros.html?q=Senhor%20dos%20Aneis", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/4/45/The_Argonath_And_The_Falls_Of_Rauros_(199869205).jpeg", 520, 520) },
+  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado", imageUrl: pngImage("https://static.todamateria.com.br/upload/ma/ch/machadodeassis-cke.jpg", 520, 520) },
+  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/4/43/Coleção_Literatura_Brasileira_Contemporânea._2020..jpg", 520, 520) },
+  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/51/Abstract_monitor_with_IDE.png" },
+  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/e/e5/'Abstract_sky',_1993_-_small_acrylic_painting_by_Dutch_artist_Fons_Heijnsbroek;_free_download_abstract_art_image,_CCO.jpg", 520, 520) },
+  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Pedro_Américo_-_Independência_ou_Morte_-_Google_Art_Project.jpg/960px-Pedro_Américo_-_Independência_ou_Morte_-_Google_Art_Project.jpg", 520, 520) },
+  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/3/38/Dulcibella-the-coming-of-the-fairies-crop.jpg", 520, 520) }
 ];
 
 const boxSets = [
