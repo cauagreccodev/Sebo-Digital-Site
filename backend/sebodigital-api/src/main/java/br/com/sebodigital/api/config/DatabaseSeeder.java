@@ -413,6 +413,132 @@ public class DatabaseSeeder {
                         copia("Ponto do Livro", "Goiania, GO", "4.66", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "27.90", 2, false, false))));
 
         cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Harry Potter e a Pedra Filosofal",
+                "J. K. Rowling",
+                "Rocco",
+                "Sebo Coruja",
+                "Sao Paulo, SP",
+                bd("4.91"),
+                "9788532511010",
+                "Portugues",
+                2000,
+                "Fantasia",
+                "Primeiro volume da saga Harry Potter, com edicoes para colecionadores e leitura infantojuvenil.",
+                imagem("Harry+Potter+Pedra+Filosofal", "1e1b4b", "fef3c7"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Sebo Coruja", "Sao Paulo, SP", "4.91", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "42.90", 4, true, true),
+                        copia("Livraria Travessa do Livro", "Rio de Janeiro, RJ", "4.74", TipoCopia.NOVO, EstadoConservacao.NOVO, "69.90", 5, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Harry Potter e a Camara Secreta",
+                "J. K. Rowling",
+                "Rocco",
+                "Sebo Coruja",
+                "Sao Paulo, SP",
+                bd("4.88"),
+                "9788532511669",
+                "Portugues",
+                2000,
+                "Fantasia",
+                "Segundo volume da saga Harry Potter, bastante procurado para completar colecoes.",
+                imagem("Harry+Potter+Camara+Secreta", "0f766e", "ecfeff"),
+                false,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Sebo Coruja", "Sao Paulo, SP", "4.91", TipoCopia.USADO, EstadoConservacao.BOM, "39.90", 3, false, true),
+                        copia("Mundo dos Livros", "Curitiba, PR", "4.79", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "48.90", 2, true, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "Harry Potter e o Prisioneiro de Azkaban",
+                "J. K. Rowling",
+                "Rocco",
+                "Mundo dos Livros",
+                "Curitiba, PR",
+                bd("4.79"),
+                "9788532512062",
+                "Portugues",
+                2000,
+                "Fantasia",
+                "Terceiro livro da saga, com exemplares usados em bom estado para leitores jovens.",
+                imagem("Harry+Potter+Prisioneiro+Azkaban", "581c87", "faf5ff"),
+                true,
+                false,
+                true,
+                false,
+                List.of(
+                        copia("Mundo dos Livros", "Curitiba, PR", "4.79", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "46.90", 4, true, false),
+                        copia("Banca Aurora", "Curitiba, PR", "4.73", TipoCopia.USADO, EstadoConservacao.BOM, "34.90", 2, false, true))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "O Senhor dos Aneis: A Sociedade do Anel",
+                "J. R. R. Tolkien",
+                "HarperCollins",
+                "Toca dos Livros",
+                "Porto Alegre, RS",
+                bd("4.86"),
+                "9788595084759",
+                "Portugues",
+                2019,
+                "Fantasia",
+                "Primeiro volume de O Senhor dos Aneis em edicao moderna para colecoes de fantasia.",
+                imagem("Sociedade+do+Anel", "14532d", "f0fdf4"),
+                true,
+                false,
+                true,
+                false,
+                List.of(
+                        copia("Toca dos Livros", "Porto Alegre, RS", "4.86", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "58.90", 2, true, false),
+                        copia("Livros da Ladeira", "Salvador, BA", "4.92", TipoCopia.NOVO, EstadoConservacao.NOVO, "79.90", 4, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "O Senhor dos Aneis: As Duas Torres",
+                "J. R. R. Tolkien",
+                "HarperCollins",
+                "Toca dos Livros",
+                "Porto Alegre, RS",
+                bd("4.86"),
+                "9788595084766",
+                "Portugues",
+                2019,
+                "Fantasia",
+                "Segundo volume da trilogia, indicado para montar boxes e colecoes de fantasia classica.",
+                imagem("As+Duas+Torres", "166534", "fff7ed"),
+                false,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Toca dos Livros", "Porto Alegre, RS", "4.86", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "56.90", 2, false, true),
+                        copia("Sebo Republica", "Porto Alegre, RS", "4.63", TipoCopia.USADO, EstadoConservacao.BOM, "44.90", 1, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
+                "O Senhor dos Aneis: O Retorno do Rei",
+                "J. R. R. Tolkien",
+                "HarperCollins",
+                "Livros da Ladeira",
+                "Salvador, BA",
+                bd("4.92"),
+                "9788595084773",
+                "Portugues",
+                2019,
+                "Fantasia",
+                "Fechamento da trilogia de Tolkien com boa procura em ofertas de colecao.",
+                imagem("Retorno+do+Rei", "422006", "fefce8"),
+                true,
+                true,
+                true,
+                false,
+                List.of(
+                        copia("Livros da Ladeira", "Salvador, BA", "4.92", TipoCopia.USADO, EstadoConservacao.MUITO_BOM, "59.90", 3, true, true),
+                        copia("Toca dos Livros", "Porto Alegre, RS", "4.86", TipoCopia.NOVO, EstadoConservacao.NOVO, "82.90", 4, false, false))));
+
+        cadastrarSeNaoExistir(livroRepository, livroService, new LivroRequest(
                 "Java para Iniciantes",
                 "Herbert Schildt",
                 "Bookman",
@@ -578,6 +704,12 @@ public class DatabaseSeeder {
                 imagens("9788598078175", 8153054, "Markus Zusak"),
                 imagens("9788522005230", 10708272, "Antoine de Saint-Exupery"),
                 imagens("9788589020109", 13470796, "Lygia Bojunga"),
+                imagens("9788532511010", 15155833, "J. K. Rowling"),
+                imagens("9788532511669", 15158664, "J. K. Rowling"),
+                imagens("9788532512062", 10580435, "J. K. Rowling"),
+                imagens("9788595084759", 14627060, "J. R. R. Tolkien"),
+                imagens("9788595084766", 14627564, "J. R. R. Tolkien"),
+                imagens("9788595084773", 14627062, "J. R. R. Tolkien"),
                 imagens("9788582603361", 62098, "Herbert Schildt"),
                 imagens("9788550800653", 5548424, "Eric Evans"),
                 imagens("9788575227244", 7087623, "Martin Fowler"),
@@ -592,19 +724,27 @@ public class DatabaseSeeder {
 
     private String capaPngOpenLibrary(int capaId) {
         String origem = "https://covers.openlibrary.org/b/id/" + capaId + "-L.jpg?default=false";
+        return imagemPng(origem, 800, 1200, "cover");
+    }
+
+    private String imagemPng(String origem, int largura, int altura, String fit) {
         return "https://images.weserv.nl/?url="
                 + URLEncoder.encode(origem, StandardCharsets.UTF_8)
-                + "&w=800&h=1200&fit=cover&output=png";
+                + "&w=" + largura
+                + "&h=" + altura
+                + "&fit=" + fit
+                + "&output=png";
     }
 
     private String retratoAutor(String autor) {
-        return switch (autor) {
+        String origem = switch (autor) {
             case "Machado de Assis" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Machado_de_Assis_by_Marc_Ferrez.jpg/500px-Machado_de_Assis_by_Marc_Ferrez.jpg";
             case "Aluisio Azevedo" -> "https://upload.wikimedia.org/wikipedia/commons/4/4e/Aluisio_Azevedo.jpg";
             case "Jorge Amado" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Jorge_Amado%2C_Headshot_2%2C_1988_%28cropped%29.png/500px-Jorge_Amado%2C_Headshot_2%2C_1988_%28cropped%29.png";
             case "Itamar Vieira Junior" -> "https://upload.wikimedia.org/wikipedia/pt/1/1d/Fotografia_de_Itamar_Vieira_Junior.webp";
             case "Carolina Maria de Jesus" -> "https://upload.wikimedia.org/wikipedia/commons/5/53/Carolina_Maria_de_Jesus%2C_1960_cr.jpg";
             case "J. R. R. Tolkien" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/500px-J._R._R._Tolkien%2C_ca._1925.jpg";
+            case "J. K. Rowling" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/J._K._Rowling_2010.jpg/500px-J._K._Rowling_2010.jpg";
             case "Robert C. Martin" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Robert_C._Martin_surrounded_by_computers_%28cropped%29.jpg/500px-Robert_C._Martin_surrounded_by_computers_%28cropped%29.jpg";
             case "Clarice Lispector" -> "https://upload.wikimedia.org/wikipedia/commons/7/7c/%281920-1977%29_Clarice_Lispector_6zxkp_please_credit%28palette.fm%29_%28cropped%29.png";
             case "Graciliano Ramos" -> "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Graciliano_Ramos%2C_1940.jpg/500px-Graciliano_Ramos%2C_1940.jpg";
@@ -619,6 +759,8 @@ public class DatabaseSeeder {
             case "Giulio Carlo Argan" -> "https://upload.wikimedia.org/wikipedia/commons/7/71/Argan_politico.jpg";
             default -> avatarAutor(autor);
         };
+
+        return origem.contains("ui-avatars.com") ? origem : imagemPng(origem, 500, 500, "cover");
     }
 
     private String avatarAutor(String autor) {

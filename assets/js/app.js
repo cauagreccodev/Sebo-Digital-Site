@@ -251,42 +251,70 @@ let books = [
   }
 ];
 
+const pngImage = (sourceUrl, width, height, fit = "cover") =>
+  `https://images.weserv.nl/?url=${encodeURIComponent(sourceUrl)}&w=${width}&h=${height}&fit=${fit}&output=png`;
+
+const openLibraryPng = (coverId, width = 800, height = 1200, fit = "cover") =>
+  pngImage(`https://covers.openlibrary.org/b/id/${coverId}-L.jpg?default=false`, width, height, fit);
+
 const literaryUniverses = [
-  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado" },
-  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura" },
-  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia" },
-  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte" },
-  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia" },
-  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil" }
+  { name: "Harry Potter", theme: "universe-wine", link: "livros.html?q=Harry%20Potter", imageUrl: openLibraryPng(8457523, 520, 520) },
+  { name: "Senhor dos Aneis", theme: "universe-sage", link: "livros.html?q=Senhor%20dos%20Aneis", imageUrl: openLibraryPng(14625765, 520, 520) },
+  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado", imageUrl: openLibraryPng(647501, 520, 520) },
+  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura", imageUrl: openLibraryPng(8176059, 520, 520) },
+  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia", imageUrl: openLibraryPng(8065615, 520, 520) },
+  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte", imageUrl: openLibraryPng(12370709, 520, 520) },
+  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia", imageUrl: openLibraryPng(8171450, 520, 520) },
+  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil", imageUrl: openLibraryPng(9321656, 520, 520) }
 ];
 
 const boxSets = [
   {
+    title: "Box Harry Potter",
+    description: "Saga de fantasia para colecionar ou presentear.",
+    price: 249.9,
+    theme: "box-wine",
+    imageUrl: openLibraryPng(8457523, 760, 760, "contain"),
+    link: "livros.html?q=Harry%20Potter"
+  },
+  {
+    title: "Box Senhor dos Aneis",
+    description: "Fantasia classica em trilogia para colecionadores.",
+    price: 189.9,
+    theme: "box-sage",
+    imageUrl: openLibraryPng(14625765, 760, 760, "contain"),
+    link: "livros.html?q=Senhor%20dos%20Aneis"
+  },
+  {
+    title: "Box Fantasia Classica",
+    description: "Selecao para quem busca sagas e mundos literarios.",
+    price: 169.9,
+    theme: "box-blue",
+    imageUrl: openLibraryPng(9321656, 760, 760, "contain"),
+    link: "livros.html?categoria=Fantasia"
+  },
+  {
     title: "Box Literatura Brasileira",
     description: "Classicos nacionais para montar uma primeira estante.",
     price: 119.9,
-    theme: "box-wine",
+    theme: "box-gold",
+    imageUrl: openLibraryPng(647501, 760, 760, "contain"),
     link: "livros.html?categoria=Literatura"
   },
   {
-    title: "Box Estudos em Java",
+    title: "Box Programacao",
     description: "Livros tecnicos para acompanhar projetos full-stack.",
     price: 148.0,
     theme: "box-teal",
+    imageUrl: openLibraryPng(8065615, 760, 760, "contain"),
     link: "livros.html?categoria=Tecnologia"
-  },
-  {
-    title: "Box Historia e Sociedade",
-    description: "Obras para leitura, pesquisa e repertorio cultural.",
-    price: 132.4,
-    theme: "box-gold",
-    link: "livros.html?categoria=Historia"
   },
   {
     title: "Box Arte e Design",
     description: "Referencias visuais e leituras de design.",
     price: 156.3,
     theme: "box-blue",
+    imageUrl: openLibraryPng(12370709, 760, 760, "contain"),
     link: "livros.html?categoria=Arte"
   }
 ];
@@ -690,7 +718,10 @@ function renderUniverses() {
 
   container.innerHTML = literaryUniverses.map((universe) => `
     <a class="universe-card ${universe.theme}" href="${universe.link}">
-      <span aria-hidden="true">${getInitials(universe.name)}</span>
+      <span aria-hidden="true">
+        <b>${getInitials(universe.name)}</b>
+        ${universe.imageUrl ? `<img src="${escapeAttribute(universe.imageUrl)}" alt="" loading="lazy" onerror="this.remove()">` : ""}
+      </span>
       <strong>${escapeHtml(universe.name)}</strong>
     </a>
   `).join("");
@@ -702,7 +733,8 @@ function renderBoxSets() {
 
   container.innerHTML = boxSets.map((box) => `
     <a class="box-card" href="${box.link}">
-      <span class="box-visual ${box.theme}" aria-hidden="true">
+      <span class="box-visual ${box.theme}${box.imageUrl ? " box-visual-photo" : ""}" aria-hidden="true">
+        ${box.imageUrl ? `<img src="${escapeAttribute(box.imageUrl)}" alt="" loading="lazy" onerror="this.parentElement.classList.remove('box-visual-photo'); this.remove()">` : ""}
         <i></i><i></i><i></i>
       </span>
       <strong>${escapeHtml(box.title)}</strong>
@@ -1205,8 +1237,5 @@ function escapeHtml(value) {
 }
 
 function escapeAttribute(value) {
-  return String(value)
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'")
-    .replaceAll(")", "\\)");
+  return escapeHtml(value);
 }
