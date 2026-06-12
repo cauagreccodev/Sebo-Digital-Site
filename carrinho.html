@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    const savedTheme = localStorage.getItem("seboDigitalTheme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  </script>
 </head>
 <body data-page="cart">
   <header class="site-header">
@@ -52,6 +56,13 @@
           <span>Carrinho</span>
           <strong data-cart-count>0</strong>
         </a>
+        <div class="theme-menu" data-theme-menu>
+          <button class="theme-trigger" type="button" aria-haspopup="true" aria-expanded="false">Tema</button>
+          <div class="theme-dropdown" role="menu">
+            <button type="button" role="menuitem" data-set-theme="light">☀️ Claro</button>
+            <button type="button" role="menuitem" data-set-theme="dark">🌙 Escuro</button>
+          </div>
+        </div>
       </div>
     </div>
 

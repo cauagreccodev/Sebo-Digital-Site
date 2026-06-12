@@ -330,6 +330,7 @@ const apiBaseUrl = window.SEBO_API_URL || "http://localhost:8080";
 const page = document.body.dataset.page;
 
 document.addEventListener("DOMContentLoaded", async () => {
+  setupThemeToggle();
   setupNavigation();
   setupSearchForms();
   setupCartEvents();
@@ -1295,4 +1296,27 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value);
+}
+
+function setupThemeToggle() {
+  const menus = document.querySelectorAll("[data-theme-menu]");
+  if (!menus.length) return;
+
+  const updateActive = (theme) => {
+    document.querySelectorAll("[data-set-theme]").forEach(btn => {
+      btn.classList.toggle("is-active", btn.dataset.setTheme === theme);
+    });
+  };
+
+  const initialTheme = document.documentElement.getAttribute("data-theme") || "light";
+  updateActive(initialTheme);
+
+  document.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-set-theme]");
+    if (!btn) return;
+    const newTheme = btn.dataset.setTheme;
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("seboDigitalTheme", newTheme);
+    updateActive(newTheme);
+  });
 }
