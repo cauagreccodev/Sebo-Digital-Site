@@ -642,6 +642,7 @@ function renderHome() {
   renderUniverses();
   renderBoxSets();
   setupShelfControls();
+  setupAuthorCarousel();
 }
 
 function setupShelfControls() {
@@ -698,12 +699,68 @@ function setupShelfControls() {
   }, autoInterval);
 }
 
+function setupAuthorCarousel() {
+  const strip = document.querySelector("#author-strip");
+  const previousButton = document.querySelector("[data-author-prev]");
+  const nextButton = document.querySelector("[data-author-next]");
+  if (!strip || !previousButton || !nextButton) return;
+
+  let isPaused = false;
+  let pauseTimeout;
+  const autoStep = 1;
+  const autoInterval = 34;
+
+  const normalizeStripPosition = () => {
+    const loopPoint = strip.scrollWidth / 2;
+
+    if (loopPoint > strip.clientWidth && strip.scrollLeft >= loopPoint) {
+      strip.scrollLeft -= loopPoint;
+    }
+  };
+
+  const pauseTemporarily = () => {
+    isPaused = true;
+    window.clearTimeout(pauseTimeout);
+    pauseTimeout = window.setTimeout(() => {
+      isPaused = false;
+    }, 1600);
+  };
+
+  const scrollAuthors = (direction) => {
+    const firstAuthor = strip.querySelector(".author-chip");
+    const distance = firstAuthor ? firstAuthor.getBoundingClientRect().width + 18 : 160;
+    const loopPoint = strip.scrollWidth / 2;
+    pauseTemporarily();
+
+    if (loopPoint > strip.clientWidth && direction < 0 && strip.scrollLeft <= 2) {
+      strip.scrollLeft = loopPoint;
+    }
+
+    strip.scrollBy({ left: direction * distance, behavior: "smooth" });
+
+    window.setTimeout(() => {
+      normalizeStripPosition();
+    }, 420);
+  };
+
+  previousButton.addEventListener("click", () => scrollAuthors(-1));
+  nextButton.addEventListener("click", () => scrollAuthors(1));
+
+  window.setInterval(() => {
+    if (isPaused || strip.scrollWidth <= strip.clientWidth) return;
+    strip.scrollLeft += autoStep;
+    normalizeStripPosition();
+  }, autoInterval);
+}
+
 function renderAuthors() {
   const container = document.querySelector("#author-strip");
   if (!container) return;
 
-  const authors = [...new Map(books.map((book) => [book.author, book])).values()].slice(0, 8);
-  container.innerHTML = authors.map((book) => `
+  const authors = [...new Map(books.map((book) => [book.author, book])).values()];
+  const loopedAuthors = authors.length > 1 ? [...authors, ...authors] : authors;
+
+  container.innerHTML = loopedAuthors.map((book) => `
     <a class="author-chip" href="livros.html?autor=${encodeURIComponent(book.author)}">
       ${renderAuthorAvatar(book.author, book.authorImageUrl)}
       <strong>${escapeHtml(book.author)}</strong>

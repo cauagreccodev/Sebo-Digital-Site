@@ -739,7 +739,15 @@ h3 {
   content: "\2039";
 }
 
+.shelf-controls [data-author-prev]::before {
+  content: "\2039";
+}
+
 .shelf-controls [data-shelf-next]::before {
+  content: "\203A";
+}
+
+.shelf-controls [data-author-next]::before {
   content: "\203A";
 }
 
@@ -1045,30 +1053,54 @@ h3 {
   gap: 10px;
 }
 
+.author-section {
+  position: relative;
+}
+
+.author-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .author-strip {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(136px, 158px);
+  grid-template-columns: none;
+  gap: 18px;
+  overflow-x: hidden;
+  overscroll-behavior-inline: contain;
+  padding: 4px 2px 12px;
+  scrollbar-width: none;
+}
+
+.author-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .author-chip {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-content: start;
   gap: 12px;
-  align-items: center;
-  min-height: 88px;
-  padding: 16px;
+  min-width: 0;
+  min-height: 190px;
+  padding: 16px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
+  text-align: center;
   box-shadow: 0 12px 30px rgba(36, 50, 47, 0.07);
 }
 
 .author-chip .author-avatar {
-  grid-row: span 2;
-  width: 56px;
-  height: 56px;
-  font-size: 1rem;
+  width: 104px;
+  height: 104px;
+  border: 4px solid #fff;
+  font-size: 1.4rem;
+  box-shadow: 0 12px 28px rgba(36, 50, 47, 0.16);
 }
 
 .author-chip strong {
@@ -1076,11 +1108,16 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 100%;
 }
 
 .author-chip small {
   color: var(--muted);
   font-weight: 800;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .universe-grid {
@@ -2096,7 +2133,6 @@ h3 {
   .catalog-grid,
   .category-grid,
   .promo-actions,
-  .author-strip,
   .box-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2224,10 +2260,31 @@ h3 {
   .catalog-grid,
   .category-grid,
   .promo-actions,
-  .author-strip,
   .box-grid,
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .author-actions {
+    gap: 10px;
+  }
+
+  .author-actions .text-link {
+    display: none;
+  }
+
+  .author-strip {
+    grid-auto-columns: minmax(124px, 142px);
+  }
+
+  .author-chip {
+    min-height: 176px;
+    padding: 14px 10px;
+  }
+
+  .author-chip .author-avatar {
+    width: 92px;
+    height: 92px;
   }
 
   .universe-grid {

@@ -139,13 +139,19 @@
       <div class="book-shelf" id="best-seller-shelf" tabindex="0" aria-label="Lista horizontal de livros mais vendidos"></div>
     </section>
 
-    <section class="content-section shell discovery-section" id="dicas">
+    <section class="content-section shell discovery-section author-section" id="dicas">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Autores</p>
           <h2>Busque por autores</h2>
         </div>
-        <a class="text-link" href="livros.html">Ver catalogo</a>
+        <div class="author-actions">
+          <a class="text-link" href="livros.html">Ver catalogo</a>
+          <div class="shelf-controls" aria-label="Controles da lista de autores">
+            <button type="button" data-author-prev aria-label="Voltar autores"></button>
+            <button type="button" data-author-next aria-label="Avancar autores"></button>
+          </div>
+        </div>
       </div>
       <div class="author-strip" id="author-strip"></div>
     </section>
