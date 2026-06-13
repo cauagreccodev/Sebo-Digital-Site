@@ -136,6 +136,33 @@ From the project root, the same command is:
 mvn -f backend\sebodigital-api\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
+### Social login
+
+The login page has Google and Facebook buttons connected to the backend OAuth2 flow.
+
+Register these redirect URIs in the provider dashboards:
+
+```text
+Google:   http://localhost:8080/login/oauth2/code/google
+Facebook: http://localhost:8080/login/oauth2/code/facebook
+```
+
+Set the OAuth2 credentials before starting the API:
+
+```powershell
+$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID="seu_google_client_id"
+$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET="seu_google_client_secret"
+$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID="seu_facebook_client_id"
+$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET="seu_facebook_client_secret"
+```
+
+If your frontend is not running at `http://localhost:5500/login.html`, also set:
+
+```powershell
+$env:APP_FRONTEND_LOGIN_URL="http://localhost:5500/login.html"
+$env:APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS="http://localhost:5500,http://127.0.0.1:5500"
+```
+
 3. Open `index.html` in the browser, or serve the project root with a local static server.
 
 The frontend reads the API from `http://localhost:8080` by default. If the backend is unavailable, it falls back to the local demo catalog.
@@ -157,6 +184,8 @@ mvn spring-boot:run "-Dspring-boot.run.profiles=h2"
 ## Version
 
 Current tagged version:
+
+`v0.4` - Social login with Google/Facebook, original provider logos, and post-login redirect to the home page
 
 `v0.2` - Backend authentication, frontend API integration, and books API
 

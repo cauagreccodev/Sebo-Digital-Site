@@ -326,6 +326,7 @@ const formatter = new Intl.NumberFormat("pt-BR", {
 
 const cartKey = "seboDigitalCart";
 const authTokenKey = "seboDigitalAuth";
+const authMessageKey = "seboDigitalAuthMessage";
 const apiBaseUrl = window.SEBO_API_URL || "http://localhost:8080";
 const page = document.body.dataset.page;
 
@@ -335,6 +336,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupSearchForms();
   setupCartEvents();
   setupAuthPage();
+  showPendingAuthMessage();
   updateCartBadge();
   await loadBooksFromApi();
 
@@ -393,6 +395,8 @@ function setupNavigation() {
 function setupAccountMenu(accountMenu, accountTrigger) {
   if (!accountMenu || !accountTrigger) return;
 
+  applyLoggedInAccountState(accountMenu, accountTrigger);
+
   let closeTimer;
   const isCompactHeader = () => window.matchMedia("(max-width: 700px)").matches;
   const setAccountState = (isOpen) => {
@@ -424,9 +428,20 @@ function setupAccountMenu(accountMenu, accountTrigger) {
     event.preventDefault();
     setAccountState(!accountMenu.classList.contains("is-account-open"));
   });
+
+  accountMenu.addEventListener("click", (event) => {
+    const logoutButton = event.target.closest("[data-logout]");
+    if (!logoutButton) return;
+    localStorage.removeItem(authTokenKey);
+    showToast("Voce saiu da sua conta.");
+    window.setTimeout(() => window.location.assign("index.html"), 500);
+  });
 }
 
 function setupAuthPage() {
+  handleOAuthRedirect();
+  setupSocialLoginButtons();
+
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
       const input = button.parentElement.querySelector("input");
@@ -451,8 +466,7 @@ function setupAuthPage() {
             senha: formData.get("password")
           })
         });
-        localStorage.setItem(authTokenKey, JSON.stringify(auth));
-        showToast(`Bem-vindo, ${auth.usuario.nome}.`);
+        completeAuthentication(auth, `Bem-vindo, ${auth.usuario.nome}.`);
       } catch (error) {
         showToast(error.message || "Nao foi possivel entrar agora.");
       }
@@ -472,13 +486,111 @@ function setupAuthPage() {
             senha: formData.get("password")
           })
         });
-        localStorage.setItem(authTokenKey, JSON.stringify(auth));
-        showToast(`Conta criada para ${auth.usuario.nome}.`);
+        completeAuthentication(auth, `Conta criada para ${auth.usuario.nome}.`);
       } catch (error) {
         showToast(error.message || "Nao foi possivel criar a conta agora.");
       }
     });
   }
+}
+
+function setupSocialLoginButtons() {
+  document.querySelectorAll("[data-oauth-provider]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const provider = button.dataset.oauthProvider;
+      const redirectUri = getOAuthRedirectUri();
+      const loginUrl = new URL(`${apiBaseUrl}/api/auth/oauth2/${provider}`);
+      loginUrl.searchParams.set("redirect_uri", redirectUri);
+      window.location.href = loginUrl.toString();
+    });
+  });
+}
+
+function handleOAuthRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const oauthStatus = params.get("oauth");
+  if (!oauthStatus) return;
+
+  if (oauthStatus === "success" && params.get("token")) {
+    const usuarioId = params.get("usuarioId");
+    const auth = {
+      token: params.get("token"),
+      tipo: params.get("tipo") || "Bearer",
+      expiraEm: params.get("expiraEm"),
+      usuario: {
+        id: usuarioId ? Number(usuarioId) : null,
+        nome: params.get("nome") || "Usuario",
+        email: params.get("email") || "",
+        role: params.get("role") || "USER"
+      }
+    };
+
+    completeAuthentication(auth, `Bem-vindo, ${auth.usuario.nome}.`);
+    return;
+  }
+
+  if (oauthStatus === "erro") {
+    showToast(params.get("mensagem") || "Nao foi possivel entrar com a conta social.");
+    cleanOAuthUrl();
+  }
+}
+
+function completeAuthentication(auth, message) {
+  localStorage.setItem(authTokenKey, JSON.stringify(auth));
+  sessionStorage.setItem(authMessageKey, message);
+  window.location.assign("index.html");
+}
+
+function showPendingAuthMessage() {
+  const message = sessionStorage.getItem(authMessageKey);
+  if (!message) return;
+  sessionStorage.removeItem(authMessageKey);
+  showToast(message);
+}
+
+function applyLoggedInAccountState(accountMenu, accountTrigger) {
+  const auth = getStoredAuth();
+  if (!auth?.token || !auth.usuario) return;
+
+  const firstName = String(auth.usuario.nome || "Conta").trim().split(" ")[0];
+  accountTrigger.textContent = `Ola, ${firstName}`;
+  accountTrigger.href = "login.html?next=conta";
+
+  const dropdown = accountMenu.querySelector(".account-dropdown");
+  if (!dropdown) return;
+
+  dropdown.innerHTML = `
+    <a href="login.html?next=conta">Minha conta</a>
+    <a href="login.html?next=pedidos">Meus pedidos</a>
+    <a href="login.html?next=listas">Minhas listas</a>
+    <button type="button" data-logout>Sair</button>
+  `;
+}
+
+function getStoredAuth() {
+  try {
+    return JSON.parse(localStorage.getItem(authTokenKey));
+  } catch (error) {
+    return null;
+  }
+}
+
+function getOAuthRedirectUri() {
+  if (window.SEBO_OAUTH_REDIRECT_URL) return window.SEBO_OAUTH_REDIRECT_URL;
+
+  if (window.location.protocol === "file:") {
+    return "http://localhost:5500/login.html";
+  }
+
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
+function cleanOAuthUrl() {
+  const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
+  window.history.replaceState({}, document.title, cleanUrl);
 }
 
 async function loadBooksFromApi() {

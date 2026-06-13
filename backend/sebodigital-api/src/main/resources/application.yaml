@@ -19,6 +19,9 @@ spring:
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
 
 app:
+  frontend:
+    login-url: ${APP_FRONTEND_LOGIN_URL:http://localhost:5500/login.html}
+    allowed-redirect-origins: ${APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS:http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://127.0.0.1:3000}
   security:
     jwt-secret: ${JWT_SECRET:sebo-digital-dev-secret-key-change-in-production-123456}
     jwt-expiration-minutes: ${JWT_EXPIRATION_MINUTES:120}

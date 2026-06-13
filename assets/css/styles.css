@@ -144,7 +144,7 @@
   color: var(--ink);
 }
 
-[data-theme="dark"] .social-button span {
+[data-theme="dark"] .social-button {
   background: var(--surface-muted);
 }
 
@@ -431,17 +431,23 @@ button {
   pointer-events: auto;
 }
 
-.account-dropdown a {
+.account-dropdown a,
+.account-dropdown button {
   display: flex;
   align-items: center;
+  width: 100%;
   min-height: 42px;
   padding: 9px 10px;
+  border: 0;
   border-radius: 6px;
+  background: transparent;
   color: var(--ink-soft);
   font-weight: 800;
+  text-align: left;
 }
 
-.account-dropdown a:hover {
+.account-dropdown a:hover,
+.account-dropdown button:hover {
   background: #fffaf0;
   color: var(--teal);
 }
@@ -2209,23 +2215,20 @@ h3 {
   font-weight: 900;
 }
 
-.social-button span {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #fff;
-  font-weight: 900;
+.social-button:hover {
+  border-color: rgba(40, 108, 103, 0.42);
+  color: var(--teal);
 }
 
-.facebook-button {
-  background: #40589b;
-  color: #fff;
+.social-logo {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
 }
 
-.google-button span {
-  color: #4285f4;
+.social-label {
+  min-width: 0;
+  line-height: 1.15;
 }
 
 .footer-grid {

@@ -8,6 +8,7 @@ import br.com.sebodigital.api.model.entity.Usuario;
 import br.com.sebodigital.api.model.enums.UsuarioRole;
 import br.com.sebodigital.api.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,6 +62,15 @@ public class AuthService {
         return jwtService.gerarToken(usuario);
     }
 
+    @Transactional
+    public AuthResponse loginOAuth(String email, String nome) {
+        String emailNormalizado = normalizarEmail(email);
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(emailNormalizado)
+                .orElseGet(() -> criarUsuarioOAuth(emailNormalizado, nome));
+
+        return jwtService.gerarToken(usuario);
+    }
+
     @Transactional(readOnly = true)
     public UsuarioResponse buscarPorEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
@@ -70,5 +80,23 @@ public class AuthService {
 
     private String normalizarEmail(String email) {
         return email == null ? "" : email.trim().toLowerCase();
+    }
+
+    private Usuario criarUsuarioOAuth(String email, String nome) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(normalizarNome(nome, email));
+        usuario.setEmail(email);
+        usuario.setSenha(passwordEncoder.encode(UUID.randomUUID().toString()));
+        usuario.setRole(UsuarioRole.USER);
+        return usuarioRepository.save(usuario);
+    }
+
+    private String normalizarNome(String nome, String email) {
+        if (nome != null && !nome.isBlank()) {
+            return nome.trim();
+        }
+
+        int arroba = email.indexOf('@');
+        return arroba > 0 ? email.substring(0, arroba) : "Usuario Sebo Digital";
     }
 }
