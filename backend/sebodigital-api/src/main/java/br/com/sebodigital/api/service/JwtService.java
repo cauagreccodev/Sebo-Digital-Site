@@ -38,6 +38,7 @@ public class JwtService {
                 .claim("usuarioId", usuario.getId())
                 .claim("nome", usuario.getNome())
                 .claim("role", usuario.getRole().name())
+                .claim("authProvider", usuario.getAuthProvider() == null ? "LOCAL" : usuario.getAuthProvider().name())
                 .claim("scope", usuario.getRole().getAuthority())
                 .build();
 

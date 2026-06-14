@@ -6,13 +6,17 @@ public record UsuarioResponse(
         Long id,
         String nome,
         String email,
-        String role) {
+        String role,
+        String authProvider,
+        String fotoUrl) {
 
     public static UsuarioResponse from(Usuario usuario) {
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getRole().name());
+                usuario.getRole().name(),
+                usuario.getAuthProvider() == null ? "LOCAL" : usuario.getAuthProvider().name(),
+                usuario.getFotoUrl());
     }
 }

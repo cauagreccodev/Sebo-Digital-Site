@@ -1,5 +1,6 @@
 package br.com.sebodigital.api.model.entity;
 
+import br.com.sebodigital.api.model.enums.AuthProvider;
 import br.com.sebodigital.api.model.enums.UsuarioRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +31,16 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private UsuarioRole role = UsuarioRole.USER;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider", length = 30)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
+    @Column(name = "provider_id", length = 160)
+    private String providerId;
+
+    @Column(name = "foto_url", length = 600)
+    private String fotoUrl;
 
     public Long getId() {
         return id;
@@ -69,5 +80,29 @@ public class Usuario {
 
     public void setRole(UsuarioRole role) {
         this.role = role;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
     }
 }

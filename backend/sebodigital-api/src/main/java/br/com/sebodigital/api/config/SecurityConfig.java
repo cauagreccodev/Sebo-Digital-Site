@@ -57,7 +57,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/auth/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/livros", "/api/livros/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 

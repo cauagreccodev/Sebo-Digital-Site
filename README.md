@@ -13,9 +13,9 @@ The project presents the first version of a virtual used-book store, with a warm
 - Account access area with lists, orders, and profile shortcuts
 - Book listing page with advanced filters
 - Book detail page with price, seller, location, condition notes, and metadata
-- Demo shopping cart using local browser storage
+- Shopping cart using local browser storage for purchase intent
 - Visual book cards with title, author, price, condition, type, shipping, language, and rating
-- Structure prepared for future backend integration
+- Frontend catalog loaded from the backend API
 - Spring Boot backend with JWT authentication
 - REST API for book registration and marketplace-style offers
 
@@ -43,7 +43,7 @@ The catalog currently supports filtering by:
 - `index.html` - storefront home page
 - `livros.html` - book catalog and filters
 - `detalhes.html?id=1` - book detail page
-- `carrinho.html` - demo cart and purchase intent
+- `carrinho.html` - cart and purchase intent
 - `login.html` - login and account creation screen
 
 ## Project Structure
@@ -84,12 +84,9 @@ The backend lives in `backend/sebodigital-api` and includes:
 - Book CRUD endpoints
 - Book copies/offers grouped as new and used
 - Sellers, publishers, stock, prices, highlights, and cover image URLs
-- Initial demo data for local testing
+- PostgreSQL-only persistence for users, books, and offers
 
-Default demo users:
-
-- `admin@sebodigital.com` / `admin123`
-- `cliente@sebodigital.com` / `cliente123`
+The API no longer creates demo users or demo books at startup. Users must be created through the registration flow/API, and books/offers must be persisted in PostgreSQL through the backend endpoints.
 
 To run the site connected to the backend:
 
@@ -138,7 +135,7 @@ mvn -f backend\sebodigital-api\pom.xml spring-boot:run "-Dspring-boot.run.profil
 
 ### Social login
 
-The login page has Google and Facebook buttons connected to the backend OAuth2 flow.
+The login page has Google and Facebook buttons connected to the backend OAuth2 flow. After a successful provider login, the API creates or updates the user in the PostgreSQL `usuarios` table and returns the same JWT response used by regular login.
 
 Register these redirect URIs in the provider dashboards:
 
@@ -156,6 +153,8 @@ $env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID="seu_facebook
 $env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET="seu_facebook_client_secret"
 ```
 
+The social registration stores the normalized e-mail, display name, provider (`GOOGLE` or `FACEBOOK`), provider id, and profile image URL when the provider returns it.
+
 If your frontend is not running at `http://localhost:5500/login.html`, also set:
 
 ```powershell
@@ -165,13 +164,7 @@ $env:APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS="http://localhost:5500,http://127.0.0
 
 3. Open `index.html` in the browser, or serve the project root with a local static server.
 
-The frontend reads the API from `http://localhost:8080` by default. If the backend is unavailable, it falls back to the local demo catalog.
-
-To use the old H2 local database instead of PostgreSQL:
-
-```bash
-mvn spring-boot:run "-Dspring-boot.run.profiles=h2"
-```
+The frontend reads the API from `http://localhost:8080` by default. If the backend or PostgreSQL connection is unavailable, the catalog shows an empty/error state and no local demo catalog is used.
 
 ## Future Roadmap
 

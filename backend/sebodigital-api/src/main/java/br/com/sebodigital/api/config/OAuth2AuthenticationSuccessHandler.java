@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -40,13 +41,16 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             }
 
             OAuth2User principal = oauthToken.getPrincipal();
+            String registrationId = oauthToken.getAuthorizedClientRegistrationId();
+            String providerId = resolveProviderId(registrationId, principal);
             String email = attribute(principal, "email");
             if (!StringUtils.hasText(email)) {
                 throw new IllegalArgumentException("O provedor nao retornou um e-mail valido");
             }
 
             String nome = resolveName(principal, email);
-            AuthResponse auth = authService.loginOAuth(email, nome);
+            String fotoUrl = resolvePicture(principal);
+            AuthResponse auth = authService.loginOAuth(registrationId, providerId, email, nome, fotoUrl);
             UsuarioResponse usuario = auth.usuario();
             String redirectUrl = UriComponentsBuilder.fromUriString(redirectResolver.resolve(request))
                     .queryParam("oauth", "success")
@@ -57,6 +61,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                     .queryParam("nome", usuario.nome())
                     .queryParam("email", usuario.email())
                     .queryParam("role", usuario.role())
+                    .queryParam("authProvider", usuario.authProvider())
+                    .queryParam("fotoUrl", usuario.fotoUrl())
                     .build()
                     .encode()
                     .toUriString();
@@ -98,8 +104,51 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         return arroba > 0 ? email.substring(0, arroba) : "Usuario Sebo Digital";
     }
 
+    private String resolveProviderId(String registrationId, OAuth2User principal) {
+        String providerIdAttribute = switch (registrationId) {
+            case "google" -> "sub";
+            case "facebook" -> "id";
+            default -> "";
+        };
+
+        String providerId = attribute(principal, providerIdAttribute);
+        return StringUtils.hasText(providerId) ? providerId : principal.getName();
+    }
+
+    private String resolvePicture(OAuth2User principal) {
+        Object picture = principal.getAttributes().get("picture");
+        if (picture instanceof String value && StringUtils.hasText(value)) {
+            return value.trim();
+        }
+
+        if (picture instanceof Map<?, ?> pictureMap) {
+            String directUrl = stringValue(pictureMap.get("url"));
+            if (StringUtils.hasText(directUrl)) {
+                return directUrl;
+            }
+
+            Object data = pictureMap.get("data");
+            if (data instanceof Map<?, ?> dataMap) {
+                String nestedUrl = stringValue(dataMap.get("url"));
+                if (StringUtils.hasText(nestedUrl)) {
+                    return nestedUrl;
+                }
+            }
+        }
+
+        return "";
+    }
+
     private String attribute(OAuth2User principal, String name) {
+        if (!StringUtils.hasText(name)) {
+            return "";
+        }
+
         Object value = principal.getAttributes().get(name);
+        return stringValue(value);
+    }
+
+    private String stringValue(Object value) {
         return value == null ? "" : value.toString().trim();
     }
 }

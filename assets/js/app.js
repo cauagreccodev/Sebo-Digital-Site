@@ -1,255 +1,5 @@
-let books = [
-  {
-    id: 1,
-    title: "Dom Casmurro",
-    author: "Machado de Assis",
-    category: "Literatura",
-    price: 32.9,
-    condition: "Muito bom",
-    year: "1998",
-    publisher: "Atica",
-    pages: 256,
-    stock: 1,
-    seller: "Banca Aurora",
-    city: "Curitiba, PR",
-    type: "Usado",
-    freeShipping: true,
-    promotion: true,
-    corporatePurchase: false,
-    rating: 4.8,
-    language: "Portugues",
-    sales: 42,
-    cover: "cover-burgundy",
-    short: "Classico brasileiro em edicao escolar bem preservada.",
-    description: "Exemplar de segunda mao com capa comum, miolo firme e paginas preservadas. Ideal para leitura, estudo e colecao inicial de literatura brasileira.",
-    notes: ["Sem grifos aparentes", "Corte levemente amarelado", "Capa com pequenos sinais de prateleira"]
-  },
-  {
-    id: 2,
-    title: "Quarto de Despejo",
-    author: "Carolina Maria de Jesus",
-    category: "Literatura",
-    price: 41.5,
-    condition: "Bom",
-    year: "2014",
-    publisher: "Atica",
-    pages: 200,
-    stock: 2,
-    seller: "Estante do Centro",
-    city: "Sao Paulo, SP",
-    type: "Usado",
-    freeShipping: false,
-    promotion: false,
-    corporatePurchase: true,
-    rating: 4.9,
-    language: "Portugues",
-    sales: 38,
-    cover: "cover-teal",
-    short: "Relato marcante, com sinais leves de leitura.",
-    description: "Livro usado em bom estado geral, com marcas discretas de manuseio. Uma obra essencial para quem busca literatura brasileira e memoria social.",
-    notes: ["Miolo integro", "Nome pequeno na primeira pagina", "Sem paginas soltas"]
-  },
-  {
-    id: 3,
-    title: "Java para Iniciantes",
-    author: "Herbert Schildt",
-    category: "Tecnologia",
-    price: 68.0,
-    condition: "Muito bom",
-    year: "2019",
-    publisher: "Bookman",
-    pages: 720,
-    stock: 1,
-    seller: "Livros & Codigo",
-    city: "Belo Horizonte, MG",
-    type: "Usado",
-    freeShipping: true,
-    promotion: false,
-    corporatePurchase: true,
-    rating: 4.7,
-    language: "Portugues",
-    sales: 35,
-    cover: "cover-blue",
-    short: "Livro tecnico para estudo, sem anotacoes relevantes.",
-    description: "Exemplar robusto para estudos de programacao Java. Bom candidato para acompanhar a futura etapa backend deste projeto.",
-    notes: ["Sem grifos importantes", "Lombada firme", "Capa com desgaste minimo"]
-  },
-  {
-    id: 4,
-    title: "Historia do Brasil",
-    author: "Boris Fausto",
-    category: "Historia",
-    price: 54.9,
-    condition: "Bom",
-    year: "2012",
-    publisher: "Edusp",
-    pages: 688,
-    stock: 1,
-    seller: "Sebo Republica",
-    city: "Porto Alegre, RS",
-    type: "Usado",
-    freeShipping: false,
-    promotion: true,
-    corporatePurchase: true,
-    rating: 4.5,
-    language: "Portugues",
-    sales: 26,
-    cover: "cover-gold",
-    short: "Panorama historico em exemplar usado e completo.",
-    description: "Edicao com sinais normais de leitura, indicada para estudos, consulta e formacao de biblioteca pessoal.",
-    notes: ["Corte com pontos de oxidacao", "Sem rasgos", "Algumas marcas a lapis"]
-  },
-  {
-    id: 5,
-    title: "O Pequeno Principe",
-    author: "Antoine de Saint-Exupery",
-    category: "Infantojuvenil",
-    price: 24.0,
-    condition: "Muito bom",
-    year: "2017",
-    publisher: "Agir",
-    pages: 96,
-    stock: 3,
-    seller: "Casa das Letras",
-    city: "Florianopolis, SC",
-    type: "Usado",
-    freeShipping: true,
-    promotion: true,
-    corporatePurchase: false,
-    rating: 4.9,
-    language: "Portugues",
-    sales: 51,
-    cover: "cover-sage",
-    short: "Edicao compacta, otima para presente ou releitura.",
-    description: "Livro em excelente estado, com capa preservada e paginas limpas. Um classico afetivo para diferentes idades.",
-    notes: ["Paginas limpas", "Sem dedicacao", "Capa preservada"]
-  },
-  {
-    id: 6,
-    title: "Design do Dia a Dia",
-    author: "Donald Norman",
-    category: "Arte",
-    price: 59.9,
-    condition: "Muito bom",
-    year: "2018",
-    publisher: "Rocco",
-    pages: 272,
-    stock: 1,
-    seller: "Prateleira Criativa",
-    city: "Rio de Janeiro, RJ",
-    type: "Usado",
-    freeShipping: true,
-    promotion: false,
-    corporatePurchase: true,
-    rating: 4.6,
-    language: "Portugues",
-    sales: 22,
-    cover: "cover-clay",
-    short: "Livro de design e usabilidade em otimo estado.",
-    description: "Obra recomendada para quem estuda experiencia do usuario, produto digital e design centrado em pessoas.",
-    notes: ["Sem grifos", "Capa com marca minima", "Miolo firme"]
-  },
-  {
-    id: 7,
-    title: "Grande Sertao: Veredas",
-    author: "Joao Guimaraes Rosa",
-    category: "Literatura",
-    price: 47.0,
-    condition: "Bom",
-    year: "2006",
-    publisher: "Nova Fronteira",
-    pages: 624,
-    stock: 1,
-    seller: "Ponto do Livro",
-    city: "Goiania, GO",
-    type: "Usado",
-    freeShipping: false,
-    promotion: false,
-    corporatePurchase: false,
-    rating: 4.4,
-    language: "Portugues",
-    sales: 19,
-    cover: "cover-ink",
-    short: "Classico extenso, completo, com marcas de leitura.",
-    description: "Exemplar para leitor que quer mergulhar em um dos grandes romances brasileiros. Usado, completo e com boa estrutura.",
-    notes: ["Corte amarelado", "Pequenas dobras na capa", "Sem paginas ausentes"]
-  },
-  {
-    id: 8,
-    title: "A Bolsa Amarela",
-    author: "Lygia Bojunga",
-    category: "Infantojuvenil",
-    price: 28.5,
-    condition: "Novo",
-    year: "2021",
-    publisher: "Casa Lygia Bojunga",
-    pages: 136,
-    stock: 2,
-    seller: "Leitura de Bolso",
-    city: "Recife, PE",
-    type: "Novo",
-    freeShipping: true,
-    promotion: true,
-    corporatePurchase: true,
-    rating: 5.0,
-    language: "Portugues",
-    sales: 33,
-    cover: "cover-violet",
-    short: "Exemplar novo de um classico da literatura juvenil.",
-    description: "Livro sem sinais de uso relevante. Boa opcao para escola, presente ou primeira biblioteca de jovens leitores.",
-    notes: ["Sem marcas", "Capa e miolo preservados", "Estoque demonstrativo"]
-  },
-  {
-    id: 9,
-    title: "Clean Code",
-    author: "Robert C. Martin",
-    category: "Tecnologia",
-    price: 92.0,
-    condition: "Bom",
-    year: "2009",
-    publisher: "Prentice Hall",
-    pages: 464,
-    stock: 1,
-    seller: "Livros & Codigo",
-    city: "Belo Horizonte, MG",
-    type: "Usado",
-    freeShipping: false,
-    promotion: false,
-    corporatePurchase: true,
-    rating: 4.7,
-    language: "Ingles",
-    sales: 29,
-    cover: "cover-teal",
-    short: "Referencia de engenharia de software com uso moderado.",
-    description: "Exemplar importado em bom estado, indicado para estudos de boas praticas e arquitetura de codigo.",
-    notes: ["Alguns grifos", "Capa com sinais de manuseio", "Lombada firme"]
-  },
-  {
-    id: 10,
-    title: "Arte Moderna",
-    author: "Giulio Carlo Argan",
-    category: "Arte",
-    price: 76.4,
-    condition: "Muito bom",
-    year: "1992",
-    publisher: "Companhia das Letras",
-    pages: 709,
-    stock: 1,
-    seller: "Prateleira Criativa",
-    city: "Rio de Janeiro, RJ",
-    type: "Usado",
-    freeShipping: true,
-    promotion: false,
-    corporatePurchase: false,
-    rating: 4.6,
-    language: "Portugues",
-    sales: 17,
-    cover: "cover-blue",
-    short: "Volume de referencia para arte, cultura e historia.",
-    description: "Livro usado, amplo e bem preservado, com conteudo indicado para pesquisa e formacao cultural.",
-    notes: ["Capa preservada", "Sem rasgos", "Corte levemente escurecido"]
-  }
-];
+let books = [];
+let catalogLoadError = null;
 
 const pngImage = (sourceUrl, width, height, fit = "cover") =>
   `https://images.weserv.nl/?url=${encodeURIComponent(sourceUrl)}&w=${width}&h=${height}&fit=${fit}&output=png`;
@@ -521,7 +271,9 @@ function handleOAuthRedirect() {
         id: usuarioId ? Number(usuarioId) : null,
         nome: params.get("nome") || "Usuario",
         email: params.get("email") || "",
-        role: params.get("role") || "USER"
+        role: params.get("role") || "USER",
+        authProvider: params.get("authProvider") || "LOCAL",
+        fotoUrl: params.get("fotoUrl") || ""
       }
     };
 
@@ -536,9 +288,21 @@ function handleOAuthRedirect() {
 }
 
 function completeAuthentication(auth, message) {
-  localStorage.setItem(authTokenKey, JSON.stringify(auth));
+  const normalizedAuth = normalizeAuth(auth);
+  localStorage.setItem(authTokenKey, JSON.stringify(normalizedAuth));
   sessionStorage.setItem(authMessageKey, message);
   window.location.assign("index.html");
+}
+
+function normalizeAuth(auth) {
+  return {
+    ...auth,
+    usuario: {
+      ...(auth.usuario || {}),
+      authProvider: auth.usuario?.authProvider || "LOCAL",
+      fotoUrl: auth.usuario?.fotoUrl || ""
+    }
+  };
 }
 
 function showPendingAuthMessage() {
@@ -594,13 +358,17 @@ function cleanOAuthUrl() {
 }
 
 async function loadBooksFromApi() {
+  catalogLoadError = null;
+  books = [];
+
   try {
     const apiBooks = await apiRequest("/api/livros");
-    if (Array.isArray(apiBooks) && apiBooks.length) {
+    if (Array.isArray(apiBooks)) {
       books = apiBooks.map(mapApiBook);
     }
   } catch (error) {
-    console.warn("Catalogo local em uso; backend indisponivel.", error);
+    catalogLoadError = error;
+    console.warn("Catalogo indisponivel; verifique a API e a conexao com PostgreSQL.", error);
   }
 }
 
@@ -1071,6 +839,21 @@ function renderDetail() {
   const detail = document.querySelector("#book-detail");
   const breadcrumb = document.querySelector("#breadcrumb-title");
 
+  if (!selectedBook) {
+    document.title = "Livro indisponivel | Sebo Digital";
+    if (breadcrumb) breadcrumb.textContent = "Livro indisponivel";
+    if (detail) {
+      detail.innerHTML = `
+        <div class="empty-state">
+          <h2>Livro indisponivel</h2>
+          <p>${catalogLoadError ? "Nao foi possivel carregar o catalogo pela API conectada ao PostgreSQL." : "Nenhum livro foi encontrado no banco PostgreSQL."}</p>
+        </div>
+      `;
+    }
+    renderBooks(document.querySelector("#related-books"), []);
+    return;
+  }
+
   document.title = `${selectedBook.title} | Sebo Digital`;
   breadcrumb.textContent = selectedBook.title;
 
@@ -1133,7 +916,7 @@ function renderCart() {
     itemsElement.innerHTML = `
       <div class="empty-state">
         <h2>Seu carrinho esta vazio</h2>
-        <p>Escolha alguns livros no catalogo para simular uma intencao de compra.</p>
+        <p>Escolha alguns livros no catalogo para montar seu carrinho.</p>
       </div>
     `;
     summaryElement.innerHTML = `
@@ -1150,6 +933,21 @@ function renderCart() {
       book: books.find((book) => book.id === item.id)
     }))
     .filter((item) => item.book);
+
+  if (!detailedItems.length) {
+    itemsElement.innerHTML = `
+      <div class="empty-state">
+        <h2>Itens indisponiveis</h2>
+        <p>${catalogLoadError ? "Nao foi possivel consultar os livros pela API conectada ao PostgreSQL." : "Os itens salvos no carrinho nao existem mais no banco."}</p>
+      </div>
+    `;
+    summaryElement.innerHTML = `
+      <h2>Resumo</h2>
+      <p class="summary-note">Nenhum item disponivel para compra.</p>
+      <a class="primary-button" href="livros.html">Ver catalogo</a>
+    `;
+    return;
+  }
 
   itemsElement.innerHTML = detailedItems.map(renderCartItem).join("");
 
@@ -1180,10 +978,16 @@ function renderBooks(container, collection) {
   if (!container) return;
 
   if (!collection.length) {
+    const message = catalogLoadError
+      ? "Nao foi possivel carregar os livros pela API conectada ao PostgreSQL."
+      : books.length
+        ? "Tente ajustar a busca ou limpar os filtros."
+        : "Nenhum livro foi encontrado no banco PostgreSQL.";
+
     container.innerHTML = `
       <div class="empty-state">
         <h3>Nenhum livro encontrado</h3>
-        <p>Tente ajustar a busca ou limpar os filtros.</p>
+        <p>${message}</p>
       </div>
     `;
     return;
