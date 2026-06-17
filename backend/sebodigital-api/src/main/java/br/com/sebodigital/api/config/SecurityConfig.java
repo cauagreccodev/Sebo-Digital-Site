@@ -60,7 +60,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
-        if (clientRegistrationRepository.getIfAvailable() != null) {
+        ClientRegistrationRepository registrations = clientRegistrationRepository.getIfAvailable();
+        if (temProvedorOAuth(registrations)) {
             http.oauth2Login(oauth2 -> oauth2
                     .successHandler(oauth2SuccessHandler)
                     .failureHandler(oauth2FailureHandler));
@@ -121,5 +122,11 @@ public class SecurityConfig {
     private SecretKey secretKey(String jwtSecret) {
         byte[] bytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(bytes, "HmacSHA256");
+    }
+
+    private boolean temProvedorOAuth(ClientRegistrationRepository registrations) {
+        return registrations != null
+                && (registrations.findByRegistrationId("google") != null
+                || registrations.findByRegistrationId("facebook") != null);
     }
 }

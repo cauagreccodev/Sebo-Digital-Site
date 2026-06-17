@@ -69,7 +69,7 @@ public class OAuth2RedirectResolver {
                 .build();
     }
 
-    private String sanitize(String redirectUri) {
+    public String sanitize(String redirectUri) {
         if (!StringUtils.hasText(redirectUri)) {
             return fallbackLoginUrl;
         }

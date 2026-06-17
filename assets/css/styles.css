@@ -63,7 +63,7 @@
   background: linear-gradient(135deg, var(--surface), rgba(217, 143, 126, 0.18));
 }
 
-[data-theme="dark"] .book-tags span {
+[data-theme="dark"] .book-tags a {
   background: var(--surface-muted);
 }
 
@@ -1260,7 +1260,18 @@ h3 {
   gap: 7px;
 }
 
-.book-tags span {
+.book-card-filter-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.book-card-filter-link:focus-visible,
+.book-tags a:focus-visible {
+  outline: 3px solid rgba(40, 108, 103, 0.28);
+  outline-offset: 3px;
+}
+
+.book-tags a {
   display: inline-flex;
   align-items: center;
   min-height: 25px;
@@ -1271,6 +1282,14 @@ h3 {
   color: var(--muted);
   font-size: 0.74rem;
   font-weight: 900;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.book-tags a:hover {
+  border-color: var(--teal);
+  background: #eef8f6;
+  color: var(--teal-dark);
 }
 
 .book-actions {

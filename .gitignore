@@ -41,5 +41,6 @@ logs/
 
 # Configuracoes locais
 .env
+scripts/local-env.ps1
 application-local.yaml
 application-local.yml

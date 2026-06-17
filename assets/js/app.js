@@ -77,7 +77,7 @@ const formatter = new Intl.NumberFormat("pt-BR", {
 const cartKey = "seboDigitalCart";
 const authTokenKey = "seboDigitalAuth";
 const authMessageKey = "seboDigitalAuthMessage";
-const apiBaseUrl = window.SEBO_API_URL || "http://localhost:8080";
+let apiBaseUrl = normalizeApiBaseUrl(window.SEBO_API_URL || "http://localhost:8080");
 const page = document.body.dataset.page;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupNavigation();
   setupSearchForms();
   setupCartEvents();
+  await loadRuntimeConfig();
   setupAuthPage();
   showPendingAuthMessage();
   updateCartBadge();
@@ -95,6 +96,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (page === "detail") renderDetail();
   if (page === "cart") renderCart();
 });
+
+async function loadRuntimeConfig() {
+  if (window.SEBO_API_URL || window.location.protocol === "file:") return;
+
+  try {
+    const response = await fetch("/api/config", {
+      cache: "no-store",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) return;
+
+    const config = await response.json();
+    if (config.apiBaseUrl) {
+      apiBaseUrl = normalizeApiBaseUrl(config.apiBaseUrl);
+    }
+    if (config.oauthRedirectUrl) {
+      window.SEBO_OAUTH_REDIRECT_URL = config.oauthRedirectUrl;
+    }
+  } catch (error) {
+    console.warn("Configuracao de deploy indisponivel; usando API local.", error);
+  }
+}
+
+function normalizeApiBaseUrl(value) {
+  return String(value || "").replace(/\/+$/, "") || "http://localhost:8080";
+}
 
 function setupNavigation() {
   const toggle = document.querySelector("[data-menu-toggle]");
@@ -246,12 +273,20 @@ function setupAuthPage() {
 
 function setupSocialLoginButtons() {
   document.querySelectorAll("[data-oauth-provider]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const provider = button.dataset.oauthProvider;
       const redirectUri = getOAuthRedirectUri();
       const loginUrl = new URL(`${apiBaseUrl}/api/auth/oauth2/${provider}`);
       loginUrl.searchParams.set("redirect_uri", redirectUri);
-      window.location.href = loginUrl.toString();
+
+      button.disabled = true;
+      try {
+        await ensureApiAvailable();
+        window.location.href = loginUrl.toString();
+      } catch (error) {
+        showToast(error.message || apiUnavailableMessage());
+        button.disabled = false;
+      }
     });
   });
 }
@@ -357,6 +392,17 @@ function cleanOAuthUrl() {
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
+async function ensureApiAvailable() {
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/livros`, {
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) throw new Error();
+  } catch (error) {
+    throw new Error(apiUnavailableMessage());
+  }
+}
+
 async function loadBooksFromApi() {
   catalogLoadError = null;
   books = [];
@@ -378,10 +424,15 @@ async function apiRequest(path, options = {}) {
     ...(options.headers || {})
   };
 
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    ...options,
-    headers
-  });
+  let response;
+  try {
+    response = await fetch(`${apiBaseUrl}${path}`, {
+      ...options,
+      headers
+    });
+  } catch (error) {
+    throw new Error(apiUnavailableMessage());
+  }
 
   if (!response.ok) {
     let message = "Nao foi possivel concluir a operacao.";
@@ -396,6 +447,10 @@ async function apiRequest(path, options = {}) {
 
   if (response.status === 204) return null;
   return response.json();
+}
+
+function apiUnavailableMessage() {
+  return "A API ainda nao respondeu. Confirme se o Spring Boot e o PostgreSQL terminaram de iniciar.";
 }
 
 function mapApiBook(apiBook) {
@@ -997,29 +1052,35 @@ function renderBooks(container, collection) {
 }
 
 function renderBookCard(book) {
+  const titleFilterUrl = catalogFilterUrl({ q: book.title });
+  const shippingFilterUrl = book.freeShipping ? catalogFilterUrl({ frete: "gratis" }) : catalogFilterUrl({ q: book.title });
+  const ratingFilterUrl = catalogFilterUrl({ avaliacao: ratingFilterValue(book.rating) });
+
   return `
     <article class="book-card">
       <a href="detalhes.html?id=${book.id}" aria-label="Ver detalhes de ${escapeHtml(book.title)}">
         ${renderCover(book)}
       </a>
       <div class="book-card-body">
-        <div class="book-meta">
-          <h3>${escapeHtml(book.title)}</h3>
-          <p class="book-author-line">
-            ${renderAuthorAvatar(book.author, book.authorImageUrl)}
-            <span>${escapeHtml(book.author)}</span>
-          </p>
-          <p>${escapeHtml(book.short)}</p>
-        </div>
+        <a class="book-card-filter-link" href="${titleFilterUrl}" aria-label="Filtrar catalogo por ${escapeHtml(book.title)}">
+          <div class="book-meta">
+            <h3>${escapeHtml(book.title)}</h3>
+            <p class="book-author-line">
+              ${renderAuthorAvatar(book.author, book.authorImageUrl)}
+              <span>${escapeHtml(book.author)}</span>
+            </p>
+            <p>${escapeHtml(book.short)}</p>
+          </div>
+        </a>
         <div class="book-price-row">
           <span class="price">${formatter.format(book.price)}</span>
           <span class="condition-badge">${escapeHtml(book.condition)}</span>
         </div>
         <div class="book-tags" aria-label="Informacoes comerciais">
-          <span>${escapeHtml(book.type)}</span>
-          <span>${book.freeShipping ? "Frete gratis" : "Frete calculado"}</span>
-          <span>${escapeHtml(book.language)}</span>
-          <span>${book.rating.toFixed(1)} estrelas</span>
+          <a href="${catalogFilterUrl({ tipo: book.type })}" aria-label="Filtrar por tipo ${escapeHtml(book.type)}">${escapeHtml(book.type)}</a>
+          <a href="${shippingFilterUrl}" aria-label="${book.freeShipping ? "Filtrar por frete gratis" : `Filtrar catalogo por ${escapeHtml(book.title)}`}">${book.freeShipping ? "Frete gratis" : "Frete calculado"}</a>
+          <a href="${catalogFilterUrl({ idioma: book.language })}" aria-label="Filtrar por idioma ${escapeHtml(book.language)}">${escapeHtml(book.language)}</a>
+          <a href="${ratingFilterUrl}" aria-label="Filtrar por avaliacao minima">${book.rating.toFixed(1)} estrelas</a>
         </div>
         <div class="book-actions">
           <a class="details-link" href="detalhes.html?id=${book.id}">Detalhes</a>
@@ -1028,6 +1089,24 @@ function renderBookCard(book) {
       </div>
     </article>
   `;
+}
+
+function catalogFilterUrl(filters) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim()) {
+      params.set(key, value);
+    }
+  });
+
+  const query = params.toString();
+  return query ? `livros.html?${query}` : "livros.html";
+}
+
+function ratingFilterValue(rating) {
+  if (rating >= 5) return "5";
+  if (rating >= 4.5) return "4.5";
+  return "4";
 }
 
 function renderCover(book) {

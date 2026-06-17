@@ -133,6 +133,24 @@ From the project root, the same command is:
 mvn -f backend\sebodigital-api\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
+For social login in the local environment, set the provider credentials and use the same `local` profile:
+
+```powershell
+mvn -f backend\sebodigital-api\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+Serve the static frontend on port `5500` while testing OAuth redirects:
+
+```powershell
+node scripts/static-server.mjs
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5500/login.html
+```
+
 ### Social login
 
 The login page has Google and Facebook buttons connected to the backend OAuth2 flow. After a successful provider login, the API creates or updates the user in the PostgreSQL `usuarios` table and returns the same JWT response used by regular login.
@@ -147,11 +165,27 @@ Facebook: http://localhost:8080/login/oauth2/code/facebook
 Set the OAuth2 credentials before starting the API:
 
 ```powershell
-$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID="seu_google_client_id"
-$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET="seu_google_client_secret"
-$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID="seu_facebook_client_id"
-$env:SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET="seu_facebook_client_secret"
+$env:GOOGLE_CLIENT_ID="seu_google_client_id"
+$env:GOOGLE_CLIENT_SECRET="seu_google_client_secret"
+$env:FACEBOOK_CLIENT_ID="id_numerico_do_app_facebook"
+$env:FACEBOOK_CLIENT_SECRET="seu_facebook_client_secret"
 ```
+
+To avoid typing the credentials every time, create a local ignored file from the template:
+
+```powershell
+Copy-Item scripts\local-env.example.ps1 scripts\local-env.ps1
+notepad scripts\local-env.ps1
+.\scripts\start-local-dev.ps1
+```
+
+The `start-local-dev.ps1` script loads `scripts/local-env.ps1`, starts the static frontend on port `5500` when needed, and runs the API with the `local` profile.
+
+You can configure only one provider during development. The API registers Google only when `GOOGLE_CLIENT_ID` ends with `.apps.googleusercontent.com` and `GOOGLE_CLIENT_SECRET` is set. Facebook is registered only when `FACEBOOK_CLIENT_ID` is numeric and `FACEBOOK_CLIENT_SECRET` is set. Restart the API after changing these variables.
+
+For Google, create an OAuth Client ID of type `Web application` in Google Cloud and copy the value named `Client ID`, not an API key. The Google client id normally ends with `.apps.googleusercontent.com`. If Google returns `Erro 401: invalid_client`, the client id/secret being sent by the backend is wrong, missing, or belongs to a deleted/different OAuth client.
+
+For Facebook, use the numeric `App ID` from Meta for Developers as `FACEBOOK_CLIENT_ID`. If the Facebook URL shows `client_id=${FACEBOOK_CLIENT_ID}`, the API was started without a real environment variable value or was not restarted after setting it.
 
 The social registration stores the normalized e-mail, display name, provider (`GOOGLE` or `FACEBOOK`), provider id, and profile image URL when the provider returns it.
 
@@ -165,6 +199,32 @@ $env:APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS="http://localhost:5500,http://127.0.0
 3. Open `index.html` in the browser, or serve the project root with a local static server.
 
 The frontend reads the API from `http://localhost:8080` by default. If the backend or PostgreSQL connection is unavailable, the catalog shows an empty/error state and no local demo catalog is used.
+
+## Vercel Deploy
+
+The frontend can be deployed to Vercel as a static site from the project root. The backend Spring Boot API must be hosted separately with the Neon environment variables configured there.
+
+In the Vercel project, set this environment variable:
+
+```text
+SEBO_API_URL=https://sua-api-publica.example.com
+```
+
+Use the public URL of the Spring Boot API without a trailing slash. The frontend reads this value from `/api/config` at runtime, so the same static files work locally and in production.
+
+After Vercel creates the production domain, configure the backend with:
+
+```text
+APP_FRONTEND_LOGIN_URL=https://seu-projeto.vercel.app/login.html
+APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS=https://seu-projeto.vercel.app
+```
+
+If social login is enabled, keep the provider callback URLs pointing to the backend API, for example:
+
+```text
+Google:   https://sua-api-publica.example.com/login/oauth2/code/google
+Facebook: https://sua-api-publica.example.com/login/oauth2/code/facebook
+```
 
 ## Future Roadmap
 
