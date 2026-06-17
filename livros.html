@@ -17,7 +17,7 @@
 <body data-page="catalog">
   <header class="site-header">
     <div class="top-strip">
-      <span>Catalogo com dados demonstrativos para a primeira etapa do projeto</span>
+      <span>Catalogo carregado da base de dados</span>
       <a href="index.html">Voltar ao inicio</a>
     </div>
 
@@ -75,34 +75,34 @@
           </a>
           <div class="mega-menu" role="menu">
             <div class="mega-feature">
-              <span>Garimpo rápido</span>
+              <span>Busca rapida</span>
               <strong>Explore livros usados por tema, estado e tipo de leitura.</strong>
               <a href="livros.html">Ver todos os livros</a>
             </div>
             <div class="mega-columns">
-              <a href="livros.html?categoria=Literatura">Literatura brasileira</a>
-              <a href="livros.html?categoria=Historia">História geral</a>
-              <a href="livros.html?categoria=Infantojuvenil">Infantojuvenil</a>
-              <a href="livros.html?categoria=Arte">Arte e design</a>
-              <a href="livros.html?categoria=Tecnologia">Tecnologia</a>
+              <a href="livros.html">Todos os livros</a>
+              <a href="livros.html?ordenar=title">Titulos A-Z</a>
+              <a href="livros.html?promo=true">Ofertas cadastradas</a>
               <a href="livros.html?frete=gratis">Frete gratis</a>
-              <a href="livros.html?preco_max=40">Preço amigo</a>
-              <a href="livros.html?categoria=Literatura&q=classico">Clássicos</a>
+              <a href="livros.html?ordenar=mais-vendidos">Destaques</a>
+              <a href="livros.html">Autores</a>
+              <a href="livros.html">Editoras</a>
+              <a href="livros.html">Ver catalogo</a>
               <a href="livros.html">Ver todas as categorias</a>
             </div>
             <div class="mega-spotlight">
-              <span>Destaque</span>
-              <strong>Livros técnicos e profissionais</strong>
-              <p>Uma área boa para estudar Java, design e produto sem pagar preço de livro novo.</p>
+              <span>Catalogo</span>
+              <strong>Dados carregados da base cadastrada</strong>
+              <p>Use os filtros para encontrar livros, autores, editoras e ofertas disponiveis.</p>
             </div>
           </div>
         </div>
         <a href="livros.html">Sebos e Livreiros</a>
         <a href="livros.html">Busque por Autores</a>
         <a href="index.html#dicas">Dicas de Livros</a>
-        <a href="livros.html?ordenar=mais-vendidos">Mais Vendidos</a>
-        <a href="livros.html?promo=true">Ofertas 1ª Compra</a>
-        <a class="shipping-link" href="livros.html?frete=gratis">Enviar para: CEP</a>
+        <a href="livros.html?ordenar=mais-vendidos">Destaques</a>
+        <a href="livros.html?promo=true">Ofertas</a>
+        <a class="shipping-link" href="livros.html?frete=gratis">Frete gratis</a>
       </div>
     </nav>
   </header>
@@ -111,14 +111,14 @@
     <section class="page-title shell">
       <p class="eyebrow">Catalogo</p>
       <h1>Livros disponiveis</h1>
-      <p>Filtre por categoria, frete, tipo de livro, autor, editora, preco, cidade, sebo e outras condicoes de compra.</p>
+      <p>Filtre os livros cadastrados por categoria, frete, tipo, autor, editora, cidade, sebo e outras condicoes de compra.</p>
     </section>
 
     <section class="catalog-layout shell">
       <aside class="filters-panel" aria-label="Filtros do catalogo">
         <div class="filters-panel-title">
           <strong>Filtros</strong>
-          <span>Refine seu garimpo</span>
+          <span>Refine os resultados</span>
         </div>
         <div class="filter-group">
           <label for="catalog-search">Busca</label>
@@ -218,7 +218,7 @@
       <section class="catalog-results">
         <div class="results-toolbar">
           <strong id="results-count">0 livros encontrados</strong>
-          <span>Dados estaticos para prototipo</span>
+          <span>Dados carregados do cadastro</span>
         </div>
         <div class="book-grid catalog-grid" id="catalog-books"></div>
       </section>
@@ -229,7 +229,7 @@
     <div class="shell footer-grid">
       <div>
         <strong>Sebo Digital</strong>
-        <p>Catalogo pronto para receber dados vindos de uma API Spring Boot.</p>
+        <p>Catalogo preenchido pelos livros salvos na base de dados.</p>
       </div>
       <div>
         <span>Navegacao</span>
@@ -239,7 +239,7 @@
       </div>
       <div>
         <span>Atendimento</span>
-        <p>Fluxo de compra sera conectado em uma etapa futura.</p>
+        <p>Os resultados aparecem conforme os dados cadastrados.</p>
       </div>
     </div>
   </footer>

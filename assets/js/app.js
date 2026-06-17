@@ -1,73 +1,7 @@
 let books = [];
 let catalogLoadError = null;
 
-const pngImage = (sourceUrl, width, height, fit = "cover") =>
-  `https://images.weserv.nl/?url=${encodeURIComponent(sourceUrl)}&w=${width}&h=${height}&fit=${fit}&output=png`;
-
-const openLibraryPng = (coverId, width = 800, height = 1200, fit = "cover") =>
-  pngImage(`https://covers.openlibrary.org/b/id/${coverId}-L.jpg?default=false`, width, height, fit);
-
-const literaryUniverses = [
-  { name: "Harry Potter", theme: "universe-wine", link: "livros.html?q=Harry%20Potter", imageUrl: pngImage("https://i.pinimg.com/736x/09/cf/fd/09cffdfd899a2b71f90248249e27ed11.jpg", 520, 520) },
-  { name: "Senhor dos Aneis", theme: "universe-sage", link: "livros.html?q=Senhor%20dos%20Aneis", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/4/45/The_Argonath_And_The_Falls_Of_Rauros_(199869205).jpeg", 520, 520) },
-  { name: "Machado de Assis", theme: "universe-wine", link: "livros.html?q=Machado", imageUrl: pngImage("https://static.todamateria.com.br/upload/ma/ch/machadodeassis-cke.jpg", 520, 520) },
-  { name: "Literatura brasileira", theme: "universe-gold", link: "livros.html?categoria=Literatura", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/4/43/Coleção_Literatura_Brasileira_Contemporânea._2020..jpg", 520, 520) },
-  { name: "Programacao", theme: "universe-teal", link: "livros.html?categoria=Tecnologia", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/51/Abstract_monitor_with_IDE.png" },
-  { name: "Arte moderna", theme: "universe-blue", link: "livros.html?categoria=Arte", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/e/e5/'Abstract_sky',_1993_-_small_acrylic_painting_by_Dutch_artist_Fons_Heijnsbroek;_free_download_abstract_art_image,_CCO.jpg", 520, 520) },
-  { name: "Historia do Brasil", theme: "universe-sage", link: "livros.html?categoria=Historia", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Pedro_Américo_-_Independência_ou_Morte_-_Google_Art_Project.jpg/960px-Pedro_Américo_-_Independência_ou_Morte_-_Google_Art_Project.jpg", 520, 520) },
-  { name: "Infantojuvenil", theme: "universe-clay", link: "livros.html?categoria=Infantojuvenil", imageUrl: pngImage("https://upload.wikimedia.org/wikipedia/commons/3/38/Dulcibella-the-coming-of-the-fairies-crop.jpg", 520, 520) }
-];
-
-const boxSets = [
-  {
-    title: "Box Harry Potter",
-    description: "Saga de fantasia para colecionar ou presentear.",
-    price: 249.9,
-    theme: "box-wine",
-    imageUrl: openLibraryPng(8457523, 760, 760, "contain"),
-    link: "livros.html?q=Harry%20Potter"
-  },
-  {
-    title: "Box Senhor dos Aneis",
-    description: "Fantasia classica em trilogia para colecionadores.",
-    price: 189.9,
-    theme: "box-sage",
-    imageUrl: openLibraryPng(14625765, 760, 760, "contain"),
-    link: "livros.html?q=Senhor%20dos%20Aneis"
-  },
-  {
-    title: "Box Fantasia Classica",
-    description: "Selecao para quem busca sagas e mundos literarios.",
-    price: 169.9,
-    theme: "box-blue",
-    imageUrl: openLibraryPng(9321656, 760, 760, "contain"),
-    link: "livros.html?categoria=Fantasia"
-  },
-  {
-    title: "Box Literatura Brasileira",
-    description: "Classicos nacionais para montar uma primeira estante.",
-    price: 119.9,
-    theme: "box-gold",
-    imageUrl: openLibraryPng(647501, 760, 760, "contain"),
-    link: "livros.html?categoria=Literatura"
-  },
-  {
-    title: "Box Programacao",
-    description: "Livros tecnicos para acompanhar projetos full-stack.",
-    price: 148.0,
-    theme: "box-teal",
-    imageUrl: openLibraryPng(8065615, 760, 760, "contain"),
-    link: "livros.html?categoria=Tecnologia"
-  },
-  {
-    title: "Box Arte e Design",
-    description: "Referencias visuais e leituras de design.",
-    price: 156.3,
-    theme: "box-blue",
-    imageUrl: openLibraryPng(12370709, 760, 760, "contain"),
-    link: "livros.html?categoria=Arte"
-  }
-];
+const universeThemes = ["universe-wine", "universe-sage", "universe-gold", "universe-teal", "universe-blue", "universe-clay"];
 
 const formatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -414,7 +348,7 @@ async function loadBooksFromApi() {
     }
   } catch (error) {
     catalogLoadError = error;
-    console.warn("Catalogo indisponivel; verifique a API e a conexao com PostgreSQL.", error);
+    console.warn("Catalogo indisponivel.", error);
   }
 }
 
@@ -450,39 +384,58 @@ async function apiRequest(path, options = {}) {
 }
 
 function apiUnavailableMessage() {
-  return "A API ainda nao respondeu. Confirme se o Spring Boot e o PostgreSQL terminaram de iniciar.";
+  return "Nao foi possivel acessar o catalogo no momento.";
+}
+
+function numberOrNull(value) {
+  if (value === undefined || value === null || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function highlightScore(highlights) {
+  return [
+    highlights.maisVendido,
+    highlights.oferta,
+    highlights.lancamento,
+    highlights.freteGratis
+  ].filter(Boolean).length;
 }
 
 function mapApiBook(apiBook) {
   const copies = flattenCopies(apiBook.copias);
   const bestCopy = selectBestCopy(copies);
   const highlights = apiBook.destaques || {};
+  const price = numberOrNull(apiBook.menorPreco ?? bestCopy.preco);
+  const rating = numberOrNull(bestCopy.avaliacaoVendedor);
 
   return {
     id: apiBook.id,
-    title: apiBook.titulo,
-    author: apiBook.autor,
+    title: apiBook.titulo || "",
+    author: apiBook.autor || "",
     authorImageUrl: apiBook.autorImagemUrl,
     category: normalizeCategory(apiBook.categoria),
-    price: Number(apiBook.menorPreco ?? bestCopy.preco ?? 0),
-    condition: formatEnum(bestCopy.estadoConservacao || "BOM"),
+    price,
+    condition: bestCopy.estadoConservacao ? formatEnum(bestCopy.estadoConservacao) : "",
     year: String(apiBook.anoPublicacao || ""),
-    publisher: apiBook.editora,
-    pages: "Nao informado",
+    publisher: apiBook.editora || "",
+    pages: "",
     stock: Number(apiBook.estoqueTotal ?? bestCopy.estoque ?? 0),
-    seller: bestCopy.vendedor || apiBook.vendedora || "Sebo Digital",
-    city: bestCopy.cidade || bestCopy.cidadeVendedor || "Brasil",
-    type: formatEnum(bestCopy.tipo || "USADO"),
+    seller: bestCopy.vendedor || apiBook.vendedora || "",
+    city: bestCopy.cidade || bestCopy.cidadeVendedor || "",
+    type: bestCopy.tipo ? formatEnum(bestCopy.tipo) : "",
     freeShipping: Boolean(highlights.freteGratis || copies.some((copy) => copy.freteGratis)),
     promotion: Boolean(highlights.oferta || copies.some((copy) => copy.promocao)),
     corporatePurchase: copies.some((copy) => copy.compraCorporativa),
-    rating: Number(bestCopy.avaliacaoVendedor || 4.7),
-    language: apiBook.idioma || "Portugues",
-    sales: highlights.maisVendido ? 100 : highlights.lancamento ? 70 : 25,
+    rating,
+    language: apiBook.idioma || "",
+    bestSeller: Boolean(highlights.maisVendido),
+    newRelease: Boolean(highlights.lancamento),
+    highlightScore: highlightScore(highlights),
     cover: coverClassFor(apiBook.categoria, apiBook.id),
     imageUrl: apiBook.imagemUrl,
-    short: apiBook.descricao || "Livro disponivel no catalogo do Sebo Digital.",
-    description: apiBook.descricao || "Obra cadastrada no marketplace com ofertas novas e usadas.",
+    short: apiBook.descricao || "",
+    description: apiBook.descricao || "",
     notes: buildApiNotes(copies)
   };
 }
@@ -498,10 +451,7 @@ function selectBestCopy(copies) {
 }
 
 function normalizeCategory(category) {
-  if (!category) return "Geral";
-  if (category.includes("Literatura")) return "Literatura";
-  if (category.includes("Ficcao") || category.includes("Romance")) return "Literatura";
-  return category;
+  return category || "Geral";
 }
 
 function formatEnum(value) {
@@ -513,29 +463,31 @@ function formatEnum(value) {
 }
 
 function coverClassFor(category, id) {
-  const byCategory = {
-    Literatura: "cover-burgundy",
-    Romance: "cover-burgundy",
-    Tecnologia: "cover-blue",
-    Fantasia: "cover-sage",
-    Memorias: "cover-teal",
-    Arte: "cover-clay",
-    Historia: "cover-gold"
-  };
   const fallback = ["cover-burgundy", "cover-teal", "cover-blue", "cover-gold", "cover-sage", "cover-clay", "cover-ink"];
-  return byCategory[category] || fallback[id % fallback.length];
+  const key = String(category || id || "catalogo");
+  return fallback[Math.abs(hashString(key)) % fallback.length];
+}
+
+function hashString(value) {
+  return [...value].reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0);
 }
 
 function buildApiNotes(copies) {
-  if (!copies.length) return ["Oferta cadastrada no backend", "Consulte disponibilidade antes da compra"];
+  if (!copies.length) return [];
   const freeShipping = copies.some((copy) => copy.freteGratis);
   const usedCopies = copies.filter((copy) => copy.tipo === "USADO").length;
   const newCopies = copies.filter((copy) => copy.tipo === "NOVO").length;
-  return [
-    `${newCopies} oferta(s) nova(s) e ${usedCopies} usada(s)`,
-    freeShipping ? "Possui opcao com frete gratis" : "Frete calculado por oferta",
-    "Dados carregados da API Spring Boot"
-  ];
+  const notes = [`${newCopies} oferta(s) nova(s) e ${usedCopies} usada(s)`];
+
+  if (freeShipping) {
+    notes.push("Possui opcao com frete gratis");
+  }
+
+  if (copies.some((copy) => copy.compraCorporativa)) {
+    notes.push("Possui compra corporativa");
+  }
+
+  return notes;
 }
 
 function setupSearchForms() {
@@ -571,12 +523,12 @@ function setupCartEvents() {
 }
 
 function renderHome() {
-  const bestSellers = sortBooks(books, "mais-vendidos");
-  renderBooks(document.querySelector("#best-seller-shelf"), [...bestSellers, ...bestSellers]);
+  const bestSellers = sortBooks(books.filter((book) => book.bestSeller), "mais-vendidos");
+  renderBooks(document.querySelector("#best-seller-shelf"), bestSellers.length > 1 ? [...bestSellers, ...bestSellers] : bestSellers);
   renderAuthors();
-  renderBooks(document.querySelector("#classic-books"), books.filter((book) => book.category.includes("Literatura")).slice(0, 4));
+  renderBooks(document.querySelector("#classic-books"), books.slice(0, 4));
   renderUniverses();
-  renderBoxSets();
+  renderOfferCards();
   setupShelfControls();
   setupAuthorCarousel();
 }
@@ -709,7 +661,14 @@ function renderUniverses() {
   const container = document.querySelector("#literary-universes");
   if (!container) return;
 
-  container.innerHTML = literaryUniverses.map((universe) => `
+  const universes = buildUniverseCards();
+
+  if (!universes.length) {
+    renderEmptyState(container, "Nenhuma categoria encontrada", "As categorias aparecem conforme os livros cadastrados.");
+    return;
+  }
+
+  container.innerHTML = universes.map((universe) => `
     <a class="universe-card ${universe.theme}" href="${universe.link}">
       <span aria-hidden="true">
         <b>${getInitials(universe.name)}</b>
@@ -720,19 +679,55 @@ function renderUniverses() {
   `).join("");
 }
 
-function renderBoxSets() {
-  const container = document.querySelector("#box-sets");
+function buildUniverseCards() {
+  const byCategory = new Map();
+
+  books.forEach((book) => {
+    if (!book.category) return;
+    const current = byCategory.get(book.category) || {
+      name: book.category,
+      count: 0,
+      imageUrl: "",
+      link: catalogFilterUrl({ categoria: book.category })
+    };
+
+    current.count += 1;
+    if (!current.imageUrl && book.imageUrl) {
+      current.imageUrl = book.imageUrl;
+    }
+
+    byCategory.set(book.category, current);
+  });
+
+  return [...byCategory.values()]
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"))
+    .slice(0, 8)
+    .map((universe, index) => ({
+      ...universe,
+      theme: universeThemes[index % universeThemes.length]
+    }));
+}
+
+function renderOfferCards() {
+  const container = document.querySelector("#offer-cards");
   if (!container) return;
 
-  container.innerHTML = boxSets.map((box) => `
-    <a class="box-card" href="${box.link}">
-      <span class="box-visual ${box.theme}${box.imageUrl ? " box-visual-photo" : ""}" aria-hidden="true">
-        ${box.imageUrl ? `<img src="${escapeAttribute(box.imageUrl)}" alt="" loading="lazy" onerror="this.parentElement.classList.remove('box-visual-photo'); this.remove()">` : ""}
-        <i></i><i></i><i></i>
-      </span>
-      <strong>${escapeHtml(box.title)}</strong>
-      <small>${escapeHtml(box.description)}</small>
-      <b>A partir de ${formatter.format(box.price)}</b>
+  const offers = books
+    .filter((book) => book.promotion || book.freeShipping || book.bestSeller || book.newRelease)
+    .sort((a, b) => b.highlightScore - a.highlightScore || (a.price ?? Number.MAX_VALUE) - (b.price ?? Number.MAX_VALUE))
+    .slice(0, 6);
+
+  if (!offers.length) {
+    renderEmptyState(container, "Nenhuma oferta cadastrada", "As ofertas aparecem conforme os livros cadastrados.");
+    return;
+  }
+
+  container.innerHTML = offers.map((book) => `
+    <a class="offer-card" href="detalhes.html?id=${book.id}">
+      ${renderCover(book)}
+      <strong>${escapeHtml(book.title)}</strong>
+      <small>${escapeHtml([book.author, book.category].filter(Boolean).join(" - "))}</small>
+      <b>${formatBookPrice(book)}</b>
     </a>
   `).join("");
 }
@@ -815,8 +810,8 @@ function renderCatalog() {
       const matchesSeller = !filters.seller || book.seller === filters.seller;
       const matchesLanguage = !filters.language || book.language === filters.language;
       const matchesRating = !filters.rating || book.rating >= filters.rating;
-      const matchesMinPrice = !filters.minPrice || book.price >= filters.minPrice;
-      const matchesMaxPrice = !filters.maxPrice || book.price <= filters.maxPrice;
+      const matchesMinPrice = !filters.minPrice || (book.price !== null && book.price >= filters.minPrice);
+      const matchesMaxPrice = !filters.maxPrice || (book.price !== null && book.price <= filters.maxPrice);
       const matchesFreeShipping = !filters.freeShipping || book.freeShipping;
       const matchesPromotion = !filters.promotion || book.promotion;
       const matchesCorporate = !filters.corporate || book.corporatePurchase;
@@ -901,7 +896,7 @@ function renderDetail() {
       detail.innerHTML = `
         <div class="empty-state">
           <h2>Livro indisponivel</h2>
-          <p>${catalogLoadError ? "Nao foi possivel carregar o catalogo pela API conectada ao PostgreSQL." : "Nenhum livro foi encontrado no banco PostgreSQL."}</p>
+          <p>${catalogLoadError ? "Nao foi possivel carregar o catalogo." : "Nenhum livro foi encontrado no catalogo."}</p>
         </div>
       `;
     }
@@ -911,6 +906,7 @@ function renderDetail() {
 
   document.title = `${selectedBook.title} | Sebo Digital`;
   breadcrumb.textContent = selectedBook.title;
+  const addButtonAttributes = canAddToCart(selectedBook) ? `data-add-cart="${selectedBook.id}"` : "disabled";
 
   detail.innerHTML = `
     <div class="detail-cover-wrap">
@@ -918,19 +914,19 @@ function renderDetail() {
     </div>
     <div class="detail-panel">
       <article class="detail-main">
-        <span class="condition-badge">${escapeHtml(selectedBook.condition)}</span>
+        ${selectedBook.condition ? `<span class="condition-badge">${escapeHtml(selectedBook.condition)}</span>` : ""}
         <h1>${escapeHtml(selectedBook.title)}</h1>
         <p class="detail-author">
           ${renderAuthorAvatar(selectedBook.author, selectedBook.authorImageUrl)}
-          <span>por ${escapeHtml(selectedBook.author)}</span>
+          <span>por ${escapeHtml(displayText(selectedBook.author))}</span>
         </p>
-        <p class="detail-description">${escapeHtml(selectedBook.description)}</p>
+        <p class="detail-description">${escapeHtml(selectedBook.description || "Sem descricao cadastrada.")}</p>
         <div class="detail-buy">
           <div>
-            <span class="price">${formatter.format(selectedBook.price)}</span>
+            <span class="price">${formatBookPrice(selectedBook)}</span>
             <p class="summary-note">Estoque: ${selectedBook.stock} ${selectedBook.stock === 1 ? "exemplar" : "exemplares"}</p>
           </div>
-          <button class="primary-button" type="button" data-add-cart="${selectedBook.id}">Adicionar ao carrinho</button>
+          <button class="primary-button" type="button" ${addButtonAttributes}>${canAddToCart(selectedBook) ? "Adicionar ao carrinho" : "Indisponivel"}</button>
         </div>
       </article>
       <div class="info-grid">
@@ -939,7 +935,7 @@ function renderDetail() {
         ${renderInfo("Editora", selectedBook.publisher)}
         ${renderInfo("Ano", selectedBook.year)}
         ${renderInfo("Idioma", selectedBook.language)}
-        ${renderInfo("Avaliacao", `${selectedBook.rating.toFixed(1)} estrelas`)}
+        ${renderInfo("Avaliacao", formatRating(selectedBook.rating))}
         ${renderInfo("Frete", selectedBook.freeShipping ? "Gratis" : "Calculado")}
         ${renderInfo("Paginas", `${selectedBook.pages}`)}
         ${renderInfo("Vendedor", selectedBook.seller)}
@@ -948,7 +944,7 @@ function renderDetail() {
       <article class="detail-main">
         <h2>Conservacao</h2>
         <ul class="detail-list">
-          ${selectedBook.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
+          ${(selectedBook.notes.length ? selectedBook.notes : ["Nenhuma observacao cadastrada."]).map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
         </ul>
       </article>
     </div>
@@ -993,7 +989,7 @@ function renderCart() {
     itemsElement.innerHTML = `
       <div class="empty-state">
         <h2>Itens indisponiveis</h2>
-        <p>${catalogLoadError ? "Nao foi possivel consultar os livros pela API conectada ao PostgreSQL." : "Os itens salvos no carrinho nao existem mais no banco."}</p>
+        <p>${catalogLoadError ? "Nao foi possivel consultar os livros." : "Os itens salvos no carrinho nao estao mais disponiveis."}</p>
       </div>
     `;
     summaryElement.innerHTML = `
@@ -1006,9 +1002,7 @@ function renderCart() {
 
   itemsElement.innerHTML = detailedItems.map(renderCartItem).join("");
 
-  const subtotal = detailedItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
-  const shippingPreview = subtotal > 0 ? 12.9 : 0;
-  const total = subtotal + shippingPreview;
+  const subtotal = detailedItems.reduce((sum, item) => sum + (item.book.price ?? 0) * item.quantity, 0);
 
   summaryElement.innerHTML = `
     <h2>Resumo</h2>
@@ -1016,16 +1010,8 @@ function renderCart() {
       <span>Subtotal</span>
       <strong>${formatter.format(subtotal)}</strong>
     </div>
-    <div class="summary-line">
-      <span>Frete estimado</span>
-      <strong>${formatter.format(shippingPreview)}</strong>
-    </div>
-    <div class="summary-total">
-      <span>Total</span>
-      <strong>${formatter.format(total)}</strong>
-    </div>
-    <p class="summary-note">Checkout, login, endereco e pagamento entram na etapa backend.</p>
-    <button class="primary-button" type="button" disabled>Finalizar depois</button>
+    <p class="summary-note">Frete e finalizacao dependem das proximas etapas do pedido.</p>
+    <button class="primary-button" type="button" disabled>Finalizacao indisponivel</button>
   `;
 }
 
@@ -1034,27 +1020,31 @@ function renderBooks(container, collection) {
 
   if (!collection.length) {
     const message = catalogLoadError
-      ? "Nao foi possivel carregar os livros pela API conectada ao PostgreSQL."
+      ? "Nao foi possivel carregar os livros."
       : books.length
         ? "Tente ajustar a busca ou limpar os filtros."
-        : "Nenhum livro foi encontrado no banco PostgreSQL.";
+        : "Nenhum livro foi encontrado no catalogo.";
 
-    container.innerHTML = `
-      <div class="empty-state">
-        <h3>Nenhum livro encontrado</h3>
-        <p>${message}</p>
-      </div>
-    `;
+    renderEmptyState(container, "Nenhum livro encontrado", message);
     return;
   }
 
   container.innerHTML = collection.map(renderBookCard).join("");
 }
 
+function renderEmptyState(container, title, message) {
+  container.innerHTML = `
+    <div class="empty-state">
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
 function renderBookCard(book) {
   const titleFilterUrl = catalogFilterUrl({ q: book.title });
   const shippingFilterUrl = book.freeShipping ? catalogFilterUrl({ frete: "gratis" }) : catalogFilterUrl({ q: book.title });
-  const ratingFilterUrl = catalogFilterUrl({ avaliacao: ratingFilterValue(book.rating) });
+  const tags = buildBookTags(book, shippingFilterUrl);
 
   return `
     <article class="book-card">
@@ -1067,28 +1057,43 @@ function renderBookCard(book) {
             <h3>${escapeHtml(book.title)}</h3>
             <p class="book-author-line">
               ${renderAuthorAvatar(book.author, book.authorImageUrl)}
-              <span>${escapeHtml(book.author)}</span>
+              <span>${escapeHtml(displayText(book.author))}</span>
             </p>
-            <p>${escapeHtml(book.short)}</p>
+            <p>${escapeHtml(book.short || "Sem descricao cadastrada.")}</p>
           </div>
         </a>
         <div class="book-price-row">
-          <span class="price">${formatter.format(book.price)}</span>
-          <span class="condition-badge">${escapeHtml(book.condition)}</span>
+          <span class="price">${formatBookPrice(book)}</span>
+          ${book.condition ? `<span class="condition-badge">${escapeHtml(book.condition)}</span>` : ""}
         </div>
-        <div class="book-tags" aria-label="Informacoes comerciais">
-          <a href="${catalogFilterUrl({ tipo: book.type })}" aria-label="Filtrar por tipo ${escapeHtml(book.type)}">${escapeHtml(book.type)}</a>
-          <a href="${shippingFilterUrl}" aria-label="${book.freeShipping ? "Filtrar por frete gratis" : `Filtrar catalogo por ${escapeHtml(book.title)}`}">${book.freeShipping ? "Frete gratis" : "Frete calculado"}</a>
-          <a href="${catalogFilterUrl({ idioma: book.language })}" aria-label="Filtrar por idioma ${escapeHtml(book.language)}">${escapeHtml(book.language)}</a>
-          <a href="${ratingFilterUrl}" aria-label="Filtrar por avaliacao minima">${book.rating.toFixed(1)} estrelas</a>
-        </div>
+        ${tags.length ? `<div class="book-tags" aria-label="Informacoes comerciais">${tags.join("")}</div>` : ""}
         <div class="book-actions">
           <a class="details-link" href="detalhes.html?id=${book.id}">Detalhes</a>
-          <button class="mini-button" type="button" data-add-cart="${book.id}">Adicionar</button>
+          <button class="mini-button" type="button" ${canAddToCart(book) ? `data-add-cart="${book.id}"` : "disabled"}>${canAddToCart(book) ? "Adicionar" : "Indisponivel"}</button>
         </div>
       </div>
     </article>
   `;
+}
+
+function buildBookTags(book, shippingFilterUrl) {
+  const tags = [];
+
+  if (book.type) {
+    tags.push(`<a href="${catalogFilterUrl({ tipo: book.type })}" aria-label="Filtrar por tipo ${escapeHtml(book.type)}">${escapeHtml(book.type)}</a>`);
+  }
+
+  tags.push(`<a href="${shippingFilterUrl}" aria-label="${book.freeShipping ? "Filtrar por frete gratis" : `Filtrar catalogo por ${escapeHtml(book.title)}`}">${book.freeShipping ? "Frete gratis" : "Frete calculado"}</a>`);
+
+  if (book.language) {
+    tags.push(`<a href="${catalogFilterUrl({ idioma: book.language })}" aria-label="Filtrar por idioma ${escapeHtml(book.language)}">${escapeHtml(book.language)}</a>`);
+  }
+
+  if (book.rating !== null) {
+    tags.push(`<a href="${catalogFilterUrl({ avaliacao: ratingFilterValue(book.rating) })}" aria-label="Filtrar por avaliacao minima">${formatRating(book.rating)}</a>`);
+  }
+
+  return tags;
 }
 
 function catalogFilterUrl(filters) {
@@ -1109,13 +1114,30 @@ function ratingFilterValue(rating) {
   return "4";
 }
 
+function displayText(value, fallback = "Nao informado") {
+  const text = String(value ?? "").trim();
+  return text || fallback;
+}
+
+function formatBookPrice(book) {
+  return book.price === null ? "Preco indisponivel" : formatter.format(book.price);
+}
+
+function formatRating(rating) {
+  return rating === null ? "" : `${rating.toFixed(1)} estrelas`;
+}
+
+function canAddToCart(book) {
+  return book.price !== null && book.stock > 0;
+}
+
 function renderCover(book) {
   return `
     <div class="book-cover ${book.cover}${book.imageUrl ? " book-cover-photo" : ""}" aria-hidden="true">
       ${book.imageUrl ? `<img src="${escapeAttribute(book.imageUrl)}" alt="" loading="lazy" onerror="this.parentElement.classList.remove('book-cover-photo'); this.remove()">` : ""}
       <span class="cover-category">${escapeHtml(book.category)}</span>
-      <strong>${escapeHtml(book.title)}</strong>
-      <small>${escapeHtml(book.author)}</small>
+      <strong>${escapeHtml(displayText(book.title, "Livro"))}</strong>
+      <small>${escapeHtml(displayText(book.author))}</small>
     </div>
   `;
 }
@@ -1130,6 +1152,7 @@ function renderAuthorAvatar(author, imageUrl) {
 
 function renderCartItem(item) {
   const { book, quantity } = item;
+  const total = book.price === null ? "Preco indisponivel" : formatter.format(book.price * quantity);
   return `
     <article class="cart-item">
       ${renderCover(book)}
@@ -1143,7 +1166,7 @@ function renderCartItem(item) {
         </div>
       </div>
       <div class="cart-item-total">
-        <strong>${formatter.format(book.price * quantity)}</strong>
+        <strong>${total}</strong>
         <button class="danger-button" type="button" data-remove-cart="${book.id}">Remover</button>
       </div>
     </article>
@@ -1154,7 +1177,7 @@ function renderInfo(label, value) {
   return `
     <div class="info-card">
       <span>${escapeHtml(label)}</span>
-      <strong>${escapeHtml(value)}</strong>
+      <strong>${escapeHtml(displayText(value))}</strong>
     </div>
   `;
 }
@@ -1175,12 +1198,24 @@ function uniqueValues(key) {
 function sortBooks(collection, sort) {
   const sorted = [...collection];
 
-  if (sort === "price-asc") return sorted.sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") return sorted.sort((a, b) => b.price - a.price);
+  if (sort === "price-asc") return sorted.sort((a, b) => comparePrice(a, b, "asc"));
+  if (sort === "price-desc") return sorted.sort((a, b) => comparePrice(a, b, "desc"));
   if (sort === "title") return sorted.sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
-  if (sort === "mais-vendidos") return sorted.sort((a, b) => b.sales - a.sales || b.rating - a.rating);
+  if (sort === "mais-vendidos") {
+    return sorted.sort((a, b) =>
+      Number(b.bestSeller) - Number(a.bestSeller)
+      || b.highlightScore - a.highlightScore
+      || (b.rating ?? 0) - (a.rating ?? 0));
+  }
 
   return sorted;
+}
+
+function comparePrice(a, b, direction) {
+  if (a.price === null && b.price === null) return 0;
+  if (a.price === null) return 1;
+  if (b.price === null) return -1;
+  return direction === "asc" ? a.price - b.price : b.price - a.price;
 }
 
 function updateResultsCount(total) {

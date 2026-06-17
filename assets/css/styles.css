@@ -114,10 +114,6 @@
   background: var(--surface-muted);
 }
 
-[data-theme="dark"] .box-visual.box-visual-photo {
-  background: var(--surface-muted);
-}
-
 [data-theme="dark"] .book-cover-photo {
   background: var(--surface-muted);
 }
@@ -1441,13 +1437,13 @@ h3 {
   background: radial-gradient(circle at 35% 25%, #ffd47f, #b65f45 52%, #793f56);
 }
 
-.box-grid {
+.offer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 18px;
 }
 
-.box-card {
+.offer-card {
   display: grid;
   gap: 12px;
   padding: 18px;
@@ -1457,93 +1453,15 @@ h3 {
   box-shadow: 0 12px 30px rgba(36, 50, 47, 0.08);
 }
 
-.box-visual {
-  position: relative;
-  display: flex;
-  align-items: end;
-  gap: 5px;
-  min-height: 185px;
-  height: 185px;
-  padding: 18px 18px 16px;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.box-visual:not(.box-visual-photo)::after {
-  content: "BOX";
-  position: absolute;
-  right: 18px;
-  top: 16px;
-  color: rgba(255, 255, 255, 0.82);
-  font-family: Lora, Georgia, serif;
-  font-size: 1.4rem;
-  font-weight: 900;
-}
-
-.box-visual i {
-  display: block;
-  width: 28%;
-  min-height: 120px;
-  border-radius: 4px 4px 2px 2px;
-  background: rgba(255, 255, 255, 0.28);
-  box-shadow: inset -8px 0 rgba(0, 0, 0, 0.16);
-}
-
-.box-visual i:nth-child(2) {
-  min-height: 145px;
-}
-
-.box-visual i:nth-child(3) {
-  min-height: 132px;
-}
-
-.box-visual.box-visual-photo {
-  align-items: center;
-  justify-content: center;
-  padding: 14px;
-  background: #fff;
-}
-
-.box-visual-photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.box-visual-photo i {
-  display: none;
-}
-
-.box-wine {
-  background: linear-gradient(135deg, #793f56, #d38a56);
-}
-
-.box-teal {
-  background: linear-gradient(135deg, #164c4a, #43c2b5);
-}
-
-.box-gold {
-  background: linear-gradient(135deg, #9b6a1f, #d4a33d);
-}
-
-.box-blue {
-  background: linear-gradient(135deg, #425f7b, #9bb8ca);
-}
-
-.box-sage {
-  background: linear-gradient(135deg, #345542, #9caf88);
-}
-
-.box-card strong {
+.offer-card strong {
   font-size: 1.05rem;
 }
 
-.box-card small {
+.offer-card small {
   color: var(--muted);
 }
 
-.box-card b {
+.offer-card b {
   color: var(--teal-dark);
   font-size: 1.08rem;
 }
@@ -2375,7 +2293,7 @@ h3 {
   .catalog-grid,
   .category-grid,
   .promo-actions,
-  .box-grid {
+  .offer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2502,7 +2420,7 @@ h3 {
   .catalog-grid,
   .category-grid,
   .promo-actions,
-  .box-grid,
+  .offer-grid,
   .info-grid {
     grid-template-columns: 1fr;
   }
