@@ -1,14 +1,26 @@
 # Sebo Digital
 
-Sebo Digital is a second-hand bookstore marketplace prototype focused on book discovery, curated listings, advanced filters, and a simple purchase-intent flow.
+Sebo Digital is a second-hand bookstore marketplace focused on book discovery, curated listings, advanced filters, and a simple purchase-intent flow.
 
-The project presents the first version of a virtual used-book store, with a warm bookstore-inspired interface and a catalog experience designed for browsing, comparing, and finding books by different criteria.
+The project presents a virtual used-book store, with a warm bookstore-inspired interface and a catalog experience designed for browsing, comparing, and finding books by different criteria.
+
+## Live Demo
+
+- Frontend: https://sebo-digital-site.vercel.app
+- Backend API: https://sebo-digital-site-production.up.railway.app
+- Public catalog endpoint: https://sebo-digital-site-production.up.railway.app/api/livros
+
+Production currently runs with:
+
+- Vercel for the static frontend
+- Railway for the Spring Boot API
+- Neon PostgreSQL for persistence
 
 ## Highlights
 
 - Responsive storefront for a virtual second-hand bookstore
 - Home page with search, featured books, categories, and reading suggestions
-- Home discovery areas for best sellers, authors, classics, literary universes, and box sets
+- Home discovery areas derived from API categories, authors, highlights, and offers
 - Marketplace-style navigation with a catalog mega menu
 - Account access area with lists, orders, and profile shortcuts
 - Book listing page with advanced filters
@@ -64,15 +76,15 @@ carrinho.html
 
 ## Image Strategy
 
-For the future full-stack version, the recommended approach is to store image files locally and save only their paths and metadata in the database.
+The catalog stores cover image URLs with each book record. If the project later needs file uploads, the recommended approach is to store image files locally or in object storage and save only their paths and metadata in the database.
 
-This keeps the project simple, easier to understand, and more suitable for a demonstrative bookstore system. The same structure can later evolve to an external storage provider if needed.
+This keeps the project simple and lets the same structure evolve to an external storage provider if needed.
 
 More details are available in `docs/estrategia-imagens.md`.
 
 ## Book Copy Modeling
 
-The future database model should separate the book record from its sellable copies. A single book can have multiple offers, grouped as new and used copies.
+The database model separates the book record from its sellable copies. A single book can have multiple offers, grouped as new and used copies.
 
 More details are available in `docs/modelagem-livros.md`.
 
@@ -204,10 +216,22 @@ The frontend reads the API from `http://localhost:8080` by default. If the backe
 
 The frontend can be deployed to Vercel as a static site from the project root. The backend Spring Boot API must be hosted separately with the Neon environment variables configured there.
 
+Production frontend:
+
+```text
+https://sebo-digital-site.vercel.app
+```
+
+Production backend:
+
+```text
+https://sebo-digital-site-production.up.railway.app
+```
+
 In the Vercel project, set this environment variable:
 
 ```text
-SEBO_API_URL=https://sua-api-publica.example.com
+SEBO_API_URL=https://sebo-digital-site-production.up.railway.app
 ```
 
 Use the public URL of the Spring Boot API without a trailing slash. The frontend reads this value from `/api/config` at runtime, so the same static files work locally and in production.
@@ -215,15 +239,15 @@ Use the public URL of the Spring Boot API without a trailing slash. The frontend
 After Vercel creates the production domain, configure the backend with:
 
 ```text
-APP_FRONTEND_LOGIN_URL=https://seu-projeto.vercel.app/login.html
-APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS=https://seu-projeto.vercel.app
+APP_FRONTEND_LOGIN_URL=https://sebo-digital-site.vercel.app/login.html
+APP_FRONTEND_ALLOWED_REDIRECT_ORIGINS=https://sebo-digital-site.vercel.app
 ```
 
 If social login is enabled, keep the provider callback URLs pointing to the backend API, for example:
 
 ```text
-Google:   https://sua-api-publica.example.com/login/oauth2/code/google
-Facebook: https://sua-api-publica.example.com/login/oauth2/code/facebook
+Google:   https://sebo-digital-site-production.up.railway.app/login/oauth2/code/google
+Facebook: https://sebo-digital-site-production.up.railway.app/login/oauth2/code/facebook
 ```
 
 ## Future Roadmap
