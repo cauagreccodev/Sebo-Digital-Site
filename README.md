@@ -262,6 +262,12 @@ Facebook: https://sebo-digital-site-production.up.railway.app/login/oauth2/code/
 
 Current tagged version:
 
+`v0.7` - Production deployment with Vercel, Railway, and Neon, removal of hardcoded catalog data, and improved mobile navigation and touch carousels
+
+`v0.6` - Neon PostgreSQL configuration and Vercel runtime deployment setup
+
+`v0.5` - PostgreSQL persistence for social authentication and removal of demo seed data
+
 `v0.4` - Social login with Google/Facebook, original provider logos, and post-login redirect to the home page
 
 `v0.2` - Backend authentication, frontend API integration, and books API
