@@ -275,13 +275,15 @@ https://sebo-digital-site-production.up.railway.app/api/auth/oauth2/providers
 
 - Book registration and management area
 - Cover image upload
-- Persistent cart and checkout flow
 - Seller/bookstore profiles
-- Orders and payment flow
+- Integration with a real payment provider
+- Carrier integration for automatic tracking updates
 
 ## Version
 
 Current tagged version:
+
+`v0.8` - Purchase-focused navigation, functional checkout, persisted orders, purchase history, stock control, and delivery tracking
 
 `v0.7` - Production deployment with Vercel, Railway, and Neon, removal of hardcoded catalog data, and improved mobile navigation and touch carousels
 
