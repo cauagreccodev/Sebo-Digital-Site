@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupSearchForms();
   setupCartEvents();
   await loadRuntimeConfig();
-  setupAuthPage();
+  await setupAuthPage();
   showPendingAuthMessage();
   updateCartBadge();
   await loadBooksFromApi();
@@ -149,9 +149,9 @@ function setupAccountMenu(accountMenu, accountTrigger) {
   });
 }
 
-function setupAuthPage() {
+async function setupAuthPage() {
   handleOAuthRedirect();
-  setupSocialLoginButtons();
+  await setupSocialLoginButtons();
 
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -205,28 +205,48 @@ function setupAuthPage() {
   }
 }
 
-function setupSocialLoginButtons() {
-  document.querySelectorAll("[data-oauth-provider]").forEach((button) => {
+async function setupSocialLoginButtons() {
+  const buttons = [...document.querySelectorAll("[data-oauth-provider]")];
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+  });
+
+  let providers;
+  try {
+    providers = await apiRequest("/api/auth/oauth2/providers");
+  } catch (error) {
+    buttons.forEach((button) => {
+      button.title = "Login social indisponivel no momento";
+      button.removeAttribute("aria-busy");
+    });
+    return;
+  }
+
+  buttons.forEach((button) => {
+    const provider = button.dataset.oauthProvider;
+    const available = providers?.[provider] === true;
+    button.disabled = !available;
+    button.removeAttribute("aria-busy");
+    button.title = available
+      ? ""
+      : `Login com ${provider === "google" ? "Google" : "Facebook"} ainda nao configurado`;
+
     button.addEventListener("click", async () => {
-      const provider = button.dataset.oauthProvider;
       const redirectUri = getOAuthRedirectUri();
       const loginUrl = new URL(`${apiBaseUrl}/api/auth/oauth2/${provider}`);
       loginUrl.searchParams.set("redirect_uri", redirectUri);
 
       button.disabled = true;
-      try {
-        await ensureApiAvailable();
-        window.location.href = loginUrl.toString();
-      } catch (error) {
-        showToast(error.message || apiUnavailableMessage());
-        button.disabled = false;
-      }
+      window.location.assign(loginUrl.toString());
     });
   });
 }
 
 function handleOAuthRedirect() {
-  const params = new URLSearchParams(window.location.search);
+  const params = oauthRedirectParams();
   const oauthStatus = params.get("oauth");
   if (!oauthStatus) return;
 
@@ -254,6 +274,16 @@ function handleOAuthRedirect() {
     showToast(params.get("mensagem") || "Nao foi possivel entrar com a conta social.");
     cleanOAuthUrl();
   }
+}
+
+function oauthRedirectParams() {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has("oauth")) return searchParams;
+
+  const fragment = window.location.hash.startsWith("#")
+    ? window.location.hash.slice(1)
+    : window.location.hash;
+  return new URLSearchParams(fragment);
 }
 
 function completeAuthentication(auth, message) {
@@ -322,19 +352,22 @@ function getOAuthRedirectUri() {
 }
 
 function cleanOAuthUrl() {
-  const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash}`;
-  window.history.replaceState({}, document.title, cleanUrl);
-}
-
-async function ensureApiAvailable() {
-  try {
-    const response = await fetch(`${apiBaseUrl}/api/livros`, {
-      headers: { Accept: "application/json" }
-    });
-    if (!response.ok) throw new Error();
-  } catch (error) {
-    throw new Error(apiUnavailableMessage());
-  }
+  const url = new URL(window.location.href);
+  [
+    "oauth",
+    "token",
+    "tipo",
+    "expiraEm",
+    "usuarioId",
+    "nome",
+    "email",
+    "role",
+    "authProvider",
+    "fotoUrl",
+    "mensagem"
+  ].forEach((parameter) => url.searchParams.delete(parameter));
+  url.hash = "";
+  window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
 }
 
 async function loadBooksFromApi() {

@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 @Component
 public class OAuth2RedirectResolver {
@@ -21,11 +25,13 @@ public class OAuth2RedirectResolver {
 
     private final String fallbackLoginUrl;
     private final List<String> allowedOrigins;
+    private final boolean secureCookie;
 
     public OAuth2RedirectResolver(
             @Value("${app.frontend.login-url:http://localhost:5500/login.html}") String fallbackLoginUrl,
             @Value("${app.frontend.allowed-redirect-origins:http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://127.0.0.1:3000}") String allowedOrigins) {
         this.fallbackLoginUrl = fallbackLoginUrl;
+        this.secureCookie = "https".equalsIgnoreCase(URI.create(fallbackLoginUrl).getScheme());
         this.allowedOrigins = new ArrayList<>(Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(StringUtils::hasText)
@@ -55,6 +61,7 @@ public class OAuth2RedirectResolver {
         return ResponseCookie.from(COOKIE_NAME, encode(sanitize(redirectUri)))
                 .path("/")
                 .httpOnly(true)
+                .secure(secureCookie)
                 .sameSite("Lax")
                 .maxAge(Duration.ofMinutes(10))
                 .build();
@@ -64,6 +71,7 @@ public class OAuth2RedirectResolver {
         return ResponseCookie.from(COOKIE_NAME, "")
                 .path("/")
                 .httpOnly(true)
+                .secure(secureCookie)
                 .sameSite("Lax")
                 .maxAge(Duration.ZERO)
                 .build();
@@ -87,6 +95,19 @@ public class OAuth2RedirectResolver {
         return fallbackLoginUrl;
     }
 
+    public String withFragment(String redirectUri, Map<String, ?> parameters) {
+        String baseUrl = UriComponentsBuilder.fromUriString(sanitize(redirectUri))
+                .fragment(null)
+                .build()
+                .toUriString();
+        String fragment = parameters.entrySet().stream()
+                .map(entry -> encodeFragmentValue(entry.getKey())
+                        + "="
+                        + encodeFragmentValue(entry.getValue()))
+                .collect(Collectors.joining("&"));
+        return baseUrl + "#" + fragment;
+    }
+
     private String originOf(URI uri) {
         if (!StringUtils.hasText(uri.getScheme()) || !StringUtils.hasText(uri.getHost())) {
             return "";
@@ -108,5 +129,9 @@ public class OAuth2RedirectResolver {
         } catch (IllegalArgumentException ignored) {
             return fallbackLoginUrl;
         }
+    }
+
+    private String encodeFragmentValue(Object value) {
+        return UriUtils.encodeQueryParam(value == null ? "" : value.toString(), StandardCharsets.UTF_8);
     }
 }

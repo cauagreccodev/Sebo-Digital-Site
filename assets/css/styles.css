@@ -2157,6 +2157,13 @@ h3 {
   color: var(--teal);
 }
 
+.social-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
 .social-logo {
   flex: 0 0 24px;
   width: 24px;

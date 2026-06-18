@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -15,7 +16,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -52,20 +52,20 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             String fotoUrl = resolvePicture(principal);
             AuthResponse auth = authService.loginOAuth(registrationId, providerId, email, nome, fotoUrl);
             UsuarioResponse usuario = auth.usuario();
-            String redirectUrl = UriComponentsBuilder.fromUriString(redirectResolver.resolve(request))
-                    .queryParam("oauth", "success")
-                    .queryParam("token", auth.token())
-                    .queryParam("tipo", auth.tipo())
-                    .queryParam("expiraEm", auth.expiraEm())
-                    .queryParam("usuarioId", usuario.id())
-                    .queryParam("nome", usuario.nome())
-                    .queryParam("email", usuario.email())
-                    .queryParam("role", usuario.role())
-                    .queryParam("authProvider", usuario.authProvider())
-                    .queryParam("fotoUrl", usuario.fotoUrl())
-                    .build()
-                    .encode()
-                    .toUriString();
+            Map<String, Object> parameters = new LinkedHashMap<>();
+            parameters.put("oauth", "success");
+            parameters.put("token", auth.token());
+            parameters.put("tipo", auth.tipo());
+            parameters.put("expiraEm", auth.expiraEm());
+            parameters.put("usuarioId", usuario.id());
+            parameters.put("nome", usuario.nome());
+            parameters.put("email", usuario.email());
+            parameters.put("role", usuario.role());
+            parameters.put("authProvider", usuario.authProvider());
+            parameters.put("fotoUrl", usuario.fotoUrl());
+            String redirectUrl = redirectResolver.withFragment(
+                    redirectResolver.resolve(request),
+                    parameters);
 
             response.addHeader(HttpHeaders.SET_COOKIE, redirectResolver.expireCookie().toString());
             response.sendRedirect(redirectUrl);
@@ -78,12 +78,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             HttpServletRequest request,
             HttpServletResponse response,
             String message) throws IOException {
-        String redirectUrl = UriComponentsBuilder.fromUriString(redirectResolver.resolve(request))
-                .queryParam("oauth", "erro")
-                .queryParam("mensagem", message)
-                .build()
-                .encode()
-                .toUriString();
+        String redirectUrl = redirectResolver.withFragment(
+                redirectResolver.resolve(request),
+                Map.of(
+                        "oauth", "erro",
+                        "mensagem", message == null ? "Nao foi possivel concluir o login social" : message));
 
         response.addHeader(HttpHeaders.SET_COOKIE, redirectResolver.expireCookie().toString());
         response.sendRedirect(redirectUrl);

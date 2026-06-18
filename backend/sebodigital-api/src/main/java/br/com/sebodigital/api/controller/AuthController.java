@@ -8,6 +8,7 @@ import br.com.sebodigital.api.dto.auth.UsuarioResponse;
 import br.com.sebodigital.api.service.AuthService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpHeaders;
@@ -85,6 +86,13 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/oauth2/providers")
+    public Map<String, Boolean> provedoresOAuth() {
+        return Map.of(
+                "google", provedorConfigurado("google"),
+                "facebook", provedorConfigurado("facebook"));
+    }
+
     @GetMapping("/me")
     public UsuarioResponse me(Authentication authentication) {
         return authService.buscarPorEmail(authentication.getName());
@@ -115,5 +123,10 @@ public class AuthController {
         }
 
         return null;
+    }
+
+    private boolean provedorConfigurado(String provider) {
+        ClientRegistrationRepository repository = clientRegistrationRepository.getIfAvailable();
+        return repository != null && repository.findByRegistrationId(provider) != null;
     }
 }
