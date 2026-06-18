@@ -135,7 +135,8 @@ function setupAccountMenu(accountMenu, accountTrigger) {
   });
 
   accountTrigger.addEventListener("click", (event) => {
-    if (!isCompactHeader()) return;
+    const isLoggedIn = accountTrigger.dataset.authenticated === "true";
+    if (!isLoggedIn && !isCompactHeader()) return;
     event.preventDefault();
     setAccountState(!accountMenu.classList.contains("is-account-open"));
   });
@@ -143,14 +144,19 @@ function setupAccountMenu(accountMenu, accountTrigger) {
   accountMenu.addEventListener("click", (event) => {
     const logoutButton = event.target.closest("[data-logout]");
     if (!logoutButton) return;
-    localStorage.removeItem(authTokenKey);
-    showToast("Voce saiu da sua conta.");
-    window.setTimeout(() => window.location.assign("index.html"), 500);
+    logout();
   });
 }
 
 async function setupAuthPage() {
   handleOAuthRedirect();
+
+  const auth = getStoredAuth();
+  if (page === "login" && auth) {
+    showAuthenticatedAccount(auth);
+    return;
+  }
+
   await setupSocialLoginButtons();
 
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
@@ -203,6 +209,57 @@ async function setupAuthPage() {
       }
     });
   }
+}
+
+function showAuthenticatedAccount(auth) {
+  document.querySelectorAll("[data-auth-guest]").forEach((element) => {
+    element.hidden = true;
+  });
+
+  const accountSection = document.querySelector("[data-auth-account]");
+  if (!accountSection) return;
+
+  const usuario = auth.usuario;
+  const name = String(usuario.nome || "Usuario").trim() || "Usuario";
+  const initials = name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
+
+  accountSection.hidden = false;
+  accountSection.querySelector("[data-account-name]").textContent = name;
+  accountSection.querySelector("[data-account-email]").textContent = usuario.email || "";
+  accountSection.querySelector("[data-account-initials]").textContent = initials || "SD";
+  accountSection.querySelector("[data-account-provider]").textContent =
+    authProviderLabel(usuario.authProvider);
+
+  const photo = accountSection.querySelector("[data-account-photo]");
+  if (usuario.fotoUrl) {
+    photo.src = usuario.fotoUrl;
+    photo.hidden = false;
+    photo.addEventListener("error", () => {
+      photo.hidden = true;
+    }, { once: true });
+  }
+
+  accountSection.querySelector("[data-logout]").addEventListener("click", logout);
+  document.title = "Minha conta | Sebo Digital";
+}
+
+function authProviderLabel(provider) {
+  const normalizedProvider = String(provider || "LOCAL").toUpperCase();
+  if (normalizedProvider === "GOOGLE") return "Google";
+  if (normalizedProvider === "FACEBOOK") return "Facebook";
+  return "E-mail e senha";
+}
+
+function logout() {
+  localStorage.removeItem(authTokenKey);
+  sessionStorage.removeItem(authMessageKey);
+  showToast("Voce saiu da sua conta.");
+  window.setTimeout(() => window.location.assign("index.html"), 500);
 }
 
 async function setupSocialLoginButtons() {
@@ -318,6 +375,7 @@ function applyLoggedInAccountState(accountMenu, accountTrigger) {
   const firstName = String(auth.usuario.nome || "Conta").trim().split(" ")[0];
   accountTrigger.textContent = `Ola, ${firstName}`;
   accountTrigger.href = "login.html?next=conta";
+  accountTrigger.dataset.authenticated = "true";
 
   const dropdown = accountMenu.querySelector(".account-dropdown");
   if (!dropdown) return;
@@ -332,7 +390,16 @@ function applyLoggedInAccountState(accountMenu, accountTrigger) {
 
 function getStoredAuth() {
   try {
-    return JSON.parse(localStorage.getItem(authTokenKey));
+    const auth = JSON.parse(localStorage.getItem(authTokenKey));
+    if (!auth?.token || !auth.usuario) return null;
+
+    const expiration = Date.parse(auth.expiraEm);
+    if (Number.isFinite(expiration) && expiration <= Date.now()) {
+      localStorage.removeItem(authTokenKey);
+      return null;
+    }
+
+    return auth;
   } catch (error) {
     return null;
   }

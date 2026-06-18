@@ -448,6 +448,10 @@ button {
   color: var(--teal);
 }
 
+.account-dropdown [data-logout] {
+  color: var(--clay);
+}
+
 .cart-link {
   display: inline-flex;
   align-items: center;
@@ -2112,6 +2116,108 @@ h3 {
   color: var(--muted);
 }
 
+.auth-account {
+  display: grid;
+  place-items: center;
+}
+
+.auth-account[hidden],
+[data-auth-guest][hidden] {
+  display: none;
+}
+
+.auth-account-card {
+  display: grid;
+  gap: 28px;
+  width: min(100%, 680px);
+  padding: clamp(24px, 5vw, 44px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.auth-account-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.auth-account-profile h1 {
+  margin: 4px 0 6px;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.auth-account-profile p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.auth-account-avatar {
+  display: grid;
+  flex: 0 0 82px;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-family: "Lora", serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.auth-account-avatar img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-account-avatar span {
+  grid-area: 1 / 1;
+}
+
+.auth-account-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.auth-account-details div {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
+.auth-account-details dt {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.auth-account-details dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.auth-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.auth-account-actions .primary-button,
+.auth-account-actions .danger-button {
+  flex: 1 1 220px;
+}
+
 .social-login {
   display: grid;
   justify-items: center;
@@ -2604,6 +2710,14 @@ h3 {
 
   .auth-page {
     padding: 32px 0 44px;
+  }
+
+  .auth-account-profile {
+    align-items: flex-start;
+  }
+
+  .auth-account-details {
+    grid-template-columns: 1fr;
   }
 
   .social-actions,

@@ -38,7 +38,7 @@
   </header>
 
   <main class="auth-page">
-    <section class="auth-layout shell" aria-label="Entrar ou criar conta">
+    <section class="auth-layout shell" aria-label="Entrar ou criar conta" data-auth-guest>
       <form class="auth-panel" id="login-form">
         <div class="auth-copy">
           <p class="eyebrow">Ja sou cliente</p>
@@ -96,7 +96,7 @@
       </form>
     </section>
 
-    <section class="social-login shell" aria-label="Acesso com redes sociais">
+    <section class="social-login shell" aria-label="Acesso com redes sociais" data-auth-guest>
       <p>Acesse sua conta Sebo Digital usando uma opcao rapida.</p>
       <div class="social-actions">
         <button class="social-button facebook-button" type="button" data-oauth-provider="facebook" disabled>
@@ -109,6 +109,38 @@
         </button>
       </div>
       <a href="login.html?ajuda=true">Preciso de ajuda</a>
+    </section>
+
+    <section class="auth-account shell" aria-label="Minha conta" data-auth-account hidden>
+      <div class="auth-account-card">
+        <div class="auth-account-profile">
+          <div class="auth-account-avatar" aria-hidden="true">
+            <img data-account-photo alt="" hidden>
+            <span data-account-initials>SD</span>
+          </div>
+          <div>
+            <p class="eyebrow">Conta conectada</p>
+            <h1 data-account-name>Minha conta</h1>
+            <p data-account-email></p>
+          </div>
+        </div>
+
+        <dl class="auth-account-details">
+          <div>
+            <dt>Status</dt>
+            <dd>Logado</dd>
+          </div>
+          <div>
+            <dt>Forma de acesso</dt>
+            <dd data-account-provider></dd>
+          </div>
+        </dl>
+
+        <div class="auth-account-actions">
+          <a class="primary-button" href="livros.html">Continuar comprando</a>
+          <button class="danger-button" type="button" data-logout>Sair da conta</button>
+        </div>
+      </div>
     </section>
   </main>
 
