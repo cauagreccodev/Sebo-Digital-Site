@@ -159,6 +159,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background: var(--paper);
   color: var(--ink);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -2462,19 +2463,24 @@ h3 {
   }
 
   .site-header {
-    position: static;
-    backdrop-filter: none;
+    position: sticky;
+    backdrop-filter: blur(14px);
   }
 
   .top-strip {
     justify-content: center;
-    min-height: 30px;
-    padding: 5px 12px;
+    min-height: 28px;
+    padding: 4px 12px;
     overflow: hidden;
-    font-size: 0.72rem;
-    line-height: 1.25;
+    font-size: 0.68rem;
+    line-height: 1.2;
     text-align: center;
-    white-space: normal;
+    white-space: nowrap;
+  }
+
+  .top-strip span {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .top-strip a {
@@ -2485,7 +2491,7 @@ h3 {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
     min-height: 0;
-    padding: 12px 0;
+    padding: 10px 0;
   }
 
   .brand {
@@ -2505,7 +2511,7 @@ h3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
-    gap: 8px;
+    gap: 6px;
   }
 
   .header-search {
@@ -2514,19 +2520,58 @@ h3 {
     order: initial;
   }
 
+  body[data-page="home"] .header-search {
+    display: none;
+  }
+
   .site-nav.is-open {
-    position: static;
-    max-height: none;
-    overflow: visible;
+    position: absolute;
+    inset: 100% 0 auto;
+    max-height: calc(100dvh - 196px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 18px 34px rgba(13, 25, 23, 0.3);
+  }
+
+  body[data-page="home"] .site-nav.is-open {
+    max-height: calc(100dvh - 140px);
   }
 
   .brand-mark {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
   }
 
   .brand strong {
-    font-size: 1.08rem;
+    font-size: 1.05rem;
+  }
+
+  .brand small {
+    font-size: 0.7rem;
+  }
+
+  .menu-toggle {
+    width: 42px;
+    height: 42px;
+    padding: 9px;
+  }
+
+  .menu-toggle span {
+    transform-origin: center;
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .cart-link {
@@ -2541,6 +2586,12 @@ h3 {
 
   .wishlist-link {
     display: none;
+  }
+
+  .account-trigger,
+  .cart-link,
+  .theme-trigger {
+    min-height: 40px;
   }
 
   .account-trigger {
@@ -2567,29 +2618,73 @@ h3 {
   }
 
   .home-hero {
-    min-height: 500px;
+    min-height: min(590px, calc(100svh - 130px));
+    align-items: center;
+  }
+
+  .hero-media {
+    background-position: 58% center;
+  }
+
+  .home-hero::after {
+    background:
+      linear-gradient(90deg, rgba(20, 31, 29, 0.9), rgba(20, 31, 29, 0.62) 72%, rgba(20, 31, 29, 0.35)),
+      linear-gradient(0deg, rgba(20, 31, 29, 0.48), transparent 42%);
   }
 
   .hero-content {
-    padding: 48px 0 64px;
+    padding: 42px 0 52px;
   }
 
   .hero-content h1 {
-    font-size: 2.35rem;
+    max-width: 12ch;
+    font-size: clamp(2rem, 9.5vw, 2.75rem);
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+
+  .hero-copy {
+    margin: 18px 0 22px;
+    font-size: 0.98rem;
+    line-height: 1.55;
   }
 
   .hero-search,
   .header-search {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .hero-search button,
   .header-search button {
     border-radius: 0;
+    padding-inline: 14px;
+  }
+
+  .hero-search input,
+  .header-search input {
+    min-width: 0;
+    padding-inline: 13px;
+    font-size: 0.92rem;
+  }
+
+  .hero-quick-links {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .hero-quick-links a {
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
   }
 
   .content-section {
     padding: 42px 0;
+  }
+
+  .section-heading h2,
+  .page-title h1 {
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
   }
 
   .book-grid,
@@ -2736,16 +2831,16 @@ h3 {
   }
 
   .header-actions {
-    gap: 8px;
+    gap: 5px;
   }
 
   .account-trigger {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .cart-link,
   .theme-trigger {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .cart-link {
@@ -2759,7 +2854,24 @@ h3 {
   }
 
   .hero-content h1 {
-    font-size: 2.05rem;
+    font-size: clamp(1.9rem, 9.5vw, 2.25rem);
+  }
+
+  .hero-search button,
+  .header-search button {
+    padding-inline: 11px;
+    font-size: 0.86rem;
+  }
+
+  .hero-search input,
+  .header-search input {
+    padding-inline: 11px;
+    font-size: 0.86rem;
+  }
+
+  .hero-search input::placeholder,
+  .header-search input::placeholder {
+    font-size: 0.82rem;
   }
 
   .reading-note,

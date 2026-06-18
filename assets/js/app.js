@@ -70,6 +70,7 @@ function setupNavigation() {
     const isOpen = nav.classList.toggle("is-open");
     document.body.classList.toggle("nav-open", isOpen);
     toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
     if (!isOpen && catalogMenu) setCatalogState(false);
   });
 
@@ -82,6 +83,29 @@ function setupNavigation() {
     catalogMenu.classList.toggle("is-catalog-open", isOpen);
     catalogTrigger.setAttribute("aria-expanded", String(isOpen));
   };
+  const closeNavigation = () => {
+    nav.classList.remove("is-open");
+    document.body.classList.remove("nav-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Abrir menu");
+    setCatalogState(false);
+  };
+
+  nav.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
+    if (link && link !== catalogTrigger) closeNavigation();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && nav.classList.contains("is-open")) {
+      closeNavigation();
+      toggle.focus();
+    }
+  });
+
+  window.matchMedia("(min-width: 981px)").addEventListener("change", (event) => {
+    if (event.matches) closeNavigation();
+  });
 
   catalogMenu.addEventListener("mouseenter", () => {
     if (!isMobileNav()) setCatalogState(true);
