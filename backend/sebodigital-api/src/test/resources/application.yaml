@@ -12,6 +12,8 @@ spring:
     show-sql: false
 
 app:
+  demo:
+    enabled: false
   security:
     jwt-secret: sebo-digital-test-secret-key-change-in-production-123456
     jwt-expiration-minutes: 120

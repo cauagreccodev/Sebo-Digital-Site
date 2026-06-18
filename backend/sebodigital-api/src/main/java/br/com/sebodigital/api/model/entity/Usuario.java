@@ -42,6 +42,27 @@ public class Usuario {
     @Column(name = "foto_url", length = 600)
     private String fotoUrl;
 
+    @Column(name = "telefone", length = 24)
+    private String telefone;
+
+    @Column(name = "endereco_principal", length = 240)
+    private String enderecoPrincipal;
+
+    @Column(name = "complemento", length = 120)
+    private String complemento;
+
+    @Column(name = "bairro", length = 120)
+    private String bairro;
+
+    @Column(name = "cidade", length = 120)
+    private String cidade;
+
+    @Column(name = "estado", length = 2)
+    private String estado;
+
+    @Column(name = "cep", length = 9)
+    private String cep;
+
     public Long getId() {
         return id;
     }
@@ -104,5 +125,61 @@ public class Usuario {
 
     public void setFotoUrl(String fotoUrl) {
         this.fotoUrl = fotoUrl;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getEnderecoPrincipal() {
+        return enderecoPrincipal;
+    }
+
+    public void setEnderecoPrincipal(String enderecoPrincipal) {
+        this.enderecoPrincipal = enderecoPrincipal;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 }

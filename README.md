@@ -20,6 +20,29 @@ The Railway service uses `backend/sebodigital-api/railway.toml` and the stable
 artifact name `target/sebodigital-api.jar`, so application version changes do
 not break the production start command.
 
+## Demo account
+
+Use the regular e-mail/password login flow to explore the marketplace with
+pre-filled data:
+
+- E-mail: [guest@exemplo.com](mailto:guest@exemplo.com)
+- Password: `guest123`
+
+This account exists only for testing. It includes a fictitious main delivery
+address, contact information, completed purchases, active orders covering every
+delivery stage, purchase history, delivery estimates, tracking codes, and a
+sample cart prepared on the first demo login when the browser cart is empty.
+
+The login page also provides an **Entrar com a conta demo** shortcut that uses
+the same backend authentication endpoint as the regular login form.
+
+The demo data is created idempotently during backend startup and can be
+disabled with:
+
+```text
+DEMO_ACCOUNT_ENABLED=false
+```
+
 ## Highlights
 
 - Responsive storefront for a virtual second-hand bookstore
@@ -62,6 +85,7 @@ The catalog currently supports filtering by:
 - `detalhes.html?id=1` - book detail page
 - `carrinho.html` - cart, delivery details, and checkout
 - `login.html` - login and account creation screen
+- `conta.html` - main delivery address and customer shortcuts
 - `compras.html` - purchase history and order tracking
 
 ## Project Structure
@@ -106,7 +130,10 @@ The backend lives in `backend/sebodigital-api` and includes:
 - Sellers, publishers, stock, prices, highlights, and cover image URLs
 - PostgreSQL-only persistence for users, books, offers, orders, and order items
 
-The API no longer creates demo users or demo books at startup. Users must be created through the registration flow/API, and books/offers must be persisted in PostgreSQL through the backend endpoints.
+The API does not create demo books at startup. Books and offers must be
+persisted in PostgreSQL through the backend endpoints. It creates only the
+documented guest account and its fictitious order history to support portfolio
+evaluation.
 
 ### Production database
 

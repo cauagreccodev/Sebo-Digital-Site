@@ -83,8 +83,12 @@ public class Pedido {
     @PrePersist
     void prePersist() {
         Instant agora = Instant.now();
-        criadoEm = agora;
-        atualizadoEm = agora;
+        if (criadoEm == null) {
+            criadoEm = agora;
+        }
+        if (atualizadoEm == null) {
+            atualizadoEm = agora;
+        }
     }
 
     @PreUpdate
@@ -209,8 +213,16 @@ public class Pedido {
         return criadoEm;
     }
 
+    public void setCriadoEm(Instant criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
     public Instant getAtualizadoEm() {
         return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(Instant atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
     }
 
     public List<ItemPedido> getItens() {

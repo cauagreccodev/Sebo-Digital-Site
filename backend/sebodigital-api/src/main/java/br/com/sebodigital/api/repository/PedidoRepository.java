@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
+    boolean existsByCodigo(String codigo);
+
     @EntityGraph(attributePaths = {"itens", "itens.livro"})
     List<Pedido> findByUsuarioEmailIgnoreCaseOrderByCriadoEmDesc(String email);
 

@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (page === "detail") renderDetail();
   if (page === "cart") renderCart();
   if (page === "purchases") await renderPurchases();
+  if (page === "account") await renderAccount();
 });
 
 async function loadRuntimeConfig() {
@@ -213,6 +214,29 @@ async function setupAuthPage() {
 
   const loginForm = document.querySelector("#login-form");
   const signupForm = document.querySelector("#signup-form");
+  const demoLoginButton = document.querySelector("[data-demo-login]");
+
+  if (demoLoginButton) {
+    demoLoginButton.addEventListener("click", async () => {
+      demoLoginButton.disabled = true;
+      demoLoginButton.textContent = "Entrando...";
+      try {
+        const auth = await apiRequest("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: "guest@exemplo.com",
+            senha: "guest123"
+          })
+        });
+        await ensureDemoCart();
+        completeAuthentication(auth, "Conta demonstrativa carregada.", "conta.html");
+      } catch (error) {
+        showToast(error.message || "Nao foi possivel acessar a conta demo.");
+        demoLoginButton.disabled = false;
+        demoLoginButton.textContent = "Entrar com a conta demo";
+      }
+    });
+  }
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
@@ -251,6 +275,24 @@ async function setupAuthPage() {
         showToast(error.message || "Nao foi possivel criar a conta agora.");
       }
     });
+  }
+}
+
+async function ensureDemoCart() {
+  if (getCart().length) return;
+
+  try {
+    const apiBooks = await apiRequest("/api/livros");
+    const availableBooks = (Array.isArray(apiBooks) ? apiBooks : [])
+      .map(mapApiBook)
+      .filter(canAddToCart)
+      .slice(0, 2);
+
+    if (availableBooks.length) {
+      saveCart(availableBooks.map((book) => ({ id: book.id, quantity: 1 })));
+    }
+  } catch (error) {
+    console.warn("Nao foi possivel preparar o carrinho demonstrativo.", error);
   }
 }
 
@@ -342,11 +384,11 @@ function oauthRedirectParams() {
   return new URLSearchParams(fragment);
 }
 
-function completeAuthentication(auth, message) {
+function completeAuthentication(auth, message, fallback = "index.html") {
   const normalizedAuth = normalizeAuth(auth);
   localStorage.setItem(authTokenKey, JSON.stringify(normalizedAuth));
   sessionStorage.setItem(authMessageKey, message);
-  window.location.assign(getPostLoginDestination("index.html"));
+  window.location.assign(getPostLoginDestination(fallback));
 }
 
 function normalizeAuth(auth) {
@@ -373,13 +415,14 @@ function applyLoggedInAccountState(accountMenu, accountTrigger) {
 
   const firstName = String(auth.usuario.nome || "Conta").trim().split(" ")[0];
   accountTrigger.textContent = `Ola, ${firstName}`;
-  accountTrigger.href = "compras.html";
+  accountTrigger.href = "conta.html";
   accountTrigger.dataset.authenticated = "true";
 
   const dropdown = accountMenu.querySelector(".account-dropdown");
   if (!dropdown) return;
 
   dropdown.innerHTML = `
+    <a href="conta.html">Minha conta</a>
     <a href="compras.html">Minhas compras</a>
     <a href="carrinho.html">Meu carrinho</a>
     <a href="livros.html">Continuar comprando</a>
@@ -390,6 +433,7 @@ function applyLoggedInAccountState(accountMenu, accountTrigger) {
 function getPostLoginDestination(fallback = "index.html") {
   const next = new URLSearchParams(window.location.search).get("next");
   const destinations = {
+    conta: "conta.html",
     compras: "compras.html",
     checkout: "carrinho.html"
   };
@@ -1155,7 +1199,7 @@ function renderCart() {
       <span>Total</span>
       <strong>${formatter.format(total)}</strong>
     </div>
-    ${auth ? renderCheckoutForm() : `
+    ${auth ? renderCheckoutForm(auth.usuario) : `
       <p class="summary-note">Entre na sua conta para informar a entrega e finalizar o pedido.</p>
       <a class="primary-button" href="login.html?next=checkout">Entrar para continuar</a>
     `}
@@ -1187,27 +1231,28 @@ function normalizeCartAgainstCatalog(cart) {
   return normalized;
 }
 
-function renderCheckoutForm() {
+function renderCheckoutForm(usuario = {}) {
+  const endereco = [usuario.enderecoPrincipal, usuario.complemento].filter(Boolean).join(" - ");
   return `
     <form class="checkout-form" data-checkout-form>
       <h3>Entrega e pagamento</h3>
       <div class="filter-group">
         <label for="checkout-address">Endereco e numero</label>
-        <input id="checkout-address" name="endereco" type="text" maxlength="240" autocomplete="street-address" required>
+        <input id="checkout-address" name="endereco" type="text" maxlength="240" autocomplete="street-address" value="${escapeAttribute(endereco)}" required>
       </div>
       <div class="checkout-location-grid">
         <div class="filter-group">
           <label for="checkout-city">Cidade</label>
-          <input id="checkout-city" name="cidade" type="text" maxlength="120" autocomplete="address-level2" required>
+          <input id="checkout-city" name="cidade" type="text" maxlength="120" autocomplete="address-level2" value="${escapeAttribute(usuario.cidade || "")}" required>
         </div>
         <div class="filter-group">
           <label for="checkout-state">UF</label>
-          <input id="checkout-state" name="estado" type="text" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" required>
+          <input id="checkout-state" name="estado" type="text" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" value="${escapeAttribute(usuario.estado || "")}" required>
         </div>
       </div>
       <div class="filter-group">
         <label for="checkout-cep">CEP</label>
-        <input id="checkout-cep" name="cep" type="text" inputmode="numeric" pattern="\\d{5}-?\\d{3}" placeholder="00000-000" autocomplete="postal-code" required>
+        <input id="checkout-cep" name="cep" type="text" inputmode="numeric" pattern="\\d{5}-?\\d{3}" placeholder="00000-000" autocomplete="postal-code" value="${escapeAttribute(usuario.cep || "")}" required>
       </div>
       <div class="filter-group">
         <label for="checkout-payment">Forma de pagamento</label>
@@ -1256,6 +1301,123 @@ async function submitCheckout(event, detailedItems) {
     button.disabled = false;
     button.textContent = "Finalizar pedido";
   }
+}
+
+async function renderAccount() {
+  const container = document.querySelector("#account-content");
+  if (!container) return;
+
+  const auth = getStoredAuth();
+  if (!auth) {
+    container.innerHTML = `
+      <div class="empty-state account-login">
+        <h2>Entre para acessar sua conta</h2>
+        <p>Consulte seu endereco principal, compras e entregas em andamento.</p>
+        <a class="primary-button" href="login.html?next=conta">Entrar ou criar conta</a>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const [usuario, orders] = await Promise.all([
+      apiRequest("/api/auth/me"),
+      apiRequest("/api/pedidos")
+    ]);
+    const updatedAuth = { ...auth, usuario };
+    localStorage.setItem(authTokenKey, JSON.stringify(updatedAuth));
+
+    const activeOrders = orders.filter((order) => order.status !== "ENTREGUE");
+    const completedOrders = orders.filter((order) => order.status === "ENTREGUE");
+    const trackingOrder = activeOrders[0];
+    const fullAddress = [
+      usuario.enderecoPrincipal,
+      usuario.complemento,
+      usuario.bairro,
+      [usuario.cidade, usuario.estado].filter(Boolean).join(" - "),
+      usuario.cep
+    ].filter(Boolean);
+
+    container.innerHTML = `
+      <section class="account-profile-card">
+        <div class="account-profile-main">
+          <span class="account-profile-avatar" aria-hidden="true">${escapeHtml(getInitials(usuario.nome))}</span>
+          <div>
+            <p class="eyebrow">Sua conta</p>
+            <h2>${escapeHtml(usuario.nome)}</h2>
+            <p>${escapeHtml(usuario.email)}</p>
+          </div>
+        </div>
+        <div class="account-stats">
+          <div><strong>${orders.length}</strong><span>compras</span></div>
+          <div><strong>${activeOrders.length}</strong><span>em andamento</span></div>
+          <div><strong>${completedOrders.length}</strong><span>entregues</span></div>
+        </div>
+      </section>
+
+      <div class="account-grid">
+        <section class="account-panel">
+          <div class="account-panel-heading">
+            <div>
+              <p class="eyebrow">Entrega</p>
+              <h2>Endereco principal</h2>
+            </div>
+            <span class="account-verified">Cadastrado</span>
+          </div>
+          ${fullAddress.length ? `
+            <address>${fullAddress.map((line) => `<span>${escapeHtml(line)}</span>`).join("")}</address>
+            <p class="account-contact">Telefone: ${escapeHtml(usuario.telefone || "Nao informado")}</p>
+          ` : `
+            <p class="summary-note">Nenhum endereco principal cadastrado.</p>
+          `}
+        </section>
+
+        <section class="account-panel">
+          <p class="eyebrow">Acesso</p>
+          <h2>Dados da conta</h2>
+          <dl class="account-data-list">
+            <div><dt>Nome</dt><dd>${escapeHtml(usuario.nome)}</dd></div>
+            <div><dt>E-mail</dt><dd>${escapeHtml(usuario.email)}</dd></div>
+            <div><dt>Forma de acesso</dt><dd>${escapeHtml(authProviderLabel(usuario.authProvider))}</dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <section class="account-shortcuts" aria-label="Atalhos da conta">
+        <a href="compras.html">
+          <span>Compras</span>
+          <strong>Ver historico de pedidos</strong>
+        </a>
+        <a href="${trackingOrder ? `compras.html?pedido=${trackingOrder.id}` : "compras.html"}">
+          <span>Rastreamento</span>
+          <strong>${trackingOrder ? orderStatusLabels[trackingOrder.status] : "Nenhuma entrega em andamento"}</strong>
+        </a>
+        <a href="carrinho.html">
+          <span>Carrinho</span>
+          <strong>Continuar sua compra</strong>
+        </a>
+      </section>
+
+      <button class="danger-button account-logout" type="button" data-account-logout>Sair da conta</button>
+    `;
+
+    container.querySelector("[data-account-logout]")?.addEventListener("click", logout);
+  } catch (error) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h2>Nao foi possivel carregar sua conta</h2>
+        <p>${escapeHtml(error.message)}</p>
+        <a class="primary-button" href="login.html?next=conta">Entrar novamente</a>
+      </div>
+    `;
+  }
+}
+
+function authProviderLabel(provider) {
+  const normalizedProvider = String(provider || "LOCAL").toUpperCase();
+  if (normalizedProvider === "GOOGLE") return "Google";
+  if (normalizedProvider === "FACEBOOK") return "Facebook";
+  return "E-mail e senha";
 }
 
 async function renderPurchases() {
