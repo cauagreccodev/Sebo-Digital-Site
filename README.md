@@ -287,6 +287,8 @@ Current tagged version:
 
 `v0.4` - Social login with Google/Facebook, original provider logos, and post-login redirect to the home page
 
+`v0.3` - Complete dark theme with a hover dropdown for switching between light and dark modes
+
 `v0.2` - Backend authentication, frontend API integration, and books API
 
 `v0.1` - Initial frontend prototype
