@@ -255,17 +255,28 @@ function showAuthenticatedAccount(auth) {
   accountSection.hidden = false;
   accountSection.querySelector("[data-account-name]").textContent = name;
   accountSection.querySelector("[data-account-email]").textContent = usuario.email || "";
-  accountSection.querySelector("[data-account-initials]").textContent = initials || "SD";
+  const initialsElement = accountSection.querySelector("[data-account-initials]");
+  initialsElement.textContent = initials || "SD";
   accountSection.querySelector("[data-account-provider]").textContent =
     authProviderLabel(usuario.authProvider);
 
+  const avatar = accountSection.querySelector(".auth-account-avatar");
   const photo = accountSection.querySelector("[data-account-photo]");
+  avatar.classList.remove("has-photo");
+  photo.hidden = true;
+  photo.removeAttribute("src");
+
   if (usuario.fotoUrl) {
-    photo.src = usuario.fotoUrl;
-    photo.hidden = false;
-    photo.addEventListener("error", () => {
+    photo.onload = () => {
+      photo.hidden = false;
+      avatar.classList.add("has-photo");
+    };
+    photo.onerror = () => {
       photo.hidden = true;
-    }, { once: true });
+      avatar.classList.remove("has-photo");
+      photo.removeAttribute("src");
+    };
+    photo.src = usuario.fotoUrl;
   }
 
   accountSection.querySelector("[data-logout]").addEventListener("click", logout);
