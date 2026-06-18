@@ -77,4 +77,17 @@ class OAuth2ConfigurationTests {
                 "https://sebo-digital-site.vercel.app/login.html",
                 resolver.sanitize("https://example.com/steal-token"));
     }
+
+    @Test
+    void acceptsSecureProductionRedirectWithLocalFallback() {
+        OAuth2RedirectResolver resolver = new OAuth2RedirectResolver(
+                "http://localhost:5500/login.html",
+                "https://sebo-digital-site.vercel.app,http://localhost:5500");
+
+        String redirectUri = "https://sebo-digital-site.vercel.app/login";
+        ResponseCookie cookie = resolver.createCookie(redirectUri);
+
+        assertEquals(redirectUri, resolver.sanitize(redirectUri));
+        assertTrue(cookie.isSecure());
+    }
 }

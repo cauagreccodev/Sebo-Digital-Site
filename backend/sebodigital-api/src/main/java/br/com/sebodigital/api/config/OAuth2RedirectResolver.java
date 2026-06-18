@@ -58,10 +58,13 @@ public class OAuth2RedirectResolver {
     }
 
     public ResponseCookie createCookie(String redirectUri) {
-        return ResponseCookie.from(COOKIE_NAME, encode(sanitize(redirectUri)))
+        String sanitizedRedirectUri = sanitize(redirectUri);
+        boolean secure = "https".equalsIgnoreCase(URI.create(sanitizedRedirectUri).getScheme());
+
+        return ResponseCookie.from(COOKIE_NAME, encode(sanitizedRedirectUri))
                 .path("/")
                 .httpOnly(true)
-                .secure(secureCookie)
+                .secure(secure)
                 .sameSite("Lax")
                 .maxAge(Duration.ofMinutes(10))
                 .build();
