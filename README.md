@@ -16,6 +16,10 @@ Production currently runs with:
 - Railway for the Spring Boot API
 - Neon PostgreSQL for persistence
 
+The Railway service uses `backend/sebodigital-api/railway.toml` and the stable
+artifact name `target/sebodigital-api.jar`, so application version changes do
+not break the production start command.
+
 ## Highlights
 
 - Responsive storefront for a virtual second-hand bookstore
