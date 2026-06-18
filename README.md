@@ -22,10 +22,11 @@ Production currently runs with:
 - Home page with search, featured books, categories, and reading suggestions
 - Home discovery areas derived from API categories, authors, highlights, and offers
 - Marketplace-style navigation with a catalog mega menu
-- Account access area with lists, orders, and profile shortcuts
+- Account access focused on purchases, checkout, and order tracking
 - Book listing page with advanced filters
 - Book detail page with price, seller, location, condition notes, and metadata
-- Shopping cart using local browser storage for purchase intent
+- Shopping cart with quantity controls, stock validation, checkout, and persisted orders
+- Purchase history with delivery status timeline and tracking code
 - Visual book cards with title, author, price, condition, type, shipping, language, and rating
 - Frontend catalog loaded from the backend API
 - Spring Boot backend with JWT authentication
@@ -55,8 +56,9 @@ The catalog currently supports filtering by:
 - `index.html` - storefront home page
 - `livros.html` - book catalog and filters
 - `detalhes.html?id=1` - book detail page
-- `carrinho.html` - cart and purchase intent
+- `carrinho.html` - cart, delivery details, and checkout
 - `login.html` - login and account creation screen
+- `compras.html` - purchase history and order tracking
 
 ## Project Structure
 
@@ -94,9 +96,11 @@ The backend lives in `backend/sebodigital-api` and includes:
 
 - User registration and login with JWT
 - Book CRUD endpoints
+- Authenticated checkout and order history endpoints
+- Stock reduction, delivery address, payment method, and tracking status persistence
 - Book copies/offers grouped as new and used
 - Sellers, publishers, stock, prices, highlights, and cover image URLs
-- PostgreSQL-only persistence for users, books, and offers
+- PostgreSQL-only persistence for users, books, offers, orders, and order items
 
 The API no longer creates demo users or demo books at startup. Users must be created through the registration flow/API, and books/offers must be persisted in PostgreSQL through the backend endpoints.
 

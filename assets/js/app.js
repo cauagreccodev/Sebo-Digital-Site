@@ -11,6 +11,22 @@ const formatter = new Intl.NumberFormat("pt-BR", {
 const cartKey = "seboDigitalCart";
 const authTokenKey = "seboDigitalAuth";
 const authMessageKey = "seboDigitalAuthMessage";
+const orderStatuses = [
+  "PEDIDO_REALIZADO",
+  "PAGAMENTO_APROVADO",
+  "EM_SEPARACAO",
+  "ENVIADO",
+  "EM_TRANSPORTE",
+  "ENTREGUE"
+];
+const orderStatusLabels = {
+  PEDIDO_REALIZADO: "Pedido realizado",
+  PAGAMENTO_APROVADO: "Pagamento aprovado",
+  EM_SEPARACAO: "Em separacao",
+  ENVIADO: "Enviado",
+  EM_TRANSPORTE: "Em transporte",
+  ENTREGUE: "Entregue"
+};
 let apiBaseUrl = normalizeApiBaseUrl(window.SEBO_API_URL || "http://localhost:8080");
 const page = document.body.dataset.page;
 
@@ -23,12 +39,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   await setupAuthPage();
   showPendingAuthMessage();
   updateCartBadge();
-  await loadBooksFromApi();
+  if (["home", "catalog", "detail", "cart"].includes(page)) {
+    await loadBooksFromApi();
+  }
 
   if (page === "home") renderHome();
   if (page === "catalog") renderCatalog();
   if (page === "detail") renderDetail();
   if (page === "cart") renderCart();
+  if (page === "purchases") await renderPurchases();
 });
 
 async function loadRuntimeConfig() {
@@ -177,7 +196,7 @@ async function setupAuthPage() {
 
   const auth = getStoredAuth();
   if (page === "login" && auth) {
-    showAuthenticatedAccount(auth);
+    window.location.replace(getPostLoginDestination("compras.html"));
     return;
   }
 
@@ -233,61 +252,6 @@ async function setupAuthPage() {
       }
     });
   }
-}
-
-function showAuthenticatedAccount(auth) {
-  document.querySelectorAll("[data-auth-guest]").forEach((element) => {
-    element.hidden = true;
-  });
-
-  const accountSection = document.querySelector("[data-auth-account]");
-  if (!accountSection) return;
-
-  const usuario = auth.usuario;
-  const name = String(usuario.nome || "Usuario").trim() || "Usuario";
-  const initials = name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0))
-    .join("")
-    .toUpperCase();
-
-  accountSection.hidden = false;
-  accountSection.querySelector("[data-account-name]").textContent = name;
-  accountSection.querySelector("[data-account-email]").textContent = usuario.email || "";
-  const initialsElement = accountSection.querySelector("[data-account-initials]");
-  initialsElement.textContent = initials || "SD";
-  accountSection.querySelector("[data-account-provider]").textContent =
-    authProviderLabel(usuario.authProvider);
-
-  const avatar = accountSection.querySelector(".auth-account-avatar");
-  const photo = accountSection.querySelector("[data-account-photo]");
-  avatar.classList.remove("has-photo");
-  photo.hidden = true;
-  photo.removeAttribute("src");
-
-  if (usuario.fotoUrl) {
-    photo.onload = () => {
-      photo.hidden = false;
-      avatar.classList.add("has-photo");
-    };
-    photo.onerror = () => {
-      photo.hidden = true;
-      avatar.classList.remove("has-photo");
-      photo.removeAttribute("src");
-    };
-    photo.src = usuario.fotoUrl;
-  }
-
-  accountSection.querySelector("[data-logout]").addEventListener("click", logout);
-  document.title = "Minha conta | Sebo Digital";
-}
-
-function authProviderLabel(provider) {
-  const normalizedProvider = String(provider || "LOCAL").toUpperCase();
-  if (normalizedProvider === "GOOGLE") return "Google";
-  if (normalizedProvider === "FACEBOOK") return "Facebook";
-  return "E-mail e senha";
 }
 
 function logout() {
@@ -382,7 +346,7 @@ function completeAuthentication(auth, message) {
   const normalizedAuth = normalizeAuth(auth);
   localStorage.setItem(authTokenKey, JSON.stringify(normalizedAuth));
   sessionStorage.setItem(authMessageKey, message);
-  window.location.assign("index.html");
+  window.location.assign(getPostLoginDestination("index.html"));
 }
 
 function normalizeAuth(auth) {
@@ -409,18 +373,27 @@ function applyLoggedInAccountState(accountMenu, accountTrigger) {
 
   const firstName = String(auth.usuario.nome || "Conta").trim().split(" ")[0];
   accountTrigger.textContent = `Ola, ${firstName}`;
-  accountTrigger.href = "login.html?next=conta";
+  accountTrigger.href = "compras.html";
   accountTrigger.dataset.authenticated = "true";
 
   const dropdown = accountMenu.querySelector(".account-dropdown");
   if (!dropdown) return;
 
   dropdown.innerHTML = `
-    <a href="login.html?next=conta">Minha conta</a>
-    <a href="login.html?next=pedidos">Meus pedidos</a>
-    <a href="login.html?next=listas">Minhas listas</a>
+    <a href="compras.html">Minhas compras</a>
+    <a href="carrinho.html">Meu carrinho</a>
+    <a href="livros.html">Continuar comprando</a>
     <button type="button" data-logout>Sair</button>
   `;
+}
+
+function getPostLoginDestination(fallback = "index.html") {
+  const next = new URLSearchParams(window.location.search).get("next");
+  const destinations = {
+    compras: "compras.html",
+    checkout: "carrinho.html"
+  };
+  return destinations[next] || fallback;
 }
 
 function getStoredAuth() {
@@ -448,8 +421,12 @@ function getOAuthRedirectUri() {
   }
 
   const url = new URL(window.location.href);
+  const next = url.searchParams.get("next");
   url.search = "";
   url.hash = "";
+  if (next === "compras" || next === "checkout") {
+    url.searchParams.set("next", next);
+  }
   return url.toString();
 }
 
@@ -488,8 +465,10 @@ async function loadBooksFromApi() {
 }
 
 async function apiRequest(path, options = {}) {
+  const auth = getStoredAuth();
   const headers = {
     "Content-Type": "application/json",
+    ...(auth?.token ? { Authorization: `Bearer ${auth.token}` } : {}),
     ...(options.headers || {})
   };
 
@@ -510,6 +489,10 @@ async function apiRequest(path, options = {}) {
       message = errorBody.erro || message;
     } catch (error) {
       message = response.statusText || message;
+    }
+    if (response.status === 401 && !path.startsWith("/api/auth/")) {
+      localStorage.removeItem(authTokenKey);
+      message = "Sua sessao expirou. Entre novamente para continuar.";
     }
     throw new Error(message);
   }
@@ -541,11 +524,12 @@ function mapApiBook(apiBook) {
   const copies = flattenCopies(apiBook.copias);
   const bestCopy = selectBestCopy(copies);
   const highlights = apiBook.destaques || {};
-  const price = numberOrNull(apiBook.menorPreco ?? bestCopy.preco);
+  const price = numberOrNull(bestCopy.preco ?? apiBook.menorPreco);
   const rating = numberOrNull(bestCopy.avaliacaoVendedor);
 
   return {
     id: apiBook.id,
+    copyId: bestCopy.id ?? null,
     title: apiBook.titulo || "",
     author: apiBook.autor || "",
     authorImageUrl: apiBook.autorImagemUrl,
@@ -555,13 +539,13 @@ function mapApiBook(apiBook) {
     year: String(apiBook.anoPublicacao || ""),
     publisher: apiBook.editora || "",
     pages: "",
-    stock: Number(apiBook.estoqueTotal ?? bestCopy.estoque ?? 0),
+    stock: Number(bestCopy.estoque ?? 0),
     seller: bestCopy.vendedor || apiBook.vendedora || "",
     city: bestCopy.cidade || bestCopy.cidadeVendedor || "",
     type: bestCopy.tipo ? formatEnum(bestCopy.tipo) : "",
-    freeShipping: Boolean(highlights.freteGratis || copies.some((copy) => copy.freteGratis)),
-    promotion: Boolean(highlights.oferta || copies.some((copy) => copy.promocao)),
-    corporatePurchase: copies.some((copy) => copy.compraCorporativa),
+    freeShipping: Boolean(bestCopy.freteGratis),
+    promotion: Boolean(highlights.oferta || bestCopy.promocao),
+    corporatePurchase: Boolean(bestCopy.compraCorporativa),
     rating,
     language: apiBook.idioma || "",
     bestSeller: Boolean(highlights.maisVendido),
@@ -582,7 +566,9 @@ function flattenCopies(copies) {
 
 function selectBestCopy(copies) {
   if (!copies.length) return {};
-  return [...copies].sort((a, b) => Number(a.preco || 0) - Number(b.preco || 0))[0];
+  return [...copies].sort((a, b) =>
+    Number(Number(b.estoque || 0) > 0) - Number(Number(a.estoque || 0) > 0)
+    || Number(a.preco || 0) - Number(b.preco || 0))[0];
 }
 
 function normalizeCategory(category) {
@@ -1107,7 +1093,7 @@ function renderDetail() {
 }
 
 function renderCart() {
-  const cart = getCart();
+  const cart = normalizeCartAgainstCatalog(getCart());
   const itemsElement = document.querySelector("#cart-items");
   const summaryElement = document.querySelector("#cart-summary");
 
@@ -1131,7 +1117,7 @@ function renderCart() {
       ...item,
       book: books.find((book) => book.id === item.id)
     }))
-    .filter((item) => item.book);
+    .filter((item) => item.book && item.book.copyId && item.book.stock > 0);
 
   if (!detailedItems.length) {
     itemsElement.innerHTML = `
@@ -1151,16 +1137,322 @@ function renderCart() {
   itemsElement.innerHTML = detailedItems.map(renderCartItem).join("");
 
   const subtotal = detailedItems.reduce((sum, item) => sum + (item.book.price ?? 0) * item.quantity, 0);
+  const shipping = detailedItems.every((item) => item.book.freeShipping) ? 0 : 14.9;
+  const total = subtotal + shipping;
+  const auth = getStoredAuth();
 
   summaryElement.innerHTML = `
-    <h2>Resumo</h2>
+    <h2>Resumo da compra</h2>
     <div class="summary-line">
       <span>Subtotal</span>
       <strong>${formatter.format(subtotal)}</strong>
     </div>
-    <p class="summary-note">Frete e finalizacao dependem das proximas etapas do pedido.</p>
-    <button class="primary-button" type="button" disabled>Finalizacao indisponivel</button>
+    <div class="summary-line">
+      <span>Frete</span>
+      <strong>${shipping === 0 ? "Gratis" : formatter.format(shipping)}</strong>
+    </div>
+    <div class="summary-total">
+      <span>Total</span>
+      <strong>${formatter.format(total)}</strong>
+    </div>
+    ${auth ? renderCheckoutForm() : `
+      <p class="summary-note">Entre na sua conta para informar a entrega e finalizar o pedido.</p>
+      <a class="primary-button" href="login.html?next=checkout">Entrar para continuar</a>
+    `}
   `;
+
+  const checkoutForm = summaryElement.querySelector("[data-checkout-form]");
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", (event) => submitCheckout(event, detailedItems));
+  }
+}
+
+function normalizeCartAgainstCatalog(cart) {
+  if (catalogLoadError || !books.length) return cart;
+
+  const normalized = cart
+    .map((item) => {
+      const book = books.find((entry) => entry.id === item.id);
+      if (!book || !book.copyId || book.stock <= 0) return null;
+      return {
+        id: item.id,
+        quantity: Math.max(1, Math.min(Number(item.quantity) || 1, book.stock))
+      };
+    })
+    .filter(Boolean);
+
+  if (JSON.stringify(normalized) !== JSON.stringify(cart)) {
+    saveCart(normalized);
+  }
+  return normalized;
+}
+
+function renderCheckoutForm() {
+  return `
+    <form class="checkout-form" data-checkout-form>
+      <h3>Entrega e pagamento</h3>
+      <div class="filter-group">
+        <label for="checkout-address">Endereco e numero</label>
+        <input id="checkout-address" name="endereco" type="text" maxlength="240" autocomplete="street-address" required>
+      </div>
+      <div class="checkout-location-grid">
+        <div class="filter-group">
+          <label for="checkout-city">Cidade</label>
+          <input id="checkout-city" name="cidade" type="text" maxlength="120" autocomplete="address-level2" required>
+        </div>
+        <div class="filter-group">
+          <label for="checkout-state">UF</label>
+          <input id="checkout-state" name="estado" type="text" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" required>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label for="checkout-cep">CEP</label>
+        <input id="checkout-cep" name="cep" type="text" inputmode="numeric" pattern="\\d{5}-?\\d{3}" placeholder="00000-000" autocomplete="postal-code" required>
+      </div>
+      <div class="filter-group">
+        <label for="checkout-payment">Forma de pagamento</label>
+        <select id="checkout-payment" name="pagamento" required>
+          <option value="PIX">PIX</option>
+          <option value="Cartao de credito">Cartao de credito</option>
+          <option value="Boleto">Boleto</option>
+        </select>
+      </div>
+      <p class="checkout-disclaimer">Ambiente demonstrativo: nenhuma cobranca real sera realizada.</p>
+      <button class="primary-button" type="submit">Finalizar pedido</button>
+    </form>
+  `;
+}
+
+async function submitCheckout(event, detailedItems) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = form.querySelector("button[type='submit']");
+  const formData = new FormData(form);
+
+  button.disabled = true;
+  button.textContent = "Finalizando...";
+
+  try {
+    const order = await apiRequest("/api/pedidos", {
+      method: "POST",
+      body: JSON.stringify({
+        itens: detailedItems.map((item) => ({
+          livroCopiaId: item.book.copyId,
+          quantidade: item.quantity
+        })),
+        enderecoEntrega: formData.get("endereco"),
+        cidadeEntrega: formData.get("cidade"),
+        estadoEntrega: formData.get("estado"),
+        cepEntrega: formData.get("cep"),
+        formaPagamento: formData.get("pagamento")
+      })
+    });
+
+    saveCart([]);
+    sessionStorage.setItem(authMessageKey, `Pedido ${order.codigo} realizado com sucesso.`);
+    window.location.assign(`compras.html?pedido=${order.id}&novo=true`);
+  } catch (error) {
+    showToast(error.message || "Nao foi possivel finalizar o pedido.");
+    button.disabled = false;
+    button.textContent = "Finalizar pedido";
+  }
+}
+
+async function renderPurchases() {
+  const container = document.querySelector("#purchases-content");
+  if (!container) return;
+
+  const auth = getStoredAuth();
+  if (!auth) {
+    container.innerHTML = `
+      <div class="empty-state purchases-login">
+        <h2>Entre para ver suas compras</h2>
+        <p>Seu historico e o rastreamento ficam vinculados a sua conta.</p>
+        <a class="primary-button" href="login.html?next=compras">Entrar ou criar conta</a>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const orders = await apiRequest("/api/pedidos");
+    if (!orders.length) {
+      container.innerHTML = `
+        <div class="empty-state purchases-empty">
+          <h2>Voce ainda nao fez nenhuma compra</h2>
+          <p>Quando finalizar um pedido, o acompanhamento aparecera aqui.</p>
+          <a class="primary-button" href="livros.html">Explorar livros</a>
+        </div>
+      `;
+      return;
+    }
+
+    const selectedId = Number(new URLSearchParams(window.location.search).get("pedido"));
+    const selectedOrder = orders.find((order) => order.id === selectedId);
+    const newOrder = new URLSearchParams(window.location.search).get("novo") === "true";
+
+    container.innerHTML = `
+      ${selectedOrder ? renderOrderDetail(selectedOrder, newOrder) : ""}
+      <div class="purchases-heading">
+        <div>
+          <p class="eyebrow">Historico</p>
+          <h2>${selectedOrder ? "Outras compras" : "Seus pedidos"}</h2>
+        </div>
+        <a class="text-link" href="livros.html">Comprar mais livros</a>
+      </div>
+      <div class="order-list">
+        ${orders.map((order) => renderOrderCard(order, selectedOrder?.id === order.id)).join("")}
+      </div>
+    `;
+  } catch (error) {
+    const sessionExpired = !getStoredAuth();
+    container.innerHTML = `
+      <div class="empty-state">
+        <h2>${sessionExpired ? "Sua sessao expirou" : "Nao foi possivel carregar suas compras"}</h2>
+        <p>${escapeHtml(error.message)}</p>
+        <a class="primary-button" href="${sessionExpired ? "login.html?next=compras" : "compras.html"}">
+          ${sessionExpired ? "Entrar novamente" : "Tentar de novo"}
+        </a>
+      </div>
+    `;
+  }
+}
+
+function renderOrderDetail(order, isNewOrder) {
+  return `
+    <article class="order-detail">
+      ${isNewOrder ? `
+        <div class="order-success">
+          <strong>Compra concluida</strong>
+          <span>O pedido foi salvo e ja aparece no seu historico.</span>
+        </div>
+      ` : ""}
+      <div class="order-detail-header">
+        <div>
+          <p class="eyebrow">Pedido ${escapeHtml(order.codigo)}</p>
+          <h2>${escapeHtml(orderStatusLabels[order.status] || formatEnum(order.status))}</h2>
+          <p>Realizado em ${formatOrderDate(order.criadoEm)}</p>
+        </div>
+        <span class="order-status ${statusClassName(order.status)}">${escapeHtml(orderStatusLabels[order.status] || order.status)}</span>
+      </div>
+      ${renderTracking(order)}
+      <div class="order-detail-grid">
+        <section class="order-info-panel">
+          <h3>Entrega</h3>
+          <p>${escapeHtml(order.enderecoEntrega)}</p>
+          <p>${escapeHtml(order.cidadeEntrega)} - ${escapeHtml(order.estadoEntrega)}, ${escapeHtml(order.cepEntrega)}</p>
+          <dl>
+            <div><dt>Codigo de rastreio</dt><dd>${escapeHtml(order.codigoRastreio)}</dd></div>
+            <div><dt>Previsao</dt><dd>${formatOrderDay(order.previsaoEntrega)}</dd></div>
+          </dl>
+        </section>
+        <section class="order-info-panel">
+          <h3>Pagamento</h3>
+          <p>${escapeHtml(order.formaPagamento)}</p>
+          <dl>
+            <div><dt>Produtos</dt><dd>${formatter.format(Number(order.subtotal))}</dd></div>
+            <div><dt>Frete</dt><dd>${Number(order.frete) === 0 ? "Gratis" : formatter.format(Number(order.frete))}</dd></div>
+            <div class="order-total-line"><dt>Total</dt><dd>${formatter.format(Number(order.total))}</dd></div>
+          </dl>
+        </section>
+      </div>
+      <div class="order-products">
+        <h3>Livros deste pedido</h3>
+        ${order.itens.map(renderOrderItem).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderTracking(order) {
+  const currentIndex = Math.max(0, orderStatuses.indexOf(order.status));
+  return `
+    <section class="tracking-panel" aria-label="Rastreamento do pedido">
+      <div class="tracking-heading">
+        <div>
+          <span>Rastreamento</span>
+          <strong>${escapeHtml(orderStatusLabels[order.status] || formatEnum(order.status))}</strong>
+        </div>
+        <small>Atualizado em ${formatOrderDate(order.atualizadoEm)}</small>
+      </div>
+      <ol class="tracking-steps">
+        ${orderStatuses.map((status, index) => {
+          const state = index < currentIndex ? "is-complete" : index === currentIndex ? "is-current" : "";
+          return `
+            <li class="${state}">
+              <span class="tracking-dot" aria-hidden="true"></span>
+              <strong>${escapeHtml(orderStatusLabels[status])}</strong>
+            </li>
+          `;
+        }).join("")}
+      </ol>
+    </section>
+  `;
+}
+
+function renderOrderCard(order, isSelected) {
+  const itemCount = order.itens.reduce((sum, item) => sum + item.quantidade, 0);
+  const firstItems = order.itens.slice(0, 3);
+  return `
+    <article class="order-card${isSelected ? " is-selected" : ""}">
+      <div class="order-card-top">
+        <div>
+          <span>Pedido ${escapeHtml(order.codigo)}</span>
+          <strong>${formatOrderDate(order.criadoEm)}</strong>
+        </div>
+        <span class="order-status ${statusClassName(order.status)}">${escapeHtml(orderStatusLabels[order.status] || order.status)}</span>
+      </div>
+      <div class="order-card-body">
+        <div class="order-card-items">
+          ${firstItems.map((item) => `
+            <span class="order-mini-cover">
+              ${item.imagemUrl ? `<img src="${escapeAttribute(item.imagemUrl)}" alt="" loading="lazy" onerror="this.remove()">` : escapeHtml(getInitials(item.titulo))}
+            </span>
+          `).join("")}
+          <p>${itemCount} ${itemCount === 1 ? "livro" : "livros"} neste pedido</p>
+        </div>
+        <div class="order-card-summary">
+          <strong>${formatter.format(Number(order.total))}</strong>
+          <a class="primary-button" href="compras.html?pedido=${order.id}">Acompanhar entrega</a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderOrderItem(item) {
+  return `
+    <article class="order-product">
+      <span class="order-product-cover">
+        ${item.imagemUrl ? `<img src="${escapeAttribute(item.imagemUrl)}" alt="" loading="lazy" onerror="this.remove()">` : escapeHtml(getInitials(item.titulo))}
+      </span>
+      <div>
+        <strong>${escapeHtml(item.titulo)}</strong>
+        <span>${escapeHtml(item.autor)} · ${escapeHtml(item.vendedor)}</span>
+        <small>Quantidade: ${item.quantidade}</small>
+      </div>
+      <strong>${formatter.format(Number(item.subtotal))}</strong>
+    </article>
+  `;
+}
+
+function formatOrderDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Data indisponivel";
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(date);
+}
+
+function statusClassName(status) {
+  return `status-${String(status || "").toLowerCase().replaceAll("_", "-")}`;
+}
+
+function formatOrderDay(value) {
+  const date = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return "A confirmar";
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(date);
 }
 
 function renderBooks(container, collection) {
@@ -1276,7 +1568,7 @@ function formatRating(rating) {
 }
 
 function canAddToCart(book) {
-  return book.price !== null && book.stock > 0;
+  return book.copyId !== null && book.price !== null && book.stock > 0;
 }
 
 function renderCover(book) {
@@ -1303,14 +1595,15 @@ function renderCartItem(item) {
   const total = book.price === null ? "Preco indisponivel" : formatter.format(book.price * quantity);
   return `
     <article class="cart-item">
-      ${renderCover(book)}
+      <a href="detalhes.html?id=${book.id}" aria-label="Ver ${escapeHtml(book.title)}">${renderCover(book)}</a>
       <div class="cart-item-info">
-        <h2>${escapeHtml(book.title)}</h2>
+        <h2><a href="detalhes.html?id=${book.id}">${escapeHtml(book.title)}</a></h2>
         <p>${escapeHtml(book.author)} · ${escapeHtml(book.type)} · ${escapeHtml(book.condition)}</p>
+        <small>Vendido por ${escapeHtml(displayText(book.seller))}</small>
         <div class="quantity-control" aria-label="Quantidade de ${escapeHtml(book.title)}">
           <button type="button" data-cart-quantity="${book.id}" data-delta="-1" aria-label="Diminuir quantidade">-</button>
           <span>${quantity}</span>
-          <button type="button" data-cart-quantity="${book.id}" data-delta="1" aria-label="Aumentar quantidade">+</button>
+          <button type="button" data-cart-quantity="${book.id}" data-delta="1" aria-label="Aumentar quantidade" ${quantity >= book.stock ? "disabled" : ""}>+</button>
         </div>
       </div>
       <div class="cart-item-total">
@@ -1387,12 +1680,16 @@ function saveCart(cart) {
 
 function addToCart(id) {
   const book = books.find((item) => item.id === id);
-  if (!book) return;
+  if (!book || !canAddToCart(book) || !book.copyId) return;
 
   const cart = getCart();
   const existing = cart.find((item) => item.id === id);
 
   if (existing) {
+    if (existing.quantity >= book.stock) {
+      showToast(`O estoque disponivel de ${book.title} ja esta no carrinho.`);
+      return;
+    }
     existing.quantity = Math.min(existing.quantity + 1, book.stock);
   } else {
     cart.push({ id, quantity: 1 });
@@ -1415,6 +1712,11 @@ function changeQuantity(id, delta) {
   const item = cart.find((entry) => entry.id === id);
   const book = books.find((entry) => entry.id === id);
   if (!item || !book) return;
+
+  if (delta > 0 && item.quantity >= book.stock) {
+    showToast(`Quantidade maxima disponivel: ${book.stock}.`);
+    return;
+  }
 
   item.quantity += delta;
 

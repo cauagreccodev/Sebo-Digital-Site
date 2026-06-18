@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalhes do livro | Sebo Digital</title>
-  <meta name="description" content="Pagina de detalhes de livro usado com preco, estado de conservacao e dados do vendedor.">
+  <title>Minhas compras | Sebo Digital</title>
+  <meta name="description" content="Historico de compras e acompanhamento de pedidos do Sebo Digital.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
@@ -14,11 +14,11 @@
     document.documentElement.setAttribute("data-theme", savedTheme);
   </script>
 </head>
-<body data-page="detail">
+<body data-page="purchases">
   <header class="site-header">
     <div class="top-strip">
-      <span>Detalhes carregados conforme o livro selecionado</span>
-      <a href="livros.html">Continuar navegando</a>
+      <span>Acompanhe seus pedidos do pagamento ate a entrega</span>
+      <a href="livros.html">Continuar comprando</a>
     </div>
 
     <div class="header-main shell">
@@ -58,8 +58,8 @@
         <div class="theme-menu" data-theme-menu>
           <button class="theme-trigger" type="button" aria-haspopup="true" aria-expanded="false">Tema</button>
           <div class="theme-dropdown" role="menu">
-            <button type="button" role="menuitem" data-set-theme="light">☀️ Claro</button>
-            <button type="button" role="menuitem" data-set-theme="dark">🌙 Escuro</button>
+            <button type="button" role="menuitem" data-set-theme="light">Claro</button>
+            <button type="button" role="menuitem" data-set-theme="dark">Escuro</button>
           </div>
         </div>
       </div>
@@ -70,62 +70,47 @@
         <div class="catalog-menu" data-catalog-menu>
           <a class="catalog-trigger" href="livros.html" aria-haspopup="true" aria-expanded="false" data-catalog-trigger>
             <span class="trigger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-            Catálogo
+            Catalogo
           </a>
           <div class="mega-menu" role="menu">
             <div class="mega-feature">
-              <span>Busca rapida</span>
-              <strong>Explore livros usados por tema, estado e tipo de leitura.</strong>
+              <span>Compra de livros</span>
+              <strong>Encontre sua proxima leitura no catalogo.</strong>
               <a href="livros.html">Ver todos os livros</a>
             </div>
             <div class="mega-columns">
               <a href="livros.html">Todos os livros</a>
               <a href="livros.html?ordenar=title">Titulos A-Z</a>
-              <a href="livros.html?promo=true">Ofertas cadastradas</a>
+              <a href="livros.html?promo=true">Ofertas</a>
               <a href="livros.html?frete=gratis">Frete gratis</a>
               <a href="livros.html?ordenar=mais-vendidos">Destaques</a>
-              <a href="livros.html">Autores</a>
-              <a href="livros.html">Editoras</a>
-              <a href="livros.html">Ver catalogo</a>
-              <a href="livros.html">Ver todas as categorias</a>
+              <a href="carrinho.html">Meu carrinho</a>
             </div>
             <div class="mega-spotlight">
-              <span>Catalogo</span>
-              <strong>Dados carregados da base cadastrada</strong>
-              <p>Use os filtros para encontrar livros, autores, editoras e ofertas disponiveis.</p>
+              <span>Seus pedidos</span>
+              <strong>Historico e rastreamento em um so lugar</strong>
+              <p>Consulte o pagamento, a separacao e o andamento da entrega.</p>
             </div>
           </div>
         </div>
-        <a href="livros.html">Sebos e Livreiros</a>
-        <a href="livros.html">Busque por Autores</a>
-        <a href="index.html#dicas">Dicas de Livros</a>
+        <a href="livros.html">Livros</a>
         <a href="livros.html?ordenar=mais-vendidos">Destaques</a>
         <a href="livros.html?promo=true">Ofertas</a>
+        <a href="carrinho.html">Carrinho</a>
         <a class="shipping-link" href="livros.html?frete=gratis">Frete gratis</a>
       </div>
     </nav>
   </header>
 
   <main>
-    <div class="shell breadcrumb">
-      <a href="index.html">Inicio</a>
-      <span>/</span>
-      <a href="livros.html">Livros</a>
-      <span>/</span>
-      <strong id="breadcrumb-title">Detalhes</strong>
-    </div>
+    <section class="page-title shell purchases-title">
+      <p class="eyebrow">Area de compras</p>
+      <h1>Minhas compras</h1>
+      <p>Consulte pedidos anteriores e acompanhe o estado atual de cada entrega.</p>
+    </section>
 
-    <section class="book-detail shell" id="book-detail"></section>
-
-    <section class="content-section shell">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Relacionados</p>
-          <h2>Outros livros do catalogo</h2>
-        </div>
-        <a class="text-link" href="livros.html">Ver catalogo</a>
-      </div>
-      <div class="book-grid" id="related-books"></div>
+    <section class="purchases-page shell" id="purchases-content" aria-live="polite">
+      <div class="loading-state">Carregando suas compras...</div>
     </section>
   </main>
 
@@ -133,17 +118,16 @@
     <div class="shell footer-grid">
       <div>
         <strong>Sebo Digital</strong>
-        <p>Detalhes preenchidos conforme o livro carregado do cadastro.</p>
+        <p>Livros usados e novos com acompanhamento do pedido.</p>
       </div>
       <div>
-        <span>Navegacao</span>
-        <a href="index.html">Inicio</a>
-        <a href="livros.html">Livros</a>
+        <span>Comprar</span>
+        <a href="livros.html">Catalogo</a>
         <a href="carrinho.html">Carrinho</a>
       </div>
       <div>
-        <span>Catalogo</span>
-        <p>As informacoes exibidas dependem dos dados cadastrados para cada livro.</p>
+        <span>Pedidos</span>
+        <a href="compras.html">Minhas compras</a>
       </div>
     </div>
   </footer>
