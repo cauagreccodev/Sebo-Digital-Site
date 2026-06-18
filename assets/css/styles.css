@@ -2348,6 +2348,11 @@ h3 {
     --shell: min(100% - 22px, 1180px);
   }
 
+  .site-header {
+    position: static;
+    backdrop-filter: none;
+  }
+
   .top-strip {
     justify-content: center;
     min-height: 30px;
