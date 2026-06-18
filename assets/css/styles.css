@@ -2349,14 +2349,57 @@ h3 {
   }
 
   .top-strip {
-    justify-content: flex-start;
-    overflow-x: auto;
-    white-space: nowrap;
+    justify-content: center;
+    min-height: 30px;
+    padding: 5px 12px;
+    overflow: hidden;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .top-strip a {
+    display: none;
   }
 
   .header-main {
-    gap: 12px;
-    min-height: 76px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 0;
+    padding: 12px 0;
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .menu-toggle {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .header-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 8px;
+  }
+
+  .header-search {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    order: initial;
+  }
+
+  .site-nav.is-open {
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
 
   .brand-mark {
@@ -2369,12 +2412,13 @@ h3 {
   }
 
   .cart-link {
-    width: 46px;
-    padding: 0;
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
   }
 
   .cart-link span {
-    display: none;
+    display: inline;
   }
 
   .wishlist-link {
@@ -2382,12 +2426,26 @@ h3 {
   }
 
   .account-trigger {
-    min-width: 68px;
+    width: 100%;
+    min-width: 0;
     padding: 0 10px;
   }
 
   .account-dropdown {
-    right: -56px;
+    left: 0;
+    right: auto;
+    max-width: calc(100vw - 22px);
+  }
+
+  .theme-menu,
+  .account-menu {
+    min-width: 0;
+  }
+
+  .theme-trigger {
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
   }
 
   .home-hero {
@@ -2399,7 +2457,7 @@ h3 {
   }
 
   .hero-content h1 {
-    font-size: clamp(2.1rem, 12vw, 3.25rem);
+    font-size: 2.35rem;
   }
 
   .hero-search,
@@ -2419,10 +2477,38 @@ h3 {
   .book-grid,
   .catalog-grid,
   .category-grid,
-  .promo-actions,
   .offer-grid,
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .promo-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(132px, 44vw);
+    grid-template-columns: none;
+    gap: 10px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .promo-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .promo-pill {
+    min-height: 48px;
+    padding: 0 14px;
+    font-size: 1rem;
+    scroll-snap-align: start;
+  }
+
+  .shelf-controls {
+    display: none;
   }
 
   .author-actions {
@@ -2435,11 +2521,16 @@ h3 {
 
   .author-strip {
     grid-auto-columns: minmax(124px, 142px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .author-chip {
     min-height: 176px;
     padding: 14px 10px;
+    scroll-snap-align: start;
   }
 
   .author-chip .author-avatar {
@@ -2452,13 +2543,16 @@ h3 {
     gap: 16px;
   }
 
-  .promo-pill {
-    min-height: 50px;
-    font-size: 1.02rem;
-  }
-
   .book-shelf {
     grid-auto-columns: minmax(230px, 82vw);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .book-shelf .book-card {
+    scroll-snap-align: start;
   }
 
   .book-cover {
@@ -2512,7 +2606,7 @@ h3 {
   }
 
   .header-main {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .header-actions {
@@ -2520,8 +2614,26 @@ h3 {
   }
 
   .account-trigger {
-    min-width: 58px;
     font-size: 0.88rem;
+  }
+
+  .cart-link,
+  .theme-trigger {
+    font-size: 0.88rem;
+  }
+
+  .cart-link {
+    gap: 6px;
+  }
+
+  .cart-link strong {
+    min-width: 23px;
+    height: 23px;
+    padding: 0 5px;
+  }
+
+  .hero-content h1 {
+    font-size: 2.05rem;
   }
 
   .reading-note,

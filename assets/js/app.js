@@ -524,7 +524,11 @@ function setupCartEvents() {
 
 function renderHome() {
   const bestSellers = sortBooks(books.filter((book) => book.bestSeller), "mais-vendidos");
-  renderBooks(document.querySelector("#best-seller-shelf"), bestSellers.length > 1 ? [...bestSellers, ...bestSellers] : bestSellers);
+  const shelfBooks = shouldAutoScrollCarousels() && bestSellers.length > 1
+    ? [...bestSellers, ...bestSellers]
+    : bestSellers;
+
+  renderBooks(document.querySelector("#best-seller-shelf"), shelfBooks);
   renderAuthors();
   renderBooks(document.querySelector("#classic-books"), books.slice(0, 4));
   renderUniverses();
@@ -533,11 +537,17 @@ function renderHome() {
   setupAuthorCarousel();
 }
 
+function shouldAutoScrollCarousels() {
+  return window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 701px)").matches
+    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function setupShelfControls() {
   const shelf = document.querySelector("#best-seller-shelf");
   const previousButton = document.querySelector("[data-shelf-prev]");
   const nextButton = document.querySelector("[data-shelf-next]");
   if (!shelf || !previousButton || !nextButton) return;
+  if (!shouldAutoScrollCarousels()) return;
 
   let isPaused = false;
   let pauseTimeout;
@@ -592,6 +602,7 @@ function setupAuthorCarousel() {
   const previousButton = document.querySelector("[data-author-prev]");
   const nextButton = document.querySelector("[data-author-next]");
   if (!strip || !previousButton || !nextButton) return;
+  if (!shouldAutoScrollCarousels()) return;
 
   let isPaused = false;
   let pauseTimeout;
@@ -645,8 +656,10 @@ function renderAuthors() {
   const container = document.querySelector("#author-strip");
   if (!container) return;
 
-  const authors = [...new Map(books.map((book) => [book.author, book])).values()];
-  const loopedAuthors = authors.length > 1 ? [...authors, ...authors] : authors;
+  const authors = [...new Map(books.filter((book) => book.author).map((book) => [book.author, book])).values()];
+  const loopedAuthors = shouldAutoScrollCarousels() && authors.length > 1
+    ? [...authors, ...authors]
+    : authors;
 
   container.innerHTML = loopedAuthors.map((book) => `
     <a class="author-chip" href="livros.html?autor=${encodeURIComponent(book.author)}">
