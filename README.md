@@ -314,7 +314,7 @@ https://sebo-digital-site-production.up.railway.app/api/auth/oauth2/providers
 
 Current tagged version:
 
-`v0.8` - Purchase-focused navigation, functional checkout, persisted orders, purchase history, stock control, and delivery tracking
+`v0.9` - Mobile-first responsive layout, purchase-focused navigation, functional checkout, demo account, purchase history, stock control, and delivery tracking
 
 `v0.7` - Production deployment with Vercel, Railway, and Neon, removal of hardcoded catalog data, and improved mobile navigation and touch carousels
 
