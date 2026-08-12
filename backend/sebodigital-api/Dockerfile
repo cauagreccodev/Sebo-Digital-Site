@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagem final (mais leve) apenas com o JRE para rodar a aplicação
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copia o arquivo .jar gerado na etapa de build
